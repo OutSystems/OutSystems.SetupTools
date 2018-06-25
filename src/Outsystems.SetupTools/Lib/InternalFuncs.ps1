@@ -183,11 +183,10 @@ Function RunConfigTool([string]$Arguments)
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the config tool..."
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the configuration tool will follow.....:"
-    If(TestVerbose) {
-        $Result = Start-Process -FilePath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -ArgumentList $Arguments -Wait -PassThru -NoNewWindow
-    } Else {
-        $Result = Start-Process -FilePath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -ArgumentList $Arguments -Wait -PassThru -NoNewWindow | Out-Null
-    }
+
+    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $InstallDir -CommandArguments "/c ConfigurationTool.com $Arguments && exit /b %ERRORLEVEL%"
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the configuration end..................:"
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
