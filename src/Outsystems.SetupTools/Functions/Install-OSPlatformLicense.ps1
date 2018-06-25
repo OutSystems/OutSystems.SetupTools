@@ -2,7 +2,7 @@ Function Install-OSPlatformLicense
 {
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory=$true)]
+        [Parameter()]
         [string]$Path
     )
 
@@ -16,11 +16,24 @@ Function Install-OSPlatformLicense
     ## Check if file exists etc etc...
     ## WILL NOT RETURN ERROR IF FAILS!!!!!
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License path: $Path"
+    If($Path){
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License path specified on the command line. Path: $Path"
+    } Else {
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License path NOT specified on the command line. Downloading from repo"
+        $Path = $ENV:TEMP
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Uploading outsytems license"
+        Try {
+            DownloadOSSources -URL "$OSRepoURL\license.lic" -SavePath "$Path\license.lic"
+            $Path = "$Path\license.lic"
+        }
+        Catch {
+            Throw "Error downloading the installer."
+        }
+    }
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing outsytems license"
     RunConfigTool -Path $OSInstallDir -Arguments $("/UploadLicense " + [char]34 + $Path + [char]34) -ErrorAction stop
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License successfully uploaded!!"
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License successfully installed!!"
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 }

@@ -46,9 +46,14 @@ Function Invoke-OSConfigurationTool
 
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory=$true)]
-        [ValidateSet('Standalone','Farm')]
-        [string]$InstallType,
+        [Parameter()]
+        [string]$Controller='127.0.0.1',
+
+        [Parameter()]
+        [string]$PrivateKey,
+
+        [Parameter()]
+        [switch]$OverwritePrivateKey,
 
         [Parameter(Mandatory=$true)]
         [ValidateSet('SQL','SQLExpress','AzureSQL')]
@@ -135,25 +140,6 @@ Function Invoke-OSConfigurationTool
             $paramDictionary.Add('DBSessionCatalog',$DBSessionCatalogParam)
         }
 
-        If ( $InstallType -eq "Farm" ) {
-            #Controller
-            $ControllerAttrib = New-Object System.Management.Automation.ParameterAttribute
-            $ControllerAttrib.Mandatory = $true
-            $ControllerAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-            $ControllerAttribCollection.Add($ControllerAttrib)
-            $ControllerParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Controller', [String], $ControllerAttribCollection)
-
-            #PrivateKey
-            $PrivateKeyAttrib = New-Object System.Management.Automation.ParameterAttribute
-            $PrivateKeyAttrib.Mandatory = $true
-            $PrivateKeyAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-            $PrivateKeyAttribCollection.Add($PrivateKeyAttrib)
-            $PrivateKeyParam = New-Object System.Management.Automation.RuntimeDefinedParameter('PrivateKey', [String], $PrivateKeyAttribCollection)
-
-            $paramDictionary.Add('Controller',$ControllerParam)
-            $paramDictionary.Add('PrivateKey',$PrivateKeyParam)
-        }
-
         Return $paramDictionary
     }
 
@@ -176,22 +162,22 @@ Function Invoke-OSConfigurationTool
         Stop-OSServices
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems services stopped"
 
-        #Write the private.key file. This needs to be done before running the configuration tool.
-        If ( $InstallType -eq "Farm" ) {
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Farm installation type"
+        #Write the private.key file. This needs to be done before running the configuration tool for the first time.
+        If ($PrivateKey){
+            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Environment private key specified in the command line"
             Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the private.key"
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Check if the file already exists"
 
-            If( -not (Test-Path -Path "$OSInstallDir\private.key")){
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File doesnt exist. Creating a new file."
+            If( ( -not (Test-Path -Path "$OSInstallDir\private.key")) -or $OverwritePrivateKey.IsPresent  ){
 
                 #Copy template file to the destination.
-                Copy-Item -Path "$PSScriptRoot\..\Lib\private.key" -Destination "$OSInstallDir\private.key"
+                Copy-Item -Path "$PSScriptRoot\..\Lib\private.key" -Destination "$OSInstallDir\private.key" -Force
 
                 #Changing the contents of the file.
                 (Get-Content "$OSInstallDir\private.key") -replace '<<KEYTOREPLACE>>', "$($PSBoundParameters.PrivateKey)" | Set-Content "$OSInstallDir\private.key"
 
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File created!!"
+                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File modified successfully!!."
+            } else {
+                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File NOT modified. File already exists and the OverwritePrivateKey switch was not set"
             }
 
         }
@@ -288,32 +274,29 @@ Function Invoke-OSConfigurationTool
 
         #Wrtting common parameters to all templates.
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting common parameters"
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting: DBAdminUser and DBAdminPass"
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBAdminUser and DBAdminPass"
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.AdminUser.InnerText = $DBAdminUser
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.AdminPassword.InnerText = $DBAdminPass
 
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting: DBRuntimeUser and DBRuntimePass"
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBRuntimeUser and DBRuntimePass"
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.RuntimeUser.InnerText = $DBRuntimeUser
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.RuntimePassword.InnerText = $DBRuntimePass
 
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting: DBLogUser and DBLogPass"
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBLogUser and DBLogPass"
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogUser.InnerText = $DBLogUser
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogPassword.InnerText = $DBLogPass
 
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting: DBSessionUser and DBSessionPass"
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBSessionUser and DBSessionPass"
         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SessionUser.InnerText = $DBSessionUser
         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SessionPassword.InnerText = $DBSessionPass
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting common parameters complete"
 
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DB Timeout to $OSDBTimeout"
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DB Timeout to: $OSDBTimeout"
         $HSConf.EnvironmentConfiguration.OtherConfigurations.DBTimeout = "$OSDBTimeout"
 
-        #Write the controller address.
-        If ( $InstallType -eq "Farm" ) {
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Farm installation type"
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting controller host to $($PSBoundParameters.Controller)"
-            $HSConf.EnvironmentConfiguration.ServiceConfiguration.CompilerServerHostname = $PSBoundParameters.Controller
-        }
+        #Writting controller address.
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting controller address to: $Controller"
+        $HSConf.EnvironmentConfiguration.ServiceConfiguration.CompilerServerHostname = $Controller
 
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Saving server.hsconf"
         $HSConf.Save("$OSInstallDir\server.hsconf")
