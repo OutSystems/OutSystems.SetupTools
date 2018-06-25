@@ -12,7 +12,7 @@
 RootModule = 'OutSystems.SetupTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.3.45.0'
+ModuleVersion = '1.3.50.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()

@@ -223,6 +223,8 @@ Function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
 {
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
 
+    $InstallDir = GetServerInstallDir
+
     $Version = [System.Version]$(GetServerVersion)
     $MajorVersion = "$($Version.Major).$($Version.Minor)"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Server major version: $MajorVersion"
@@ -240,7 +242,7 @@ Function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
     #    $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
     #    -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow | Out-Null
     #}
-    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $OSPToolPath -CommandArguments "/c OSPTool.com /publish " + [char]34 + $Solution + [char]34 + " $ENV:ComputerName $SCUser $SCPass && exit /b %ERRORLEVEL%"
+    $Result = ExecuteCommand -CommandPath "$OSPToolPath\OSPTool.com" -WorkingDirectory $InstallDir -CommandArguments $("/publish " + [char]34 + $Solution + [char]34 + " $ENV:ComputerName $SCUser $SCPass")
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the OSP end..................:"
