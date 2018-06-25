@@ -233,13 +233,16 @@ Function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the OSP tool..."
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Solution: $Solution"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the OSP tool will follow.....:"
-    If(TestVerbose) {
-        $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
-        -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow
-    } Else {
-        $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
-        -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow | Out-Null
-    }
+    #If(TestVerbose) {
+    #    $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
+    #    -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow
+    #} Else {
+    #    $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
+    #    -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow | Out-Null
+    #}
+    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $OSPToolPath -CommandArguments "/c OSPTool.com /publish " + [char]34 + $Solution + [char]34 + " $ENV:ComputerName $SCUser $SCPass && exit /b %ERRORLEVEL%"
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the OSP end..................:"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
 
