@@ -209,9 +209,9 @@ Function InstallOSSystemCenter([string]$Path)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the tool will follow .........:"
 
     If(TestVerbose) {
-        $Result = Start-Process -FilePath "$InstallDir\SCInstaller.exe" -WorkingDirectory $InstallDir -ArgumentList "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" -Wait -PassThru -NoNewWindow
+        $Result = Start-Process -FilePath "$InstallDir\SCInstaller.exe" -WorkingDirectory $InstallDir -ArgumentList "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" -Wait -PassThru -NoNewWindow -LoadUserProfile
     } Else {
-        $Result = Start-Process -FilePath "$InstallDir\SCInstaller.exe" -WorkingDirectory $InstallDir -ArgumentList "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" -Wait -PassThru -NoNewWindow | Out-Null
+        $Result = Start-Process -FilePath "$InstallDir\SCInstaller.exe" -WorkingDirectory $InstallDir -ArgumentList "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" -Wait -PassThru -NoNewWindow -LoadUserProfile | Out-Null
     }
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the tool end .................:"
