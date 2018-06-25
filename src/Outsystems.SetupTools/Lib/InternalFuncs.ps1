@@ -208,15 +208,11 @@ Function InstallOSSystemCenter([string]$Path)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing OS Service Center"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the tool will follow .........:"
 
-    If(TestVerbose) {
-        $Result = Start-Process -FilePath "$env:comspec" -WorkingDirectory $InstallDir -ArgumentList '/c echo %ERRORLEVEL% && SCInstaller.exe -file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif && exit /b %ERRORLEVEL%' -Wait -PassThru -NoNewWindow
-    } Else {
-        $Result = Start-Process -FilePath "$env:comspec" -WorkingDirectory $InstallDir -ArgumentList '/c echo %ERRORLEVEL% && SCInstaller.exe -file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif && exit /b %ERRORLEVEL%' -Wait -PassThru -NoNewWindow | Out-Null
-    }
+    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $InstallDir -CommandArguments '/c SCInstaller.exe -file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif && exit /b %ERRORLEVEL%'
 
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the tool end .................:"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
-
     If( $Result.ExitCode -ne 0 ){
         throw "Error installing service center. Return code: $($Result.ExitCode)"
     }
@@ -306,4 +302,39 @@ Function DownloadOSSources([string]$URL, [string]$SavePath)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File successfully downloaded!"
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+}
+
+Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string]$CommandArguments)
+{
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
+
+    Try {
+        $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
+        $ProcessInfo.FileName = $CommandPath
+        $ProcessInfo.RedirectStandardError = $true
+        $ProcessInfo.RedirectStandardOutput = $true
+        $ProcessInfo.UseShellExecute = $false
+        $ProcessInfo.Arguments = $CommandArguments
+        $ProcessInfo.WorkingDirectory = $WorkingDirectory
+
+        $Process = New-Object System.Diagnostics.Process
+        $Process.StartInfo = $ProcessInfo
+        $Process.Start() | Out-Null
+        $Output = $Process.StandardOutput.ReadToEnd()
+
+        $Process.WaitForExit()
+
+        Return [PSCustomObject]@{
+            Output = $Output
+            ExitCode = $Process.ExitCode
+        }
+    }
+    Catch {
+        Throw "Error launching the process $CommandPath with the arguments $CommandArguments"
+    }
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+
 }
