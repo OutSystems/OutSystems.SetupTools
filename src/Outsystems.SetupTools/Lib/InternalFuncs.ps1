@@ -181,6 +181,14 @@ Function RunConfigTool([string]$Arguments)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting server install directory"
     $InstallDir = GetServerInstallDir
 
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Check if the file machine.config is locked before running the tool."
+    $MachineConfigFile = "$ENV:windir\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config"
+
+    While(TestFileLock($MachineConfigFile)){
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File is locked!! Retrying is 10s."
+        Start-Sleep -Seconds 10
+    }
+
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the config tool..."
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the configuration tool will follow.....:"
 
@@ -332,6 +340,42 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
     }
     Catch {
         Throw "Error launching the process $CommandPath with the arguments $CommandArguments"
+    }
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+
+}
+
+function TestFileLock([string]$Path)
+{
+
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking if file $Path is locked"
+
+    $File = New-Object System.IO.FileInfo $Path
+
+    If ((Test-Path -Path $Path) -eq $false) {
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File does not exist. Returning false."
+        Return $false
+    }
+
+    Try {
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Openning"
+
+        $Stream = $File.Open([System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+
+        If ($Stream) {
+            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Sucessfully open the file. File is not locked"
+            $Stream.Close()
+            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Closing and returnig false"
+        }
+
+        Return $false
+
+    } Catch {
+
+        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File is locked!!! Returnig true!!"
+        Return $true
     }
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
