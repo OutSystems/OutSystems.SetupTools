@@ -207,6 +207,7 @@ Function InstallOSSystemCenter([string]$Path)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing OS Service Center"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the tool will follow .........:"
 
+    #SCInstaller needs to run inside a CMD or will not return an exit code
     $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $InstallDir -CommandArguments '/c SCInstaller.exe -file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif && exit /b %ERRORLEVEL%'
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
@@ -235,13 +236,7 @@ Function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the OSP tool..."
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Solution: $Solution"
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the OSP tool will follow.....:"
-    #If(TestVerbose) {
-    #    $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
-    #    -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow
-    #} Else {
-    #    $Result = Start-Process -FilePath "$OSPToolPath\OSPTool.com" -WorkingDirectory $OSPToolPath  `
-    #    -ArgumentList $("/publish " + [char]34 + $Solution + [char]34), "$ENV:ComputerName $SCUser $SCPass" -Wait -PassThru -NoNewWindow | Out-Null
-    #}
+
     $Result = ExecuteCommand -CommandPath "$OSPToolPath\OSPTool.com" -WorkingDirectory $InstallDir -CommandArguments $("/publish " + [char]34 + $Solution + [char]34 + " $ENV:ComputerName $SCUser $SCPass")
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"

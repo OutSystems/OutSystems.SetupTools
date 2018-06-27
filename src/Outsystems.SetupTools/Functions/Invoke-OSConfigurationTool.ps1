@@ -47,7 +47,7 @@ Function Invoke-OSConfigurationTool
     [CmdletBinding()]
     Param(
         [Parameter()]
-        [string]$Controller='127.0.0.1',
+        [string]$Controller,
 
         [Parameter()]
         [string]$PrivateKey,
@@ -295,6 +295,9 @@ Function Invoke-OSConfigurationTool
         $HSConf.EnvironmentConfiguration.OtherConfigurations.DBTimeout = "$OSDBTimeout"
 
         #Writting controller address.
+        If(-not $Controller){
+            $Controller = "127.0.0.1"
+        }
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting controller address to: $Controller"
         $HSConf.EnvironmentConfiguration.ServiceConfiguration.CompilerServerHostname = $Controller
 
