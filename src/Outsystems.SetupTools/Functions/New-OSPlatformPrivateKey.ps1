@@ -1,4 +1,4 @@
-Function Get-OSPlatformNewPrivateKey
+Function New-OSPlatformPrivateKey
 {
 
     [CmdletBinding()]

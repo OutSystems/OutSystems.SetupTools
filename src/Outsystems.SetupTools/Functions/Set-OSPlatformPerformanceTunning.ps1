@@ -17,9 +17,8 @@ Function Set-OSPlatformPerformanceTunning
     $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength = 131072
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting .NET executionTimeout to 110 seconds"
     $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout = [TimeSpan]::FromSeconds(110)
+
     $NETMachineConfig.Save()
-
-
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 }

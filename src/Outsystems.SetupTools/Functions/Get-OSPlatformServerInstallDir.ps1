@@ -17,7 +17,7 @@ Function Get-OSPlatformServerInstallDir
 
     $InstallDir = GetServerInstallDir
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Returning $InstallDir"
+    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $InstallDir"
     return $InstallDir
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"

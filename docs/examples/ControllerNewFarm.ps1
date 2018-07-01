@@ -1,72 +1,52 @@
 ﻿[CmdletBinding()]
-Param(
+Param()
 
-    [Parameter()]
-    [string]$OSLogPath="$Env:Windir\Temp\OutsystemsInstall",
+# ------------- Outsystems configuration variables ------------------
+# This can be FE for FrontEnd or LT for lifetime
+$OSRole=""
 
-    [Parameter()]
-    [ValidateSet('SQL','SQLExpress','AzureSQL')]
-    [string]$OSDBProvider='SQL',
+$OSInstallDir="$Env:ProgramFiles\OutSystems"
 
-    [Parameter()]
-    [ValidateSet('SQL','Windows')]
-    [string]$OSDBAuth='SQL',
+$OSPlatformVersion='10.0.823.0'
+$OSDevEnvironmentVersion='10.0.825.0'
 
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBServer,
+# If you dont specify a license here, a trial license will be installed.
+#$OSLicensePath="$PSScriptRoot"
+$OSLicensePath=""
 
-    [Parameter()]
-    [string]$OSDBCatalog='outsystems',
+$OSLogPath="$Env:Windir\Temp\OutsystemsInstall"
 
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBSAUser,
+$ConfigToolArgs = @{
 
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBSAPass,
+    # If this is a frontend or you want to connect to an existing database environment specify the environment private key here.
+    # In case this is a Farm deployment you should generate a new private key using the cmdlet New-OSPlatformPrivateKey
+    PrivateKey          = ""
 
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBSessionServer,
+    # If this is a frontend specify here the controller IP address.
+    Controller          = ""
 
-    [Parameter()]
-    [string]$OSDBSessionCatalog='osSession',
+    DBProvider          = "SQL"                 # This can be SQL, SQLExpress, AzureSQL
+    DBAuth              = "SQL"                 # This can be SQL or Windows
 
-    [Parameter()]
-    [string]$OSDBSessionUser='OSSTATE',
+    DBServer            = "<SQL server>"        # SQL server IP or hostname
+    DBCatalog           = "outsystems"          # Platform catalog
+    DBSAUser            = "sa"                  # User with dba permission on the database. If windows auth should be <DOMAIN\USER>
+    DBSAPass            = "<sa password>"
 
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBSessionPass,
+    DBSessionServer     = "<SQL server>"        # SQL server IP or hostname for the session catalog
+    DBSessionCatalog    = "osSession"           # Session catalog
+    DBSessionUser       = "OSSTATE"             # Session DB User
+    DBSessionPass       = "<OSSTATE pass>"      # Session DB Pass
 
-    [Parameter()]
-    [string]$OSDBAdminUser='OSADMIN',
+    DBAdminUser         = "OSADMIN"             # Admin DB User
+    DBAdminPass         = "<OSADMIN pass>"      # Admin DB Pass
+    DBRuntimeUser       = "OSRUNTIME"           # Runtime DB User
+    DBRuntimePass       = "<OSRUNTIME pass>"    # Runtime DB Pass
+    DBLogUser           = "OSLOG"               # Log DB User
+    DBLogPass           = "<OSLOG pass>"        # Log DB User
+}
 
-    [Parameter()]
-    [string]$OSDBAdminPass,
-
-    [Parameter()]
-    [string]$OSDBRuntimeUser='OSRUNTIME',
-
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBRuntimePass,
-
-    [Parameter()]
-    [string]$OSDBLogUser='OSLOG',
-
-    [Parameter(Mandatory=$true)]
-    [string]$OSDBLogPass,
-
-    [Parameter()]
-    [string]$OSInstallDir="$Env:ProgramFiles\OutSystems",
-
-    [Parameter()]
-    [string]$OSLicensePath,
-
-    [Parameter()]
-    [string]$OSPlatformVersion='10.0.823.0',
-
-    [Parameter()]
-    [string]$OSDevEnvironmentVersion='10.0.825.0'
-
-)
+# ------------- Outsystems configuration variables ------------------
 
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
@@ -90,48 +70,32 @@ Install-OSPlatformServerPreReqs -Verbose
 
 # -- Download and install OS Server and Dev environment from repo
 Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -Verbose
-Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose
 
-# -- Download and install OS Server and Dev environment from a local source
-# Install-OSPlatformServer -SourcePath "$PSScriptRoot\Sources" -Version 10.0.816.0
-# Install-OSDevEnvironment -SourcePath "$PSScriptRoot\Sources" -Version 10.0.822.0
-
-# -- Configure environment
-$ConfigToolArgs = @{
-
-    $OSPrivateKey       = $OSPrivateKey
-
-    DBProvider          = $OSDBProvider
-    DBAuth              = $OSDBAuth
-
-    DBServer            = $OSDBServer
-    DBCatalog           = $OSDBCatalog
-    DBSAUser            = $OSDBSAUser
-    DBSAPass            = $OSDBSAPass
-
-    DBSessionServer     = $OSDBSessionServer
-    DBSessionCatalog    = $OSDBSessionCatalog
-    DBSessionUser       = $OSDBSessionUser
-    DBSessionPass       = $OSDBSessionPass
-
-    DBAdminUser         = $OSDBAdminUser
-    DBAdminPass         = $OSDBAdminPass
-    DBRuntimeUser       = $OSDBRuntimeUser
-    DBRuntimePass       = $OSDBRuntimePass
-    DBLogUser           = $OSDBLogUser
-    DBLogPass           = $OSDBLogPass
+# If this is a frontend, wait for the controller to become available
+If ($OSRole -eq "FE"){
+    While ( -not $(Get-OSPlatformVersion -Host $ConfigToolArgs.Controller -ErrorAction SilentlyContinue) ) {
+        Write-Output "Waiting for the controller $($ConfigToolArgs.Controller)"
+        Start-Sleep -s 15
+    }
 }
+
+# -- Run config tool
 Invoke-OSConfigurationTool -Verbose @ConfigToolArgs
 
-# -- Install Service Center and SysComponents
-Install-OSPlatformServiceCenter
-Install-OSPlatformSysComponents
-
-# -- Install license
-Install-OSPlatformLicense -Path $OSLicensePath -Verbose
+# -- If not a frontend install Service Center, SysComponents and license
+If ($OSRole -ne "FE"){
+    Install-OSPlatformServiceCenter
+    Install-OSPlatformSysComponents
+    Install-OSPlatformLicense -Path $OSLicensePath -Verbose
+}
 
 # -- Install Lifetime
-# Install-OSPlatformLifetime -Verbose
+If ($OSRole -eq "LT"){
+    Install-OSPlatformLifetime -Verbose
+}
+
+# -- Install dev environment
+Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose
 
 # -- System tunning
 Set-OSPlatformPerformanceTunning -Verbose

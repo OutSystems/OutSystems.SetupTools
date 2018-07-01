@@ -16,7 +16,7 @@ Function Install-OSPlatformLicense
     ## Check if file exists etc etc...
     ## WILL NOT RETURN ERROR IF FAILS!!!!!
 
-    If($Path){
+    If($Path -and ($Path -ne "")){
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License path specified on the command line. Path: $Path"
     } Else {
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "License path NOT specified on the command line. Downloading from repo"
