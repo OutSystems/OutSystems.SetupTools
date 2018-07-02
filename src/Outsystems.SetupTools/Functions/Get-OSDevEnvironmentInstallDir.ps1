@@ -29,10 +29,12 @@ Function Get-OSDevEnvironmentInstallDir
     try{
         $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction Stop)."(default)"
         Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
-        return $output
+
     } catch {
         Throw "Outsystems development environment $MajorVersion is not installed"
     }
 
     Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+
+    return $output
 }

@@ -13,6 +13,10 @@ Function Write-MyVerbose([string]$FuncName, [int]$Phase, [string]$Message){
     $Output += ' ' + $Message
 
     Write-Verbose $Output
+
+    If($script:LogFile -and ($script:LogFile -ne "")){
+        Add-Content -Path $script:LogFile -Value "$Output`n"
+    }
 }
 
 Function TestVerbose {

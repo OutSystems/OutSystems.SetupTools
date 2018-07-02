@@ -16,5 +16,8 @@ Foreach($Import in @($GlobalVars + $Lib + $Functions))
     }
 }
 
+# Global log variable. This is blank by default. Use the Set-OSInstallLog function to set the log location
+$Script:LogFile
+
 # Export only the functions using PowerShell standard verb-noun naming.
 Export-ModuleMember -Function *-*
