@@ -1,4 +1,4 @@
-Function Start-OSServices
+Function Disable-OSIPv6
 {
     <#
     .SYNOPSIS
