@@ -3,7 +3,7 @@ Param()
 
 # ------------- Outsystems configuration variables ------------------
 # This can be FE for FrontEnd or LT for lifetime
-$OSRole=""
+$OSRole="FE"
 
 $OSInstallDir="$Env:ProgramFiles\OutSystems"
 
@@ -20,18 +20,18 @@ $ConfigToolArgs = @{
 
     # If this is a frontend or you want to connect to an existing database environment specify the environment private key here.
     # In case this is a Farm deployment you should generate a new private key using the cmdlet New-OSPlatformPrivateKey
-    PrivateKey          = ""
+    PrivateKey          = "gO0Hk91M5LhrNImOtzF/Sg=="
 
     # If this is a frontend specify here the controller IP address.
-    Controller          = ""
+    Controller          = "TEST200"
 
-    DBProvider          = "SQL"                 # This can be SQL, SQLExpress, AzureSQL
+    DBProvider          = "AzureSQL"                 # This can be SQL, SQLExpress, AzureSQL
     DBAuth              = "SQL"                 # This can be SQL or Windows
 
-    DBServer            = "<SQL server>"        # SQL server IP or hostname
+    DBServer            = "AZSQL"        # SQL server IP or hostname
     DBCatalog           = "outsystems"          # Platform catalog
     DBSAUser            = "sa"                  # User with dba permission on the database. If windows auth should be <DOMAIN\USER>
-    DBSAPass            = "<sa password>"
+    DBSAPass            = "secret25"
 
     DBSessionServer     = "<SQL server>"        # SQL server IP or hostname for the session catalog
     DBSessionCatalog    = "osSession"           # Session catalog
@@ -67,12 +67,6 @@ Install-OSPlatformServerPreReqs -Verbose
 # -- Download and install OS Server and Dev environment from repo
 Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -Verbose
 
-# -- Configure windows firewall
-Set-OSPlatformWindowsFirewall -Verbose
-
-# -- Disable IPv6
-Disable-OSIPv6 -Verbose
-
 # If this is a frontend, wait for the controller to become available
 If ($OSRole -eq "FE"){
     While ( -not $(Get-OSPlatformVersion -Host $ConfigToolArgs.Controller -ErrorAction SilentlyContinue) ) {
@@ -83,6 +77,9 @@ If ($OSRole -eq "FE"){
 
 # -- Run config tool
 Invoke-OSConfigurationTool -Verbose @ConfigToolArgs
+
+# -- Configure windows firewall
+Set-OSPlatformWindowsFirewall -Verbose
 
 # -- If not a frontend install Service Center, SysComponents and license
 If ($OSRole -ne "FE"){
