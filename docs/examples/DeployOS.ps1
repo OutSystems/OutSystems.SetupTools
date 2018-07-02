@@ -54,12 +54,8 @@ Remove-Module Outsystems.SetupTools -ErrorAction SilentlyContinue
 Install-Module Outsystems.SetupTools -Force
 Import-Module Outsystems.SetupTools
 
-# -- Import module local. If the systems doesnt have internet access
-# Remove-Module Outsystems.SetupTools -ErrorAction SilentlyContinue
-# Import-Module .\..\..\src\Outsystems.SetupTools
-
 # -- Start logging
-Start-Transcript -Path "$OSLogPath\$($MyInvocation.MyCommand.Name)-$(get-date -Format 'yyyyMMddHHmmss').log" -Force
+Set-OSInstallLog -Path $OSLogPath -File "InstallLog-$(get-date -Format 'yyyyMMddHHmmss').log"
 
 # -- Check HW and OS for compability
 Test-OSPlatformHardwareReqs -Verbose
@@ -102,6 +98,3 @@ Set-OSPlatformPerformanceTunning -Verbose
 
 # -- Security settings
 Set-OSPlatformSecuritySettings -Verbose
-
-# -- Stop logging
-Stop-Transcript
