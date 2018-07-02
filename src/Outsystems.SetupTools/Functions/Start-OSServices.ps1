@@ -19,7 +19,7 @@ Function Start-OSServices
     ForEach ($OSService in $OSServices) {
         If ($(Get-Service -Name $OSService -ErrorAction SilentlyContinue)){
             Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting OS service: $OSService"
-            Get-Service -Name $OSService | Where-Object {$_.StartType -ne "Disabled"} | Start-Service
+            Get-Service -Name $OSService | Where-Object {$_.StartType -ne "Disabled"} | Start-Service -WarningAction SilentlyContinue
             Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Service started"
         }
     }
