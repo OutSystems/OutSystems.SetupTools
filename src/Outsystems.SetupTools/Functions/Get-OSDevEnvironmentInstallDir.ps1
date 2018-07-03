@@ -12,7 +12,7 @@ Function Get-OSDevEnvironmentInstallDir
     Major version. 9.0, 9.1, 10.0, 11.0, ...
 
     .EXAMPLE
-    Get-OSDevEnvironmentInstallDir -MajorVersion 10.0
+    Get-OSDevEnvironmentInstallDir -MajorVersion "10.0"
 
     #>
 
@@ -23,18 +23,23 @@ Function Get-OSDevEnvironmentInstallDir
         [string]$MajorVersion
     )
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(Default)"
-
-    try{
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction Stop)."(default)"
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
-
-    } catch {
-        Throw "Outsystems development environment $MajorVersion is not installed"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Process {
+        Try{
+            $output = GetDevEnvInstallDir -MajorVersion $MajorVersion
 
-    return $output
+        } Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems development environment $MajorVersion is not installed"
+            Throw "Outsystems development environment $MajorVersion is not installed"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
+        Return $output
+    }
+
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

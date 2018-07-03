@@ -1,5 +1,4 @@
-Function Get-OSDevEnvironmentVersion
-{
+Function Get-OSDevEnvironmentVersion {
     <#
     .SYNOPSIS
     Returns the Outsystems development environment installed version.
@@ -12,26 +11,33 @@ Function Get-OSDevEnvironmentVersion
     Major version. 9.0, 9.1, 10.0, 11.0, ...
 
     .EXAMPLE
-    Get-OSDevEnvironmentVersion -MajorVersion 10.0
+    Get-OSDevEnvironmentVersion -MajorVersion "10.0"
 
     #>
     [CmdletBinding()]
     [OutputType([System.Version])]
     param (
-        [Parameter(Mandatory=$true, HelpMessage="10.0")]
+        [Parameter(Mandatory = $true, HelpMessage = "10.0")]
         [string]$MajorVersion
     )
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
-
-    try {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion" -ErrorAction Stop)."Service Studio $MajorVersion"
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
-        return [System.Version]$output
-    } catch {
-        Throw "Outsystems development environment $MajorVersion is not installed"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Process {
+        Try {
+            $output = GetDevEnvVersion -MajorVersion $MajorVersion
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems development environment $MajorVersion is not installed"
+            Throw "Outsystems development environment $MajorVersion is not installed"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
+        Return [System.Version]$output
+    }
+
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

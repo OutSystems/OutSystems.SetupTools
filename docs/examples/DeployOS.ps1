@@ -62,7 +62,7 @@ Test-OSPlatformHardwareReqs -Verbose
 Test-OSPlatformSoftwareReqs -Verbose
 
 # -- Install PreReqs
-Install-OSPlatformServerPreReqs -Verbose
+Install-OSPlatformPreReqs -MajorVersion "$(([System.Version]$OSPlatformVersion).Major).$(([System.Version]$OSPlatformVersion).Minor)"
 
 # -- Download and install OS Server and Dev environment from repo
 Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -Verbose

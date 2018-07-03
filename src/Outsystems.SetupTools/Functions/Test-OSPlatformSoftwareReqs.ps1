@@ -1,5 +1,4 @@
-Function Test-OSPlatformSoftwareReqs
-{
+Function Test-OSPlatformSoftwareReqs {
     <#
     .SYNOPSIS
     Checks if the server has a supported operating system and software installed.
@@ -13,30 +12,36 @@ Function Test-OSPlatformSoftwareReqs
     [CmdletBinding()]
     Param()
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    }
 
-    #Check Operating System Version
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking Operating System version"
-    If([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OSReqsMinOSVersion) { Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported" }
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Operating system is supported"
+    Process {
+        #Check Operating System Version
+        If ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OSReqsMinOSVersion) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
+            Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
+        }
 
-    #Check Operating System ProductType
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking Operating System product type"
-    If($(GetOperatingSystemProductType) -lt $OSReqsMinOSProductType) { Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported" }
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Operating system is a server product"
+        #Check Operating System ProductType
+        If ($(GetOperatingSystemProductType) -lt $OSReqsMinOSProductType) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
+            Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
+        }
 
-    #Check for Operating System GUI
-    ## TODO!!
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Operating system is a server product 2008R2 or higher"
 
-    #Check .NET
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking .NET version"
-    If($(GetDotNet4Version) -lt $OSReqsMinDotNetVersion) { Throw "Minimum .NET version not installed. NET4.6.1 or higher needs to be installed first" }
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installed .NET is supported for OutSystems"
+        #Check .NET
+        If ($(GetDotNet4Version) -lt $OSReqsMinDotNetVersion) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Minimum .NET version not installed. NET4.6.1 or higher needs to be installed first"
+            Throw "Minimum .NET version not installed. NET4.6.1 or higher needs to be installed first"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installed .NET is supported for OutSystems"
 
-    #Check .NET deployment tools
-    ## TODO!!
+        ## TODO!! #Check .NET deployment tools?
+    }
 
-
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
-
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

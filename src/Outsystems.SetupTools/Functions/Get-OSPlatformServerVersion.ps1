@@ -1,5 +1,4 @@
-Function Get-OSPlatformServerVersion
-{
+Function Get-OSPlatformServerVersion {
     <#
     .SYNOPSIS
     Returns the current Outsystems platform version
@@ -13,12 +12,23 @@ Function Get-OSPlatformServerVersion
     [OutputType([System.Version])]
     Param()
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    }
 
-    $Version = GetServerVersion
+    Process {
+        Try {
+            $output = GetServerVersion
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            Throw "Outsystems platform is not installed"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
+        Return [System.Version]$output
+    }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $Version"
-    Return [System.Version]$Version
-
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

@@ -1,5 +1,19 @@
-Function Get-OSPlatformVersion
-{
+Function Get-OSPlatformVersion {
+    <#
+    .SYNOPSIS
+    Gets the platform version from Service Center.
+
+    .DESCRIPTION
+    This will return the Outsystems platform version from Service Center API. Will throw an exception if cannot get the version.
+
+    .PARAMETER Host
+    Service Center address. If not specofied will default to localhost (127.0.0.1).
+
+    .EXAMPLE
+    Get-OSPlatformVersion -Host "10.0.0.1"
+
+    #>
+
     [CmdletBinding()]
     [OutputType([System.Version])]
     Param(
@@ -7,20 +21,26 @@ Function Get-OSPlatformVersion
         [string]$Host = "127.0.0.1"
     )
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
-    Try{
-        $ServiceProxy = New-WebServiceProxy -Uri "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?wsdl" -Namespace Outsystems -ErrorAction Stop
-        $RefDummy = ""
-        $Version = $ServiceProxy.GetPlatformInfo(([ref]$RefDummy))
-
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $Version"
-
-    } Catch {
-        Throw "Error contacting service center."
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Process {
+        Try {
+            $ServiceProxy = New-WebServiceProxy -Uri "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?wsdl" -Namespace Outsystems -ErrorAction Stop
+            $RefDummy = ""
+            $Version = $ServiceProxy.GetPlatformInfo(([ref]$RefDummy))
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error contacting service center"
+            Throw "Error contacting service center"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $Version"
+        Return [System.Version]$Version
+    }
 
-    Return [System.Version]$Version
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
+
 }

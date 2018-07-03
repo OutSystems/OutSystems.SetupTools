@@ -1,5 +1,4 @@
-Function Stop-OSServices
-{
+Function Stop-OSServices {
     <#
     .SYNOPSIS
     Stops Outsystems services.
@@ -12,17 +11,25 @@ Function Stop-OSServices
     [CmdletBinding()]
     Param()
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
-    If( -not $(CheckRunAsAdmin)) {Throw "The current user is not Administrator of the machine"}
-
-    ForEach ($OSService in $OSServices) {
-        If ($(Get-Service -Name $OSService -ErrorAction SilentlyContinue)){
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Stopping OS service: $OSService"
-            Get-Service -Name $OSService | Stop-Service -WarningAction SilentlyContinue
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Service stopped"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        If ( -not $(CheckRunAsAdmin)) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
+            Throw "The current user is not Administrator of the machine"
         }
     }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Process {
+        ForEach ($OSService in $OSServices) {
+            If ($(Get-Service -Name $OSService -ErrorAction SilentlyContinue)) {
+                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Stopping OS service: $OSService"
+                Get-Service -Name $OSService | Stop-Service -WarningAction SilentlyContinue
+                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Service stopped"
+            }
+        }
+    }
+
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

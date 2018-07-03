@@ -1,5 +1,4 @@
-Function Get-OSPlatformServerInstallDir
-{
+Function Get-OSPlatformServerInstallDir {
     <#
     .SYNOPSIS
     Returns where the Outsystems platform server is installed.
@@ -13,12 +12,23 @@ Function Get-OSPlatformServerInstallDir
     [OutputType([System.String])]
     Param()
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    }
 
-    $InstallDir = GetServerInstallDir
+    Process {
+        Try {
+            $output = GetServerInstallDir
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            Throw "Outsystems platform is not installed"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
+        Return $output
+    }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $InstallDir"
-    return $InstallDir
-
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

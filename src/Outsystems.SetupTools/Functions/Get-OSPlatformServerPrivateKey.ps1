@@ -1,11 +1,10 @@
-Function Get-OSPlatformServerPrivateKey
-{
+Function Get-OSPlatformServerPrivateKey {
     <#
     .SYNOPSIS
-    Returns where the Outsystems platform server private key.
+    Returns the Outsystems platform server private key.
 
     .DESCRIPTION
-    This will returns the Outsystems platform server private key. Will throw an exception if the platform is not installed.
+    This will returns the Outsystems platform server private key. Will throw an exception if the platform is not installed or if the key file doesn't exist.
 
     #>
 
@@ -13,30 +12,42 @@ Function Get-OSPlatformServerPrivateKey
     [OutputType([System.String])]
     Param()
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking if server is installed."
-
-    $InstallDir = GetServerInstallDir
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Server is installed at $InstallDir"
-
-    $Path = "$InstallDir\private.key"
-
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking if file exists at $Path"
-    If( -not (Test-Path -Path $Path)){ Throw "Cant file the setup file: $Path"}
-
-    Get-Content $Path | ForEach-Object {
-
-        $Regex = "^--*"
-
-        If(-not ($_ -match $regex)){
-            $pKey = $_
-            Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Found private key: $pKey"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Try {
+            $InstallDir = GetServerInstallDir
         }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            Throw "Outsystems platform is not installed"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Server is installed at $InstallDir"
+
+        $Path = "$InstallDir\private.key"
+        If ( -not (Test-Path -Path $Path)) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Cant file the file $Path"
+            Throw "Cant file the file $Path"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "private.key file found"
     }
 
-    If( -not $pKey){ Throw "Error getting the private key in file: $Path"}
+    Process {
+        $Regex = "^--*"
+        Get-Content $Path | ForEach-Object {
+            If ( -not ($_ -match $Regex) ) {
+                $PrivateKey = $_
+            }
+        }
 
-    return $pKey
+        If ( -not $PrivateKey ) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error processing the file"
+            Throw "Error processing the file"
+        }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $PrivateKey"
+        Return $PrivateKey
+    }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

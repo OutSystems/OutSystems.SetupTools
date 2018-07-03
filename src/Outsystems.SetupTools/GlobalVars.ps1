@@ -48,3 +48,7 @@ $OSRepoURL = "https://myfilerepo.blob.core.windows.net/sources"
 
 # Database default timeout
 $OSDBTimeout = "60"
+
+# Log related
+$LogFile = ""
+$LogDebug = $false

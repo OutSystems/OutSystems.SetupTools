@@ -1,98 +1,122 @@
-Function Install-OSPlatformServer
-{
+Function Install-OSPlatformServer {
     <#
     .SYNOPSIS
-    Short description
+    Installs or updates the Outsystems Platform server.
 
     .DESCRIPTION
-    Long description
+    This will installs or updates the platform server.
+    If the platform is already installed it will check if version to be installed is higher than the current one.
+    If the platform is already installed with an higher version it will throw an exception.
+
 
     .PARAMETER InstallDir
-    Parameter description
+    Where the platform will be installed. If the platform is already installed, this parameter has no effect.
+    If not specified will default to %ProgramFiles%\Outsystems
 
     .PARAMETER SourcePath
-    Parameter description
+    If specified, the function will use the sources in that path. If not specified it will download the sources from the Outsystems repository.
 
     .PARAMETER Version
-    Parameter description
+    The version to be installed.
 
     .EXAMPLE
-    An example
+    Install-OSPlatformServer -Version "10.0.823.0"
+    Install-OSPlatformServer -Version "10.0.823.0" -InstallDir D:\Outsystems
+    Install-OSPlatformServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
-    .NOTES
-    General notes
     #>
-    #TODO: Log file of the installer.
 
     [CmdletBinding()]
     Param(
-        [Parameter(ParameterSetName='Local')]
-        [Parameter(ParameterSetName='Remote')]
-        [string]$InstallDir=$OSDefaultInstallDir,
+        [Parameter(ParameterSetName = 'Local')]
+        [Parameter(ParameterSetName = 'Remote')]
+        [string]$InstallDir = $OSDefaultInstallDir,
 
-        [Parameter(ParameterSetName='Local', Mandatory=$true)]
+        [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
         [string]$SourcePath,
 
-        [Parameter(ParameterSetName='Local', Mandatory=$true)]
-        [Parameter(ParameterSetName='Remote', Mandatory=$true)]
+        [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
+        [Parameter(ParameterSetName = 'Remote', Mandatory = $true)]
         [string]$Version
     )
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
-    #Checking for admin rights
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking for admin rights."
-    If( -not $(CheckRunAsAdmin) ) { Throw "Current user is not admin. Please open an elevated powershell console." }
-
-
-    #Check if server is already installed.
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Check if the platform is already installed."
-    $OSVersion = Get-OSPlatformServerVersion -ErrorAction SilentlyContinue
-
-    If( -not $OSVersion){
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems platform server not installed. Proceeding with the installation."
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing version: $Version"
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing in: $InstallDir"
-
-        #Check if installer is local or is to be downloaded.
-        switch ($PsCmdlet.ParameterSetName)
-        {
-            "Remote"
-            {
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installer is remote."
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Downloading installer from: $OSRepoURL"
-
-                $Installer = "$ENV:TEMP\PlatformServer-$Version.exe"
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Save to: $Installer"
-
-                Try {
-                    DownloadOSSources -URL "$OSRepoURL\PlatformServer-$Version.exe" -SavePath $Installer
-                }
-                Catch {
-                    Throw "Error downloading the installer."
-                }
-
-            }
-            "Local"
-            {
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installer is local."
-                Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Check if the installer is available in the supplied path."
-                $Installer = "$SourcePath\PlatformServer-$Version.exe"
-                If( -not (Test-Path -Path $Installer)){ Throw "Cant file the setup file: $Installer"}
-            }
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        If ( -not $(CheckRunAsAdmin)) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
+            Throw "The current user is not Administrator of the machine"
         }
 
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation."
-        $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir\Platform Server" -Wait -PassThru
-        If( $IntReturnCode.ExitCode -ne 0 ){
-            throw "Error installing Outsystems Platform Server. Exit code:$IntReturnCode.ExitCode"
+        Try{
+            $OSVersion = GetServerVersion
+            $OSInstallDir = GetServerInstallDir
+        } Catch {}
+
+        If( -not $OSVersion ){
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems platform server is not installed"
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Proceeding with normal installation"
+            $InstallDir = "$InstallDir\Platform Server"
+            $DoInstall = $true
+        } ElseIf ( [version]$OSVersion -lt [version]$Version) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems platform server already installed. Updating!!"
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Current version $OSVersion will be updated to $Version"
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Ignoring InstallDir since this is an update"
+            $InstallDir = $OSInstallDir
+            $DoInstall = $true
+        } ElseIf ( [version]$OSVersion -gt [version]$Version) {
+            $DoInstall = $false
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform server already installed with an higher version $OSVersion"
+            Throw "Outsystems platform server already installed with an higher version $OSVersion"
+        } Else {
+            $DoInstall = $false
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems platform server already installed with the specified version $OSVersion"
         }
-
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems platform server successfully installed."
-
-    } Else {
-        Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems is already installed. Version: $OSVersion"
     }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Process {
+        If ( $DoInstall ) {
+
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing version $Version"
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing in $InstallDir"
+
+            #Check if installer is local or is to be downloaded.
+            switch ($PsCmdlet.ParameterSetName) {
+                "Remote" {
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "SourcePath not specified. Downloading installer from repository"
+
+                    $Installer = "$ENV:TEMP\PlatformServer-$Version.exe"
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Saving installer to $Installer"
+
+                    Try {
+                        DownloadOSSources -URL "$OSRepoURL\PlatformServer-$Version.exe" -SavePath $Installer
+                    }
+                    Catch {
+                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error downloading the installer from repository. Check if version is correct"
+                        Throw "Error downloading the installer from repository. Check if version is correct"
+                    }
+
+                }
+                "Local" {
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "SourcePath specified. Using the local installer"
+                    $Installer = "$SourcePath\PlatformServer-$Version.exe"
+                    If ( -not (Test-Path -Path $Installer)) {
+                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Cant file the setup file: $Installer"
+                        Throw "Cant file the setup file: $Installer"
+                    }
+                }
+            }
+
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation. This can take a while..."
+            $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru
+            If ( $IntReturnCode.ExitCode -ne 0 ) {
+                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing Outsystems Platform Server. Exit code: $($IntReturnCode.ExitCode)"
+                throw "Error installing Outsystems Platform Server. Exit code: $($IntReturnCode.ExitCode)"
+            }
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Outsystems platform server successfully installed."
+        }
+    }
+
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }

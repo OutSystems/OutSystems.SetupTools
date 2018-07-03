@@ -1,25 +1,49 @@
-Function Install-OSPlatformServiceCenter
-{
+Function Install-OSPlatformServiceCenter {
     [CmdletBinding()]
     param ()
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+    Begin {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        If ( -not $(CheckRunAsAdmin)) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
+            Throw "The current user is not Administrator of the machine"
+        }
 
-    #Checking for admin rights
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Checking for admin rights"
-    If( -not $(CheckRunAsAdmin) ) { Throw "Current user is not admin. Please open an elevated powershell console" }
-
-    #Checking if platform server is installed.
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Check if the platform server is installed"
-    $OSVersion = Get-OSPlatformServerVersion -ErrorAction stop
-    $OSInstallDir = Get-OSPlatformServerInstallDir -ErrorAction stop
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Platform server is installed. Version: $OSVersion"
+        Try {
+            $OSVersion = GetServerVersion
+            $OSInstallDir = GetServerInstallDir
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            Throw "Outsystems platform is not installed"
+        }
+    }
 
     ### TODO!!!!  #Checking service center is installed and running.
+    Process {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing Service Center. This can take a while"
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing Service Center. This can take a while."
-    InstallOSSystemCenter -ErrorAction stop
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Service Center successfully installed!!"
+        Try {
+            $Result = InstallOSServiceCenter
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error lauching the service center installer"
+            Throw "Error lauching the service center installer"
+        }
 
-    Write-MyVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        $OutputLog = $($Result.Output) -Split("`r`n")
+        ForEach($Logline in $OutputLog){
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "SCINSTALLER: $Logline"
+        }
+
+        If( $Result.ExitCode -ne 0 ){
+            throw "Error installing service center. Return code: $($Result.ExitCode)"
+        }
+
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Service Center successfully installed!!"
+    }
+
+    End {
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    }
 }
