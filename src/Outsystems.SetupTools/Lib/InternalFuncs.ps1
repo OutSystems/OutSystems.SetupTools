@@ -42,25 +42,13 @@ Function LogDebug([string]$FuncName, [int]$Phase, [string]$Message){
     }
 }
 
-Function TestVerbose {
-    [CmdletBinding()]
-    param()
-        [System.Management.Automation.ActionPreference]::SilentlyContinue -ne $VerbosePreference
-    }
-
 Function InstallWindowsFeatures([string[]]$Features)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     Install-WindowsFeature -Name $Features -Verbose:$false -ErrorAction Stop | Out-Null
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
-
 }
 
 Function ConfigureServiceWindowsSearch()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
 
     If ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue)){
 
@@ -74,135 +62,97 @@ Function ConfigureServiceWindowsSearch()
         LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Service not found. Skipping."
     }
 
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 }
 
 Function DisableFIPS {
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting on registry HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy\Enabled = 0"
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Force | Set-ItemProperty -Name "Enabled" -Value 0
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -ErrorAction Ignore
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -Value 0
 }
 
 Function ConfigureMSMQDomainServer {
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting on registry HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup\AlwaysWithoutDS = 1"
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Force | Set-ItemProperty -Name "AlwaysWithoutDS" -Value 1
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    New-Item -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -ErrorAction Ignore
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Name "AlwaysWithoutDS" -Value 1
 }
 
 Function CheckRunAsAdmin()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
 
     $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
 
     If((New-Object Security.Principal.WindowsPrincipal $CurrentUser).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)){
         LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Current user is admin."
-        LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
-        Return $true
+    } Else {
+        LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Current user is NOT admin!!."
+        Throw "The current user is not Administrator or not running this script in an elevated session"
     }
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Current user is NOT admin!!."
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
-    Return $false
 
 }
 
 Function GetDotNet4Version()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the registry value HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\<langid>\Release."
     $DotNetVersion = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction SilentlyContinue | Get-ItemProperty).Release
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Got value: $DotNetVersion"
 
     Return $DotNetVersion
 }
 
 Function GetNumberOfCores()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     $WMIComputerSystem = Get-WmiObject -Class Win32_ComputerSystem
     $NumOfCores = $WMIComputerSystem.NumberOfLogicalProcessors
 
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $NumOfCores"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
     Return $NumOfCores
 }
 
 Function GetInstalledRAM()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     $WMIComputerSystem = Get-WmiObject -Class Win32_ComputerSystem
     $InstalledRAM = $WMIComputerSystem.TotalPhysicalMemory
     $InstalledRAM = $InstalledRAM / 1GB
 
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $InstalledRAM GB"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
     Return $InstalledRAM
 }
 
 Function ConfigureServiceWMI()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the WMI windows service and changing the startup type to automatic."
     Set-Service -Name "Winmgmt" -StartupType "Automatic" | Start-Service
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 }
 
 Function GetOperatingSystemVersion()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     $WMIOperatingSystem = Get-WmiObject -Class Win32_OperatingSystem
     $OSVersion = $WMIOperatingSystem.Version
 
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $OSVersion"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
     Return $OSVersion
 }
 
 Function GetOperatingSystemProductType()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     $WMIOperatingSystem = Get-WmiObject -Class Win32_OperatingSystem
     $OSProductType = $WMIOperatingSystem.ProductType
 
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $OSProductType"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
     Return $OSProductType
 }
 
 Function ConfigureWindowsEventLog([string]$LogName, [string]$LogSize, [string]$LogOverflowAction)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting event log $LogName with maxsize of $LogSize and $LogOverflowAction"
     Limit-EventLog -MaximumSize $LogSize -OverflowAction $LogOverflowAction -LogName $LogName
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 }
 
 Function RunConfigTool([string]$Arguments)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting server install directory"
     $InstallDir = GetServerInstallDir
 
@@ -215,161 +165,117 @@ Function RunConfigTool([string]$Arguments)
     }
 
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the config tool..."
-
     $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments"
-
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
     Return $Result
 }
 
-Function InstallOSServiceCenter([string]$Path)
+Function RunSCInstaller([string]$Arguments)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting server install directory"
     $InstallDir = GetServerInstallDir
 
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the OS Service Center installer...."
-
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running SCInstaller..."
     #SCInstaller needs to run inside a CMD or will not return an exit code
-    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $InstallDir -CommandArguments '/c SCInstaller.exe -file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif && exit /b %ERRORLEVEL%'
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
-
+    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $InstallDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
     Return $Result
 }
 
 Function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting server install directory"
     $InstallDir = GetServerInstallDir
 
     $Version = [System.Version]$(GetServerVersion)
     $MajorVersion = "$($Version.Major).$($Version.Minor)"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Server major version: $MajorVersion"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Server major version is $MajorVersion"
 
     $OSPToolPath = "$ENV:CommonProgramFiles\OutSystems\$MajorVersion"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "OSPTool path: $OSPToolPath"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "OSPTool path is $OSPToolPath"
 
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the OSP tool..."
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Solution: $Solution"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the OSP tool will follow.....:"
 
     $Result = ExecuteCommand -CommandPath "$OSPToolPath\OSPTool.com" -WorkingDirectory $InstallDir -CommandArguments $("/publish " + [char]34 + $Solution + [char]34 + " $ENV:ComputerName $SCUser $SCPass")
 
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$($Result.Output)"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Output of the OSP end..................:"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
 
-    If( $Result.ExitCode -ne 0 ){
-        throw "Error publishing the solution. Return code: $($Result.ExitCode)"
-    }
+    Return $Result
+}
 
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+Function RunOSPTool([string]$Arguments)
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting server install directory"
+    $InstallDir = GetServerInstallDir
+
+    $Version = [System.Version]$(GetServerVersion)
+    $MajorVersion = "$($Version.Major).$($Version.Minor)"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Server major version is $MajorVersion"
+
+    $OSPToolPath = "$ENV:CommonProgramFiles\OutSystems\$MajorVersion"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "OSPTool path is $OSPToolPath"
+
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Running the OSPTool..."
+    $Result = ExecuteCommand -CommandPath "$OSPToolPath\OSPTool.com" -WorkingDirectory $InstallDir -CommandArgument $Arguments
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Return code: $($Result.ExitCode)"
+
+    Return $Result
 }
 
 Function GetServerInstallDir()
 {
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\(Default)"
 
-    try{
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)" -ErrorAction Stop)."(default)"
-        LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)" -ErrorAction Stop)."(default)"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
 
-        return $output
-
-    } catch {
-        Throw "Outsystems platform is not installed"
-    }
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Return $output
 }
 
 Function GetDevEnvInstallDir([string]$MajorVersion)
 {
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
 
-    try{
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction Stop)."(default)"
-        LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction Stop)."(default)"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
 
-        return $output -Replace "\Service Studio", ""
-
-    } catch {
-        Throw "Outsystems dev environment is not installed"
-    }
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Return $output -Replace "\Service Studio", ""
 }
 
 Function GetServerVersion()
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Server"
 
-    try{
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server"-ErrorAction Stop).Server
-        LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server" -ErrorAction Stop).Server
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
 
-        return $output
-
-    } catch {
-        Throw "Outsystems platform is not installed"
-    }
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Return $output
 }
 
 Function GetDevEnvVersion([string]$MajorVersion)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
 
-    try{
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion" -ErrorAction Stop)."Service Studio $MajorVersion"
-        LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion" -ErrorAction Stop)."Service Studio $MajorVersion"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
 
-        return $output
-
-    } catch {
-        Throw "Outsystems platform is not installed"
-    }
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+    Return $output
 }
 
 Function DownloadOSSources([string]$URL, [string]$SavePath)
 {
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Download sources from: $URL"
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Save sources to: $SavePath"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Download sources from $URL"
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Save sources to $SavePath"
 
-    try{
-        (New-Object System.Net.WebClient).DownloadFile($URL, $SavePath)
-    } catch {
-        Throw "Cannot download file from: $URL"
-    }
+    (New-Object System.Net.WebClient).DownloadFile($URL, $SavePath)
 
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File successfully downloaded!"
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 }
 
 Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string]$CommandArguments)
 {
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
 
     Try {
@@ -396,8 +302,6 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
     Catch {
         Throw "Error launching the process $CommandPath $CommandArguments"
     }
-
-    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
 }
 
@@ -436,3 +340,55 @@ function TestFileLock([string]$Path)
     LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
 
 }
+
+Function GetSCCompiledVersion()
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter"
+
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -ErrorAction Stop).ServiceCenter
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+
+    Return $output
+}
+
+Function SetSCCompiledVersion([string]$SCVersion)
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter = $SCVersion"
+    New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
+    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -Value "$SCVersion"
+}
+
+Function GetSysComponentsCompiledVersion()
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\SystemComponents"
+
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -ErrorAction Stop).SystemComponents
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+
+    Return $output
+}
+
+Function SetSysComponentsCompiledVersion([string]$SysComponentsVersion)
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\SystemComponents = $SysComponentsVersion"
+    New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
+    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -Value "$SysComponentsVersion"
+}
+
+Function GetLifetimeCompiledVersion()
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime"
+
+    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -ErrorAction Stop).Lifetime
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning: $output"
+
+    Return $output
+}
+
+Function SetLifetimeCompiledVersion([string]$LifetimeVersion)
+{
+    LogDebug -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime = $LifetimeVersion"
+    New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
+    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -Value "$LifetimeVersion"
+}
+

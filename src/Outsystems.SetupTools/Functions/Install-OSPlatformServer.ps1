@@ -42,9 +42,12 @@ Function Install-OSPlatformServer {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-        If ( -not $(CheckRunAsAdmin)) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
-            Throw "The current user is not Administrator of the machine"
+        Try{
+            CheckRunAsAdmin | Out-Null
+        }
+        Catch{
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
         Try{
@@ -100,8 +103,8 @@ Function Install-OSPlatformServer {
                     LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "SourcePath specified. Using the local installer"
                     $Installer = "$SourcePath\PlatformServer-$Version.exe"
                     If ( -not (Test-Path -Path $Installer)) {
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Cant file the setup file: $Installer"
-                        Throw "Cant file the setup file: $Installer"
+                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Cant file the setup file at $Installer"
+                        Throw "Cant file the setup file at $Installer"
                     }
                 }
             }

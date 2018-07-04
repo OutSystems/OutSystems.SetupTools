@@ -25,7 +25,7 @@ Function New-OSPlatformPrivateKey {
         Try {
             $NewKey = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
         }
-        catch {
+        Catch {
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error generating a new private key"
             Throw "Error generating a new private key"
         }

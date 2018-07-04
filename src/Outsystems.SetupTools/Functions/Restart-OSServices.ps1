@@ -13,9 +13,12 @@ Function Restart-OSServices {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-        If ( -not $(CheckRunAsAdmin)) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
-            Throw "The current user is not Administrator of the machine"
+        Try{
+            CheckRunAsAdmin | Out-Null
+        }
+        Catch{
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
 

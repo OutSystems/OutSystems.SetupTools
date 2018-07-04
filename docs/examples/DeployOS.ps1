@@ -47,6 +47,7 @@ $ConfigToolArgs = @{
 }
 
 # ------------- Outsystems configuration variables ------------------
+# ----------- DO NOT CHANGE ANYTHING ABOVE THIS LINE ----------------
 
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
@@ -62,10 +63,11 @@ Test-OSPlatformHardwareReqs -Verbose
 Test-OSPlatformSoftwareReqs -Verbose
 
 # -- Install PreReqs
-Install-OSPlatformPreReqs -MajorVersion "$(([System.Version]$OSPlatformVersion).Major).$(([System.Version]$OSPlatformVersion).Minor)"
+Install-OSPlatformPreReqs -MajorVersion "$(([System.Version]$OSPlatformVersion).Major).$(([System.Version]$OSPlatformVersion).Minor)" -Verbose
 
 # -- Download and install OS Server and Dev environment from repo
 Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -Verbose
+Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose
 
 # -- Configure windows firewall
 Set-OSPlatformWindowsFirewall -Verbose
@@ -86,8 +88,8 @@ Invoke-OSConfigurationTool -Verbose @ConfigToolArgs
 
 # -- If not a frontend install Service Center, SysComponents and license
 If ($OSRole -ne "FE"){
-    Install-OSPlatformServiceCenter
-    Install-OSPlatformSysComponents
+    Install-OSPlatformServiceCenter -Verbose
+    Install-OSPlatformSystemComponents -Verbose
     Install-OSPlatformLicense -Path $OSLicensePath -Verbose
 }
 
@@ -95,9 +97,6 @@ If ($OSRole -ne "FE"){
 If ($OSRole -eq "LT"){
     Install-OSPlatformLifetime -Verbose
 }
-
-# -- Install dev environment
-Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose
 
 # -- System tunning
 Set-OSPlatformPerformanceTunning -Verbose

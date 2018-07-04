@@ -110,13 +110,16 @@ Function Invoke-OSConfigurationTool {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-        If ( -not $(CheckRunAsAdmin)) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
-            Throw "The current user is not Administrator of the machine"
+        Try{
+            CheckRunAsAdmin | Out-Null
+        }
+        Catch{
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
         Try {
-            $OSVersion = GetServerVersion
+            GetServerVersion | Out-Null
             $OSInstallDir = GetServerInstallDir
         }
         Catch {
@@ -264,24 +267,25 @@ Function Invoke-OSConfigurationTool {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Saving server.hsconf"
         $HSConf.Save("$OSInstallDir\server.hsconf")
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the platform. This can take a while."
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the platform. This can take a while..."
         Try {
             $Result = RunConfigTool -Arguments "/silent /setupinstall $DBSAUser $DBSAPass /rebuildsession $DBSAUser $DBSAPass"
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error lauching the configuration tool."
-            Throw "Error lauching the configuration tool."
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error lauching the configuration tool"
+            Throw "Error lauching the configuration tool"
         }
 
         $ConfToolOutputLog = $($Result.Output) -Split("`r`n")
         ForEach($Logline in $ConfToolOutputLog){
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "CONFTOOL: $Logline"
         }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuration tool exit code: $($Result.ExitCode)"
 
         If( $Result.ExitCode -ne 0 ){
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
             throw "Error configuring the platform. Return code: $($Result.ExitCode)"
         }
-
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Platform successfully configured!!"
     }
 

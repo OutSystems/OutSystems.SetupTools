@@ -13,18 +13,21 @@ Function Set-OSPlatformWindowsFirewall {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-        If ( -not $(CheckRunAsAdmin)) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
-            Throw "The current user is not Administrator of the machine"
+        Try{
+            CheckRunAsAdmin | Out-Null
+        }
+        Catch{
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
 
     Process {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Creating a windows firewall rule to allow inbound connections to TCP Port from 12000-12004"
-        try {
+        Try {
             New-NetFirewallRule -DisplayName 'OutSystems' -Profile @('Domain', 'Private', 'Public') -Direction Inbound -Action Allow -Protocol TCP -LocalPort @('12000', '12001', '12002', '12003', '12004') | Out-Null
         }
-        catch {
+        Catch {
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error creating the firewall rule"
             Throw "Error creating the firewall rule"
         }

@@ -7,7 +7,8 @@ Function Set-OSPlatformPerformanceTunning
 
     # Process scheduling -- http://technet.microsoft.com/library/Cc976120
     LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting processor scheduling priority to background services"
-    New-Item -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -Force | Set-ItemProperty -Name "Win32PrioritySeparation" -Value 24
+    New-Item -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -ErrorAction Ignore
+    Set-ItemProperty -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Value 24
 
     # Configure .NET
     LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring .NET maxRequestLength and executionTimeout"

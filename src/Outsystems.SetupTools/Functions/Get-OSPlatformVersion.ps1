@@ -23,6 +23,7 @@ Function Get-OSPlatformVersion {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        If( $($Host.Trim()) -eq "" ) { $Host = "127.0.0.1" }
     }
 
     Process {

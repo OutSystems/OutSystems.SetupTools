@@ -36,9 +36,12 @@ Function Install-OSPlatformPreReqs {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
-        If ( -not $(CheckRunAsAdmin)) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator of the machine"
-            Throw "The current user is not Administrator of the machine"
+        Try {
+            CheckRunAsAdmin | Out-Null
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
 
@@ -72,31 +75,67 @@ Function Install-OSPlatformPreReqs {
         ForEach ($Feature in $WinFeatures) {
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$Feature"
         }
-        InstallWindowsFeatures -Features $WinFeatures
+        Try {
+            InstallWindowsFeatures -Features $WinFeatures
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing windows features"
+            Throw "Error installing windows features"
+        }
 
         #Configure the WMI windows service
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the WMI windows service"
-        ConfigureServiceWMI
+        Try {
+            ConfigureServiceWMI
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the WMI service"
+            Throw "Error configuring the WMI service"
+        }
 
         #Configure the Windows search service
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the Windows search service"
-        ConfigureServiceWindowsSearch
+        Try {
+            ConfigureServiceWindowsSearch
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the Windows search service"
+            Throw "Error configuring the Windows search service"
+        }
 
         #Disable FIPS compliant algorithms checks
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Disabling FIPS compliant algorithms checks"
-        DisableFIPS
+        Try {
+            DisableFIPS
+        }
+        Catch {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error disabling FIPS compliant algorithms checks"
+            Throw "Error disabling FIPS compliant algorithms checks"
+        }
 
         #Configure event log
         ForEach ($EventLog in $OSWinEventLogName) {
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring $EventLog Event Log"
-            ConfigureWindowsEventLog -LogName $EventLog -LogSize $OSWinEventLogSize -LogOverflowAction $OSWinEventLogOverflowAction
+            Try {
+                ConfigureWindowsEventLog -LogName $EventLog -LogSize $OSWinEventLogSize -LogOverflowAction $OSWinEventLogOverflowAction
+            }
+            Catch {
+                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring $EventLog Event Log"
+                Throw "Error configuring $EventLog Event Log"
+            }
         }
 
         # Version specific configuration.
         Switch ($MajorVersion) {
             '10.0' {
                 LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configure Message Queuing service to to always try to contact a message queue server when running on a server registered in a domain."
-                ConfigureMSMQDomainServer
+                Try {
+                    ConfigureMSMQDomainServer
+                }
+                Catch {
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the Message Queuing service"
+                    Throw "Error configuring the Message Queuing service"
+                }
             }
             '11.0' {
                 #TODO. Configure RabbitMQ? Or probably this needs to be done in the conf tool.. Lets see..
