@@ -10,7 +10,7 @@ $OSRole=""
 $OSPlatformVersion='10.0.823.0'
 $OSDevEnvironmentVersion='10.0.825.0'
 
-# Where the platoform will be installed.
+# Where the platform will be installed.
 $OSInstallDir="$Env:ProgramFiles\OutSystems"
 #$OSInstallDir="D:\OutSystems"
 
