@@ -22,6 +22,7 @@ Function Install-OSPlatformServiceCenter {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Installing Outsystems Service Center. This can take a while... Please wait..."
         Try {
             CheckRunAsAdmin | Out-Null
         }
@@ -56,8 +57,8 @@ Function Install-OSPlatformServiceCenter {
         If ($DoInstall -or $Force.IsPresent) {
 
             If( $Force.IsPresent ){ LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Force switch specified. We will reinstall!!" }
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing Service Center. This can take a while..."
 
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing Outsystems Service Center. This can take a while..."
             Try {
                 $Result = RunSCInstaller -Arguments "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif"
             }
@@ -83,6 +84,7 @@ Function Install-OSPlatformServiceCenter {
     }
 
     End {
+        Write-Output "Outystems Service Center successfully installed!!"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

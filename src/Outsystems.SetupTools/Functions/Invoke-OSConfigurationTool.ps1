@@ -110,6 +110,7 @@ Function Invoke-OSConfigurationTool {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Configuring the platform. This can take a while... Please wait..."
         Try{
             CheckRunAsAdmin | Out-Null
         }
@@ -290,6 +291,7 @@ Function Invoke-OSConfigurationTool {
     }
 
     End {
+        Write-Output "Platform successfully configured!!"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

@@ -23,7 +23,7 @@ $OSReqsMinCores = 2
 $OSReqsMinRAMGB = 4
 
 # Software and operating system requirements
-$OSReqsMinOSVersion = "6.1.0.0"
+$OSReqsMinOSVersion = "6.2.0.0"
 $OSReqsMinOSProductType = 2
 $OSReqsMinDotNetVersion = "394254"
 

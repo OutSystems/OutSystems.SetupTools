@@ -80,6 +80,7 @@ Function Install-OSPlatformLicense {
     }
 
     End {
+        Write-Output "Outystems license successfully installed!!"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

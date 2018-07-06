@@ -32,6 +32,7 @@ Function Install-OSPlatformLifetime {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Starting Lifetime installation. This can take a while... Please wait..."
         Try {
             CheckRunAsAdmin | Out-Null
         }
@@ -106,6 +107,7 @@ Function Install-OSPlatformLifetime {
     }
 
     End {
+        Write-Output "Outystems Lifetime successfully installed!!"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

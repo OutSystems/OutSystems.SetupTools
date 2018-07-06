@@ -42,6 +42,7 @@ Function Install-OSDevEnvironment {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Starting the Outsystems development environment installation. This can take a while... Please wait..."
         Try{
             CheckRunAsAdmin | Out-Null
         }
@@ -124,6 +125,7 @@ Function Install-OSDevEnvironment {
     }
 
     End {
+        Write-Output "Outsystems development environment successfully installed!! Version $Version"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

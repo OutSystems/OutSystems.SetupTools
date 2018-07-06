@@ -43,6 +43,7 @@ Function Test-OSPlatformHardwareReqs {
     }
 
     End {
+        Write-Output "Your server hardware was validated for Outsystems"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

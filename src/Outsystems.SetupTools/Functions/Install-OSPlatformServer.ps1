@@ -42,6 +42,7 @@ Function Install-OSPlatformServer {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Starting the Outsystems platform server installation. This can take a while... Please wait..."
         Try{
             CheckRunAsAdmin | Out-Null
         }
@@ -120,6 +121,7 @@ Function Install-OSPlatformServer {
     }
 
     End {
+        Write-Output "Outsystems platform installation server successfully installed!! Version $Version"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

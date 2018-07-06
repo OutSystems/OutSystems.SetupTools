@@ -35,6 +35,7 @@ Function Disable-OSIPv6
     }
 
     End {
+        Write-Output "IPv6 successfully disabled"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

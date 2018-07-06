@@ -33,6 +33,7 @@ Function Start-OSServices {
     }
 
     End {
+        Write-Output "Outsystems services successfully started"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

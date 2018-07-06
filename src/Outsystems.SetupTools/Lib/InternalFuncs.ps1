@@ -44,7 +44,12 @@ Function LogDebug([string]$FuncName, [int]$Phase, [string]$Message){
 
 Function InstallWindowsFeatures([string[]]$Features)
 {
-    Install-WindowsFeature -Name $Features -Verbose:$false -ErrorAction Stop | Out-Null
+    Install-WindowsFeature -Name $Features -ErrorAction Stop -Verbose:$false | Out-Null
+}
+
+Function GetWindowsFeatureState([string]$Feature)
+{
+    Return $($(Get-WindowsFeature -Name $Feature -Verbose:$false).Installed)
 }
 
 Function ConfigureServiceWindowsSearch()

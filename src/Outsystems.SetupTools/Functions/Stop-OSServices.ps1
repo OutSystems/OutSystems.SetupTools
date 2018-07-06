@@ -33,6 +33,7 @@ Function Stop-OSServices {
     }
 
     End {
+        Write-Output "Outsystems services successfully stopped"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

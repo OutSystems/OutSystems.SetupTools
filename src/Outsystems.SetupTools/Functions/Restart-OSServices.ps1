@@ -33,6 +33,7 @@ Function Restart-OSServices {
     }
 
     End {
+        Write-Output "Outsystems services successfully restarted"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

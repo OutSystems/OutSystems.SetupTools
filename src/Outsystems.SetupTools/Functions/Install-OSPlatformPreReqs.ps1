@@ -5,7 +5,8 @@ Function Install-OSPlatformPreReqs {
 
     .DESCRIPTION
     This will install the pre-requisites for the platform server version specified.
-    It will not install .NET. You should run the Test-OSPlatformSoftwareReqs and the Test-OSPlatformHardwareReqs before running this one.
+    It will install .NET 4.6.1 if needed. After installing .NET a reboot will be probably needed.
+    You should also run the Test-OSPlatformSoftwareReqs and the Test-OSPlatformHardwareReqs to check if your server is supported for Outsystems.
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
@@ -36,6 +37,7 @@ Function Install-OSPlatformPreReqs {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Starting the pre-requisites installation. This can take a while... Please wait..."
         Try {
             CheckRunAsAdmin | Out-Null
         }
@@ -46,6 +48,41 @@ Function Install-OSPlatformPreReqs {
     }
 
     Process {
+        # Check and install .NET
+        If ($(GetDotNet4Version) -lt $OSReqsMinDotNetVersion) {
+            Write-Output "Minimum .NET version is not installed. We will try to download and install NET 4.6.1..."
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Minimum .NET version is not installed. We will try to download and install NET 4.6.1."
+
+            #Download sources from repo
+            $Installer = "$ENV:TEMP\NDP461-KB3102436-x86-x64-AllOS-ENU.exe"
+            Try {
+                DownloadOSSources -URL "$OSRepoURL\NDP461-KB3102436-x86-x64-AllOS-ENU.exe" -SavePath $Installer
+            }
+            Catch {
+                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error downloading the installer from repository. Check if version is correct"
+                Throw "Error downloading the installer from repository. Check if file name is correct"
+            }
+
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation. This can take a while..."
+            $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q","/norestart","/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru
+            Switch ($IntReturnCode.ExitCode){
+                0 {
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message ".NET 4.6.1 successfully installed."
+                }
+                3010 {
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
+                    Throw ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
+                }
+                Default {
+                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
+                    Throw "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
+                }
+            }
+
+        } Else {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installed .NET is supported for OutSystems"
+        }
+
         # Base Windows features
         $WinFeatures = $OSWindowsFeaturesBase
 
@@ -72,15 +109,20 @@ Function Install-OSPlatformPreReqs {
 
         # Windows features
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing windows features"
+        $ProgressPreference = "SilentlyContinue"
         ForEach ($Feature in $WinFeatures) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "$Feature"
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Feature $Feature is currently installed: $(GetWindowsFeatureState($Feature))"
         }
+        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation"
         Try {
             InstallWindowsFeatures -Features $WinFeatures
         }
         Catch {
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing windows features"
             Throw "Error installing windows features"
+        }
+        ForEach ($Feature in $WinFeatures) {
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Feature $Feature is now installed: $(GetWindowsFeatureState($Feature))"
         }
 
         #Configure the WMI windows service
@@ -144,6 +186,7 @@ Function Install-OSPlatformPreReqs {
     }
 
     End {
+        Write-Output "Pre-requisites successfully installed!!"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

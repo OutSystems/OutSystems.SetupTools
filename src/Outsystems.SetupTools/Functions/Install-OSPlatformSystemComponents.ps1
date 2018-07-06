@@ -31,6 +31,7 @@ Function Install-OSPlatformSystemComponents {
 
     Begin {
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        Write-Output "Installing Outsystems System Components. This can take a while... Please wait..."
         Try {
             CheckRunAsAdmin | Out-Null
         }
@@ -72,8 +73,8 @@ Function Install-OSPlatformSystemComponents {
         If ($DoInstall -or $Force.IsPresent) {
 
             If( $Force.IsPresent ){ LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Force switch specified. We will reinstall!!" }
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing System Components. This can take a while..."
 
+            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing Outsystems System Components. This can take a while..."
             Try {
                 $Result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$OSInstallDir\System_Components.osp") + [char]34 + " $ENV:ComputerName $SystemCenterUser $SystemCenterPass")
             }
@@ -99,6 +100,7 @@ Function Install-OSPlatformSystemComponents {
     }
 
     End {
+        Write-Output "Outystems System components successfully installed!!"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

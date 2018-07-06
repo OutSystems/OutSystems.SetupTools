@@ -35,6 +35,7 @@ Function Set-OSPlatformWindowsFirewall {
     }
 
     End {
+        Write-Output "Windows firewall successfully configured for Outsystems"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }

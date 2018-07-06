@@ -1,36 +1,47 @@
-﻿[CmdletBinding()]
-Param()
+﻿# ------------- Outsystems environment configuration  ------------------
 
-# ------------- Outsystems configuration variables ------------------
-# This can be FE for FrontEnd or LT for lifetime
+# The server role.
+# This can be "FE" for FrontEnd or "LT" for lifetime. Defaults to controller.
 $OSRole=""
+#$OSRole="FE"
+#$OSRole="LT"
 
-$OSInstallDir="$Env:ProgramFiles\OutSystems"
-
+# The version of the platform that will be installed.
 $OSPlatformVersion='10.0.823.0'
 $OSDevEnvironmentVersion='10.0.825.0'
 
-# If you dont specify a license here, a trial license will be installed.
-#$OSLicensePath="$PSScriptRoot"
-$OSLicensePath=""
+# Where the platoform will be installed.
+$OSInstallDir="$Env:ProgramFiles\OutSystems"
+#$OSInstallDir="D:\OutSystems"
 
+# Where the license is located. If you dont specify a license path here, a trial license will be installed.
+$OSLicensePath=""
+#$OSLicensePath="$PSScriptRoot"
+#$OSLicensePath="D:\sources"
+
+# Log location
 $OSLogPath="$Env:Windir\Temp\OutsystemsInstall"
 
+# Set to true if you want to see verbose output in the console
+$Verbose=$true
+
+# Configuration tool parameters
 $ConfigToolArgs = @{
 
     # If this is a frontend or you want to connect to an existing database environment specify the environment private key here.
-    # In case this is a Farm deployment you should generate a new private key using the cmdlet New-OSPlatformPrivateKey
+    # If this is a Farm deployment, you should generate a new private key using the cmdlet New-OSPlatformPrivateKey.
+    # If empty, a random one will be generated.
     PrivateKey          = ""
 
-    # If this is a frontend specify here the controller IP address.
+    # If this is a frontend specify the controller IP address here. Otherwise leave this blank!!!
     Controller          = ""
 
-    DBProvider          = "SQL"                 # This can be SQL, SQLExpress, AzureSQL
-    DBAuth              = "SQL"                 # This can be SQL or Windows
+    DBProvider          = "SQL"                 # Possible value: SQL, SQLExpress, AzureSQL
+    DBAuth              = "SQL"                 # Possible values: SQL or Windows
 
     DBServer            = "<SQL server>"        # SQL server IP or hostname
     DBCatalog           = "outsystems"          # Platform catalog
-    DBSAUser            = "sa"                  # User with dba permission on the database. If windows auth should be <DOMAIN\USER>
+    DBSAUser            = "sa"                  # User with dba permission on the database. If windows auth, this should be <DOMAIN\USER>
     DBSAPass            = "<sa password>"
 
     DBSessionServer     = "<SQL server>"        # SQL server IP or hostname for the session catalog
@@ -46,8 +57,8 @@ $ConfigToolArgs = @{
     DBLogPass           = "<OSLOG pass>"        # Log DB User
 }
 
-# ------------- Outsystems configuration variables ------------------
-# ----------- DO NOT CHANGE ANYTHING ABOVE THIS LINE ----------------
+# ------------- Outsystems environment configuration ------------------
+# ----------- DO NOT CHANGE ANYTHING BELLOW THIS LINE -----------------
 
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
@@ -56,26 +67,26 @@ Install-Module Outsystems.SetupTools -Force
 Import-Module Outsystems.SetupTools
 
 # -- Start logging
-Set-OSInstallLog -Path $OSLogPath -File "InstallLog-$(get-date -Format 'yyyyMMddHHmmss').log"
+Set-OSInstallLog -Path $OSLogPath -File "InstallLog-$(get-date -Format 'yyyyMMddHHmmss').log" -Verbose:$Verbose
 
 # -- Check HW and OS for compability
-Test-OSPlatformHardwareReqs -Verbose
-Test-OSPlatformSoftwareReqs -Verbose
+Test-OSPlatformHardwareReqs -Verbose:$Verbose
+Test-OSPlatformSoftwareReqs -Verbose:$Verbose
 
 # -- Install PreReqs
-Install-OSPlatformPreReqs -MajorVersion "$(([System.Version]$OSPlatformVersion).Major).$(([System.Version]$OSPlatformVersion).Minor)" -Verbose
+Install-OSPlatformPreReqs -MajorVersion "$(([System.Version]$OSPlatformVersion).Major).$(([System.Version]$OSPlatformVersion).Minor)" -Verbose:$Verbose
 
 # -- Download and install OS Server and Dev environment from repo
-Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -Verbose
-Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose
+Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -Verbose:$Verbose
+Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose:$Verbose
 
 # -- Configure windows firewall
-Set-OSPlatformWindowsFirewall -Verbose
+Set-OSPlatformWindowsFirewall -Verbose:$Verbose
 
 # -- Disable IPv6
-Disable-OSIPv6 -Verbose
+Disable-OSIPv6 -Verbose:$Verbose
 
-# If this is a frontend, wait for the controller to become available
+# -- If this is a frontend, wait for the controller to become available
 If ($OSRole -eq "FE"){
     While ( -not $(Get-OSPlatformVersion -Host $ConfigToolArgs.Controller -ErrorAction SilentlyContinue) ) {
         Write-Output "Waiting for the controller $($ConfigToolArgs.Controller)"
@@ -84,22 +95,30 @@ If ($OSRole -eq "FE"){
 }
 
 # -- Run config tool
-Invoke-OSConfigurationTool -Verbose @ConfigToolArgs
+Invoke-OSConfigurationTool @ConfigToolArgs -Verbose:$Verbose
 
 # -- If not a frontend install Service Center, SysComponents and license
 If ($OSRole -ne "FE"){
-    Install-OSPlatformServiceCenter -Verbose
-    Install-OSPlatformSystemComponents -Verbose
-    Install-OSPlatformLicense -Path $OSLicensePath -Verbose
+    Install-OSPlatformServiceCenter -Verbose:$Verbose
+    Install-OSPlatformSystemComponents -Verbose:$Verbose
+    Install-OSPlatformLicense -Path $OSLicensePath -Verbose:$Verbose
 }
 
-# -- Install Lifetime
+# -- Install Lifetime if role is LT
 If ($OSRole -eq "LT"){
-    Install-OSPlatformLifetime -Verbose
+    Install-OSPlatformLifetime -Verbose:$Verbose
+}
+
+# -- If this is a frontend, wait for the service center to be published by the controller before running the system tunning
+If ($OSRole -eq "FE"){
+    While ( -not $(Get-OSPlatformVersion -ErrorAction SilentlyContinue) ) {
+        Write-Output "Waiting for service center to be published"
+        Start-Sleep -s 15
+    }
 }
 
 # -- System tunning
-Set-OSPlatformPerformanceTunning -Verbose
+Set-OSPlatformPerformanceTunning -Verbose:$Verbose
 
 # -- Security settings
-Set-OSPlatformSecuritySettings -Verbose
+Set-OSPlatformSecuritySettings -Verbose:$Verbose
