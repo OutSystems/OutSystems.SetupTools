@@ -36,7 +36,7 @@ $ConfigToolArgs = @{
     # If this is a frontend specify the controller IP address here. Otherwise leave this blank!!!
     Controller          = ""
 
-    DBProvider          = "SQL"                 # Possible value: SQL, SQLExpress, AzureSQL
+    DBProvider          = "SQL"                 # Possible values: SQL, SQLExpress, AzureSQL
     DBAuth              = "SQL"                 # Possible values: SQL or Windows
 
     DBServer            = "<SQL server>"        # SQL server IP or hostname
