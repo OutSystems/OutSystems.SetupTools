@@ -115,6 +115,8 @@ If ($OSRole -eq "FE"){
         Write-Output "Waiting for service center to be published"
         Start-Sleep -s 15
     }
+    Write-Output "Controller $($ConfigToolArgs.Controller) available. Waiting 1 minute for full initialization"
+    Start-Sleep -s 60
 } Else {
     # -- If not a frontend install Service Center, SysComponents and license
     Install-OSPlatformServiceCenter -Verbose:$Verbose
