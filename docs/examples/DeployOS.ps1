@@ -98,6 +98,8 @@ If ($OSRole -eq "FE"){
         Write-Output "Waiting for the controller $($ConfigToolArgs.Controller)"
         Start-Sleep -s 15
     }
+    Write-Output "Controller $($ConfigToolArgs.Controller) available. Waiting 1 minute for full initialization"
+    Start-Sleep -s 60
 }
 
 # -- Run config tool
