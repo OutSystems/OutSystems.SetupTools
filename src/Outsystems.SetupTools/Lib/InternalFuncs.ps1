@@ -15,8 +15,8 @@ Function LogVerbose([string]$FuncName, [int]$Phase, [string]$Message){
 
     Write-Verbose $Output
 
-    If($script:LogFile -and ($script:LogFile -ne "")){
-        Add-Content -Path $script:LogFile -Value "VERBOSE: $Output`n"
+    If($script:OSLogFile -and ($script:OSLogFile -ne "")){
+        Add-Content -Path $script:OSLogFile -Value "VERBOSE: $Output`n"
     }
 }
 
@@ -37,8 +37,8 @@ Function LogDebug([string]$FuncName, [int]$Phase, [string]$Message){
 
     Write-Debug $Output
 
-    If($script:LogFile -and ($script:LogFile -ne "") -and ($script:LogDebug)){
-        Add-Content -Path $script:LogFile -Value "DEBUG  : $Output`n"
+    If($script:OSLogFile -and ($script:OSLogFile -ne "") -and ($script:LogDebug)){
+        Add-Content -Path $script:OSLogFile -Value "DEBUG  : $Output`n"
     }
 }
 

@@ -50,5 +50,24 @@ $OSRepoURL = "https://myfilerepo.blob.core.windows.net/sources"
 $OSDBTimeout = "60"
 
 # Log related
-$LogFile = ""
-$LogDebug = $false
+$OSLogFile = ""
+$OSLogDebug = $false
+
+# IIS configuration
+$OSIISConfig = @(
+    @{
+        'PoolName' = 'OutSystemsApplications';
+        'MemoryPercentage' = 60;
+        'Match' = @('*')
+    },
+    @{
+        'PoolName' = 'ServiceCenterAppPool';
+        'MemoryPercentage' = 100;
+        'Match' = @('/ServiceCenter')
+    },
+    @{
+        'PoolName' = 'LifeTimeAppPool';
+        'MemoryPercentage' = 60;
+        'Match' = @('/LT*','/lifet*','/LifeT*','PerformanceMonitor')
+    }
+)

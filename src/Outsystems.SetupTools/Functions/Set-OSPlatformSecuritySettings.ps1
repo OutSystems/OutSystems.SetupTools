@@ -27,7 +27,7 @@ Function Set-OSPlatformSecuritySettings {
         }
 
         Try {
-            $OSVersion = GetServerVersion
+            GetServerVersion | Out-Null
             GetServerInstallDir | Out-Null
         }
         Catch {
@@ -35,15 +35,6 @@ Function Set-OSPlatformSecuritySettings {
             Throw "Outsystems platform is not installed"
         }
 
-        Try {
-            $SCVersion = GetSCCompiledVersion
-        }
-        Catch {}
-
-        If ( $SCVersion -ne $OSVersion ) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-            Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-        }
     }
 
     Process {
@@ -62,7 +53,7 @@ Function Set-OSPlatformSecuritySettings {
             Throw "Error disabling unsafe SSL protocols"
         }
 
-        # Disable clickjacking
+        # Disable clickjacking (Server Level)
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Disabling click jacking"
         Try {
             If (Get-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='X-Frame-Options']" -Name . ) {

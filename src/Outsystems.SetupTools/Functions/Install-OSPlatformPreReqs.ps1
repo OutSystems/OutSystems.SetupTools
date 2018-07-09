@@ -19,7 +19,7 @@ Function Install-OSPlatformPreReqs {
 
     .EXAMPLE
     Install-OSPlatformPreReqs -MajorVersion "10.0"
-    Install-OSPlatformPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole $false
+    Install-OSPlatformPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
 
     .NOTES
     General notes
@@ -110,9 +110,7 @@ Function Install-OSPlatformPreReqs {
         # Windows features
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing windows features"
         $ProgressPreference = "SilentlyContinue"
-        ForEach ($Feature in $WinFeatures) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Feature $Feature is currently installed: $(GetWindowsFeatureState($Feature))"
-        }
+
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation"
         Try {
             InstallWindowsFeatures -Features $WinFeatures
@@ -120,9 +118,6 @@ Function Install-OSPlatformPreReqs {
         Catch {
             LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing windows features"
             Throw "Error installing windows features"
-        }
-        ForEach ($Feature in $WinFeatures) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Feature $Feature is now installed: $(GetWindowsFeatureState($Feature))"
         }
 
         #Configure the WMI windows service

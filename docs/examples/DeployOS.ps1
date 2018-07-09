@@ -14,6 +14,10 @@ $OSDevEnvironmentVersion='10.0.825.0'
 $OSInstallDir="$Env:ProgramFiles\OutSystems"
 #$OSInstallDir="D:\OutSystems"
 
+# IIS Temp folders
+$OSIISNetCompilationDir=""
+$OSIISHttpCompressionDir=""
+
 # Where the license is located. If you dont specify a license path here, a trial license will be installed.
 $OSLicensePath=""
 #$OSLicensePath="$PSScriptRoot"
@@ -59,6 +63,8 @@ $ConfigToolArgs = @{
 
 # ------------- Outsystems environment configuration ------------------
 # ----------- DO NOT CHANGE ANYTHING BELLOW THIS LINE -----------------
+# -- Stop on any error
+$ErrorActionPreference = "Stop"
 
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
@@ -97,8 +103,18 @@ If ($OSRole -eq "FE"){
 # -- Run config tool
 Invoke-OSConfigurationTool @ConfigToolArgs -Verbose:$Verbose
 
-# -- If not a frontend install Service Center, SysComponents and license
-If ($OSRole -ne "FE"){
+# -- If this is a frontend, disable the controller service and wait for the service center to be published by the controller before running the system tunning
+If ($OSRole -eq "FE"){
+
+    Get-Service -Name "OutSystems Deployment Controller Service" | Stop-Service -WarningAction SilentlyContinue
+    Set-Service -Name "OutSystems Deployment Controller Service" -StartupType "Disabled"
+
+    While ( -not $(Get-OSPlatformVersion -ErrorAction SilentlyContinue) ) {
+        Write-Output "Waiting for service center to be published"
+        Start-Sleep -s 15
+    }
+} Else {
+    # -- If not a frontend install Service Center, SysComponents and license
     Install-OSPlatformServiceCenter -Verbose:$Verbose
     Install-OSPlatformSystemComponents -Verbose:$Verbose
     Install-OSPlatformLicense -Path $OSLicensePath -Verbose:$Verbose
@@ -109,16 +125,8 @@ If ($OSRole -eq "LT"){
     Install-OSPlatformLifetime -Verbose:$Verbose
 }
 
-# -- If this is a frontend, wait for the service center to be published by the controller before running the system tunning
-If ($OSRole -eq "FE"){
-    While ( -not $(Get-OSPlatformVersion -ErrorAction SilentlyContinue) ) {
-        Write-Output "Waiting for service center to be published"
-        Start-Sleep -s 15
-    }
-}
-
 # -- System tunning
-Set-OSPlatformPerformanceTunning -Verbose:$Verbose
+Set-OSPlatformPerformanceTunning -Verbose:$Verbose -IISNetCompilationPath $OSIISNetCompilationDir -IISHttpCompressionPath $OSIISHttpCompressionDir
 
 # -- Security settings
 Set-OSPlatformSecuritySettings -Verbose:$Verbose

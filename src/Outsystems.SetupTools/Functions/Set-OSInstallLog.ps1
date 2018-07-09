@@ -44,12 +44,12 @@ Function Set-OSInstallLog {
             }
         }
 
-        $Script:LogFile = "$Path\$File"
-        $Script:LogDebug = $LogDebug
+        $Script:OSLogFile = "$Path\$File"
+        $Script:OSLogDebug = $LogDebug
     }
 
     End {
-        Write-Output "Outsystems install log set to $LogFile"
+        Write-Output "Outsystems install log set to $OSLogFile"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "************* Starting Log **************"
     }
 }
