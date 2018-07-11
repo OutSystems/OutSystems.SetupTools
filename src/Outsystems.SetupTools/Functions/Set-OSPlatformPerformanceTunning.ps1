@@ -223,6 +223,7 @@ Function Set-OSPlatformPerformanceTunning {
     }
 
     End {
+        Write-Output "Performance settings successfully applied"
         LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
     }
 }
