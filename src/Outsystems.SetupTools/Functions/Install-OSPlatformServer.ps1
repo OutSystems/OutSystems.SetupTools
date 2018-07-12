@@ -69,7 +69,7 @@ Function Install-OSPlatformServer {
             $DoInstall = $true
         } ElseIf ( [version]$OSVersion -gt [version]$Version) {
             $DoInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform server already installed with an higher version $OSVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform server already installed with an higher version $OSVersion"
             Throw "Outsystems platform server already installed with an higher version $OSVersion"
         } Else {
             $DoInstall = $false
@@ -104,7 +104,7 @@ Function Install-OSPlatformServer {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SourcePath specified. Using the local installer"
                     $Installer = "$SourcePath\PlatformServer-$Version.exe"
                     If ( -not (Test-Path -Path $Installer)) {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Cant file the setup file at $Installer"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant file the setup file at $Installer"
                         Throw "Cant file the setup file at $Installer"
                     }
                 }
@@ -113,7 +113,7 @@ Function Install-OSPlatformServer {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
             $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru
             If ( $IntReturnCode.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing Outsystems Platform Server. Exit code: $($IntReturnCode.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Outsystems Platform Server. Exit code: $($IntReturnCode.ExitCode)"
                 throw "Error installing Outsystems Platform Server. Exit code: $($IntReturnCode.ExitCode)"
             }
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems platform server successfully installed."

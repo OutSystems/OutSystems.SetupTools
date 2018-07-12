@@ -19,13 +19,13 @@ Function Test-OSPlatformSoftwareReqs {
     Process {
         #Check Operating System Version
         If ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OSReqsMinOSVersion) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
             Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
         }
 
         #Check Operating System ProductType
         If ($(GetOperatingSystemProductType) -lt $OSReqsMinOSProductType) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
             Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
         }
 

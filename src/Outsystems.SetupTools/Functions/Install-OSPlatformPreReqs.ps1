@@ -70,11 +70,11 @@ Function Install-OSPlatformPreReqs {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.6.1 successfully installed."
                 }
                 3010 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
                     Throw ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
                 }
                 Default {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
                     Throw "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
                 }
             }

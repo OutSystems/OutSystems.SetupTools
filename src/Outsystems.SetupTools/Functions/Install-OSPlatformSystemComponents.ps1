@@ -62,7 +62,7 @@ Function Install-OSPlatformSystemComponents {
         Catch {}
 
         If ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
@@ -96,7 +96,7 @@ Function Install-OSPlatformSystemComponents {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($Result.ExitCode)"
 
             If ( $Result.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing the system Components. Return code: $($Result.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing the system Components. Return code: $($Result.ExitCode)"
                 throw "Error installing the system Components. Return code: $($Result.ExitCode)"
             }
 

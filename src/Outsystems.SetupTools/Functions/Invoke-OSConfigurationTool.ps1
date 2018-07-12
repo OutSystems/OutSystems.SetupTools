@@ -162,6 +162,7 @@ Function Invoke-OSConfigurationTool {
         }
 
         If( $Result.ExitCode -ne 0 ){
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error generating the templates. Return code: $($Result.ExitCode)"
             throw "Error generating the templates. Return code: $($Result.ExitCode)"
         }
 
@@ -284,7 +285,7 @@ Function Invoke-OSConfigurationTool {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($Result.ExitCode)"
 
         If( $Result.ExitCode -ne 0 ){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
             throw "Error configuring the platform. Return code: $($Result.ExitCode)"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Platform successfully configured!!"

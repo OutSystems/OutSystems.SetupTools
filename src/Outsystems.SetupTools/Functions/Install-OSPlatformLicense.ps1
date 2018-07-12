@@ -29,13 +29,13 @@ Function Install-OSPlatformLicense {
         Catch {}
 
         If ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
         If ($Path -and ($Path -ne "")) {
             If ( -not (Test-Path -Path "$Path\license.lic")) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "License file not found at $Path\license.lic"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "License file not found at $Path\license.lic"
                 Throw "License file not found at $Path\license.lic"
             }
         }
@@ -72,7 +72,7 @@ Function Install-OSPlatformLicense {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($Result.ExitCode)"
 
         If( $Result.ExitCode -ne 0 ){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error uploading the license. Return code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error uploading the license. Return code: $($Result.ExitCode)"
             throw "Error uploading the license. Return code: $($Result.ExitCode)"
         }
 

@@ -29,14 +29,14 @@ Function Test-OSPlatformHardwareReqs {
 
         #CPU
         If ($(GetNumberOfCores) -lt $OSReqsMinCores) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Hardware not supported. Number of CPU cores is less than $OSReqsMinCores"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Hardware not supported. Number of CPU cores is less than $OSReqsMinCores"
             Throw "Hardware not supported. Number of CPU cores is less than $OSReqsMinCores"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server has the necessary Number of cores for Outsystems"
 
         #MEM
         If ([int][Math]::Ceiling($(GetInstalledRAM)) -lt $OSReqsMinRAMGB) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Hardware not supported. Server has less than $OSReqsMinRAMGB GB"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Hardware not supported. Server has less than $OSReqsMinRAMGB GB"
             Throw "Hardware not supported. Server has less than $OSReqsMinRAMGB GB"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server has enought RAM"

@@ -21,8 +21,6 @@ Function Get-OSPlatformServerInstallDir {
             $output = GetServerInstallDir
         }
         Catch {
-            #$_.Exception.Message
-            #$_.Exception.StackTrace
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed" -Exception $_.Exception
             Throw "Outsystems platform is not installed"
         }

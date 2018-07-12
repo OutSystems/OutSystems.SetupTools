@@ -32,22 +32,24 @@ Function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
             Write-Verbose "$LogLineTemplate $Message"
 
             # Exception info
-            $E = $Exception
-            Write-Verbose "$LogLineTemplate $($E.Message)"
-            If($script:OSLogFile -and ($script:OSLogFile -ne "")){
-                Add-Content -Path $script:OSLogFile -Value "ERROR   : $LogLineTemplate $Message"
-                Add-Content -Path $script:OSLogFile -Value "InnerException:"
-                Add-Content -Path $script:OSLogFile -Value $($E.Message)
-                Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
-            }
-
-            # Drill down to show the full exception chain
-            While ($E.InnerException) {
-                $E = $E.InnerException
-                Write-Host "$LogLineTemplate $($E.Message)"
+            If ($Exception){
+                $E = $Exception
+                Write-Verbose "$LogLineTemplate $($E.Message)"
                 If($script:OSLogFile -and ($script:OSLogFile -ne "")){
-                    Add-Content -Path $script:OSLogFile -Value $LogLineTemplate $($E.Message)
+                    Add-Content -Path $script:OSLogFile -Value "ERROR   : $LogLineTemplate $Message"
+                    Add-Content -Path $script:OSLogFile -Value "InnerException:"
+                    Add-Content -Path $script:OSLogFile -Value $($E.Message)
                     Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
+                }
+
+                # Drill down to show the full exception chain
+                While ($E.InnerException) {
+                    $E = $E.InnerException
+                    Write-Host "$LogLineTemplate $($E.Message)"
+                    If($script:OSLogFile -and ($script:OSLogFile -ne "")){
+                        Add-Content -Path $script:OSLogFile -Value $LogLineTemplate $($E.Message)
+                        Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
+                    }
                 }
             }
         }

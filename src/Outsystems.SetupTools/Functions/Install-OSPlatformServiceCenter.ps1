@@ -74,7 +74,7 @@ Function Install-OSPlatformServiceCenter {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCInstaller exit code: $($Result.ExitCode)"
 
             If ( $Result.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing service center. Return code: $($Result.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing service center. Return code: $($Result.ExitCode)"
                 throw "Error installing service center. Return code: $($Result.ExitCode)"
             }
 
