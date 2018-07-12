@@ -33,7 +33,7 @@ Function Get-OSPlatformVersion {
             $Version = $ServiceProxy.GetPlatformInfo(([ref]$RefDummy))
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error contacting service center"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error contacting service center"
             Throw "Error contacting service center"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $Version"

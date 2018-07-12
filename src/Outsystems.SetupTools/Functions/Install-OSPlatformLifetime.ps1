@@ -37,7 +37,7 @@ Function Install-OSPlatformLifetime {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -46,7 +46,7 @@ Function Install-OSPlatformLifetime {
             $OSInstallDir = GetServerInstallDir
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
 
@@ -58,12 +58,12 @@ Function Install-OSPlatformLifetime {
         Catch {}
 
         If ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
         If ( $SystemComponentsVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Systems components version mismatch. You should run the Install-OSPlatformSystemComponents first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Systems components version mismatch. You should run the Install-OSPlatformSystemComponents first"
             throw "Systems components version mismatch. You should run the Install-OSPlatformSystemComponents first"
         }
 
@@ -86,7 +86,7 @@ Function Install-OSPlatformLifetime {
                 $Result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$OSInstallDir\Lifetime.osp") + [char]34 + " $ENV:ComputerName $SystemCenterUser $SystemCenterPass")
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the lifetime installer"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the lifetime installer"
                 Throw "Error lauching the lifetime installer"
             }
 
@@ -97,7 +97,7 @@ Function Install-OSPlatformLifetime {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($Result.ExitCode)"
 
             If ( $Result.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing lifetime. Return code: $($Result.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing lifetime. Return code: $($Result.ExitCode)"
                 throw "Error installing lifetime. Return code: $($Result.ExitCode)"
             }
 

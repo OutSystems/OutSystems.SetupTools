@@ -11,7 +11,7 @@ Function Install-OSPlatformLicense {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -19,7 +19,7 @@ Function Install-OSPlatformLicense {
             $OSVersion = GetServerVersion
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
 
@@ -29,13 +29,13 @@ Function Install-OSPlatformLicense {
         Catch {}
 
         If ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
         If ($Path -and ($Path -ne "")) {
             If ( -not (Test-Path -Path "$Path\license.lic")) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "License file not found at $Path\license.lic"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "License file not found at $Path\license.lic"
                 Throw "License file not found at $Path\license.lic"
             }
         }
@@ -48,7 +48,7 @@ Function Install-OSPlatformLicense {
                 $Path = "$Path\license.lic"
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error downloading the license from the repository"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading the license from the repository"
                 Throw "Error downloading the license from the repository"
             }
         }
@@ -61,7 +61,7 @@ Function Install-OSPlatformLicense {
             $Result = RunConfigTool -Arguments $("/UploadLicense " + [char]34 + $Path + [char]34)
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the configuration tool"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
             Throw "Error lauching the configuration tool"
         }
 
@@ -72,7 +72,7 @@ Function Install-OSPlatformLicense {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($Result.ExitCode)"
 
         If( $Result.ExitCode -ne 0 ){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error uploading the license. Return code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error uploading the license. Return code: $($Result.ExitCode)"
             throw "Error uploading the license. Return code: $($Result.ExitCode)"
         }
 

@@ -17,7 +17,7 @@ Function Set-OSPlatformWindowsFirewall {
             CheckRunAsAdmin | Out-Null
         }
         Catch{
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
@@ -28,7 +28,7 @@ Function Set-OSPlatformWindowsFirewall {
             New-NetFirewallRule -DisplayName 'OutSystems' -Profile @('Domain', 'Private', 'Public') -Direction Inbound -Action Allow -Protocol TCP -LocalPort @('12000', '12001', '12002', '12003', '12004') | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error creating the firewall rule"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating the firewall rule"
             Throw "Error creating the firewall rule"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Firewall rule Outsystems created successfully"

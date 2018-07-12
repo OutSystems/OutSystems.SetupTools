@@ -18,7 +18,7 @@ Function Disable-OSIPv6
             CheckRunAsAdmin | Out-Null
         }
         Catch{
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
@@ -28,7 +28,7 @@ Function Disable-OSIPv6
             Get-NetAdapterBinding -ComponentID 'ms_tcpip6' | Disable-NetAdapterBinding -ComponentID ms_tcpip6
             New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\" -Name "DisabledComponents" -Value 0xffffffff -PropertyType "DWORD" -Force | Out-Null
         } Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling IPv6"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling IPv6"
             Throw "Error disabling IPv6"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "IPv6 successfully disabled"

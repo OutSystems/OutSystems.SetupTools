@@ -17,7 +17,7 @@ Function Start-OSServices {
             CheckRunAsAdmin | Out-Null
         }
         Catch{
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }

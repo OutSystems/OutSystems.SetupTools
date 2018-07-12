@@ -30,7 +30,7 @@ Function Get-OSDevEnvironmentVersion {
             $output = GetDevEnvVersion -MajorVersion $MajorVersion
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"
             Throw "Outsystems development environment $MajorVersion is not installed"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"

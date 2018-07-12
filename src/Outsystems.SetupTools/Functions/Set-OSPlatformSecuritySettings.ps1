@@ -22,7 +22,7 @@ Function Set-OSPlatformSecuritySettings {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -31,7 +31,7 @@ Function Set-OSPlatformSecuritySettings {
             GetServerInstallDir | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
 
@@ -49,7 +49,7 @@ Function Set-OSPlatformSecuritySettings {
             }
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling unsafe SSL protocols"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling unsafe SSL protocols"
             Throw "Error disabling unsafe SSL protocols"
         }
 
@@ -71,7 +71,7 @@ Function Set-OSPlatformSecuritySettings {
             }
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling click jacking"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling click jacking"
             Throw "Error disabling click jacking"
         }
     }

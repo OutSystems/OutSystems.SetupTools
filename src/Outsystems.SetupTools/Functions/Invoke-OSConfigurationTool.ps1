@@ -115,7 +115,7 @@ Function Invoke-OSConfigurationTool {
             CheckRunAsAdmin | Out-Null
         }
         Catch{
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -124,7 +124,7 @@ Function Invoke-OSConfigurationTool {
             $OSInstallDir = GetServerInstallDir
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
     }
@@ -157,7 +157,7 @@ Function Invoke-OSConfigurationTool {
             $Result = RunConfigTool -Arguments "/GenerateTemplates"
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the configuration tool."
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool."
             Throw "Error lauching the configuration tool."
         }
 
@@ -273,7 +273,7 @@ Function Invoke-OSConfigurationTool {
             $Result = RunConfigTool -Arguments "/silent /setupinstall $DBSAUser $DBSAPass /rebuildsession $DBSAUser $DBSAPass"
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the configuration tool"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
             Throw "Error lauching the configuration tool"
         }
 
@@ -284,7 +284,7 @@ Function Invoke-OSConfigurationTool {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($Result.ExitCode)"
 
         If( $Result.ExitCode -ne 0 ){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
             throw "Error configuring the platform. Return code: $($Result.ExitCode)"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Platform successfully configured!!"

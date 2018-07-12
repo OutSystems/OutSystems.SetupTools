@@ -34,7 +34,7 @@ Function Set-OSPlatformPerformanceTunning {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -43,7 +43,7 @@ Function Set-OSPlatformPerformanceTunning {
             GetServerInstallDir | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
     }
@@ -59,7 +59,7 @@ Function Set-OSPlatformPerformanceTunning {
             Set-ItemProperty -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Value 24
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error setting processor scheduling priority"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting processor scheduling priority"
             Throw "Error setting processor scheduling priority"
         }
 
@@ -76,7 +76,7 @@ Function Set-OSPlatformPerformanceTunning {
             $NETMachineConfig.Save()
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring .NET settings"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring .NET settings"
             Throw "Error configuring .NET settings"
         }
 
@@ -86,7 +86,7 @@ Function Set-OSPlatformPerformanceTunning {
             Set-WebConfigurationProperty -PSPath "MACHINE/WEBROOT/APPHOST" -Filter "system.webServer/security/requestFiltering/requestLimits" -Name "maxAllowedContentLength" -Value 134217728
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error setting IIS upload size limits"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting IIS upload size limits"
             Throw "Error setting IIS upload size limits"
         }
 
@@ -114,7 +114,7 @@ Function Set-OSPlatformPerformanceTunning {
                         New-Item -Path "IIS:\AppPools\$($Config.PoolName)" | Out-Null
                     }
                     Catch {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error creating AppPool $($Config.PoolName)"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating AppPool $($Config.PoolName)"
                         Throw "Error creating AppPool $($Config.PoolName)"
                     }
                 }
@@ -153,7 +153,7 @@ Function Set-OSPlatformPerformanceTunning {
                     Stop-WebCommitDelay
                 }
                 Catch {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error applying setting to AppPool $($Config.PoolName)"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error applying setting to AppPool $($Config.PoolName)"
                     Throw "Error applying setting to AppPool $($Config.PoolName)"
                 }
 
@@ -170,7 +170,7 @@ Function Set-OSPlatformPerformanceTunning {
             Set-WebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost/sites/site[@name='Default Web Site']" -Name "Limits" -Value @{MaxConnections = 4294967295}
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring IIS for unlimited connections"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring IIS for unlimited connections"
             Throw "Error configuring IIS for unlimited connections"
         }
 
@@ -183,7 +183,7 @@ Function Set-OSPlatformPerformanceTunning {
                     New-Item -Path $IISNetCompilationPath -ItemType directory -Force | Out-Null
                 }
                 Catch {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error creating the IIS Net compilation folder"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating the IIS Net compilation folder"
                     Throw "Error creating the IIS Net compilation folder"
                 }
             }
@@ -192,7 +192,7 @@ Function Set-OSPlatformPerformanceTunning {
                 Set-WebConfigurationProperty -PSPath "MACHINE/WEBROOT" -Filter "system.web/compilation" -Name 'tempDirectory' -Value $IISNetCompilationPath
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error setting the IIS compilation folder"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the IIS compilation folder"
                 Throw "Error setting the IIS compilation folder"
             }
 
@@ -207,7 +207,7 @@ Function Set-OSPlatformPerformanceTunning {
                     New-Item -Path $IISHttpCompressionPath -ItemType directory -Force | Out-Null
                 }
                 Catch {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error creating the IIS HTTP compression folder"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating the IIS HTTP compression folder"
                     Throw "Error creating the IIS HTTP compression folder"
                 }
             }
@@ -216,7 +216,7 @@ Function Set-OSPlatformPerformanceTunning {
                 Set-WebConfigurationProperty -PSPath "MACHINE/WEBROOT/APPHOST"  -Filter "system.webServer/httpCompression" -Name "directory" -Value $IISHttpCompressionPath
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error setting the IIS HTTP compression folder"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the IIS HTTP compression folder"
                 Throw "Error setting the IIS HTTP compression folder"
             }
         }

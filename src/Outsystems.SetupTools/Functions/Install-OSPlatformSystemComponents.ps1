@@ -42,7 +42,7 @@ Function Install-OSPlatformSystemComponents {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -51,7 +51,7 @@ Function Install-OSPlatformSystemComponents {
             $OSInstallDir = GetServerInstallDir
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
 
@@ -62,7 +62,7 @@ Function Install-OSPlatformSystemComponents {
         Catch {}
 
         If ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
@@ -85,7 +85,7 @@ Function Install-OSPlatformSystemComponents {
                 $Result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$OSInstallDir\System_Components.osp") + [char]34 + " $ENV:ComputerName $SystemCenterUser $SystemCenterPass")
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the system Components installer"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the system Components installer"
                 Throw "Error lauching the system Components installer"
             }
 
@@ -96,7 +96,7 @@ Function Install-OSPlatformSystemComponents {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($Result.ExitCode)"
 
             If ( $Result.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing the system Components. Return code: $($Result.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing the system Components. Return code: $($Result.ExitCode)"
                 throw "Error installing the system Components. Return code: $($Result.ExitCode)"
             }
 

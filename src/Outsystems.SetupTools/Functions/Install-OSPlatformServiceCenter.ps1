@@ -27,7 +27,7 @@ Function Install-OSPlatformServiceCenter {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -36,7 +36,7 @@ Function Install-OSPlatformServiceCenter {
             GetServerInstallDir | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
 
@@ -63,7 +63,7 @@ Function Install-OSPlatformServiceCenter {
                 $Result = RunSCInstaller -Arguments "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif"
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the service center installer"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the service center installer"
                 Throw "Error lauching the service center installer"
             }
 
@@ -74,7 +74,7 @@ Function Install-OSPlatformServiceCenter {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCInstaller exit code: $($Result.ExitCode)"
 
             If ( $Result.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing service center. Return code: $($Result.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing service center. Return code: $($Result.ExitCode)"
                 throw "Error installing service center. Return code: $($Result.ExitCode)"
             }
 

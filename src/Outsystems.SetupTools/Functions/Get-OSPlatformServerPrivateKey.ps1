@@ -18,14 +18,14 @@ Function Get-OSPlatformServerPrivateKey {
             $InstallDir = GetServerInstallDir
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Server is installed at $InstallDir"
 
         $Path = "$InstallDir\private.key"
         If ( -not (Test-Path -Path $Path)) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Cant file the file $Path"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Cant file the file $Path"
             Throw "Cant file the file $Path"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "private.key file found"
@@ -40,7 +40,7 @@ Function Get-OSPlatformServerPrivateKey {
         }
 
         If ( -not $PrivateKey ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error processing the file"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error processing the file"
             Throw "Error processing the file"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $PrivateKey"

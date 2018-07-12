@@ -42,7 +42,7 @@ Function Install-OSPlatformPreReqs {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
@@ -59,7 +59,7 @@ Function Install-OSPlatformPreReqs {
                 DownloadOSSources -URL "$OSRepoURL\NDP461-KB3102436-x86-x64-AllOS-ENU.exe" -SavePath $Installer
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error downloading the installer from repository. Check if version is correct"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading the installer from repository. Check if version is correct"
                 Throw "Error downloading the installer from repository. Check if file name is correct"
             }
 
@@ -74,7 +74,7 @@ Function Install-OSPlatformPreReqs {
                     Throw ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
                 }
                 Default {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
                     Throw "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
                 }
             }
@@ -116,7 +116,7 @@ Function Install-OSPlatformPreReqs {
             InstallWindowsFeatures -Features $WinFeatures
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing windows features"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing windows features"
             Throw "Error installing windows features"
         }
 
@@ -126,7 +126,7 @@ Function Install-OSPlatformPreReqs {
             ConfigureServiceWMI
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the WMI service"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the WMI service"
             Throw "Error configuring the WMI service"
         }
 
@@ -136,7 +136,7 @@ Function Install-OSPlatformPreReqs {
             ConfigureServiceWindowsSearch
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the Windows search service"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the Windows search service"
             Throw "Error configuring the Windows search service"
         }
 
@@ -146,7 +146,7 @@ Function Install-OSPlatformPreReqs {
             DisableFIPS
         }
         Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling FIPS compliant algorithms checks"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling FIPS compliant algorithms checks"
             Throw "Error disabling FIPS compliant algorithms checks"
         }
 
@@ -157,7 +157,7 @@ Function Install-OSPlatformPreReqs {
                 ConfigureWindowsEventLog -LogName $EventLog -LogSize $OSWinEventLogSize -LogOverflowAction $OSWinEventLogOverflowAction
             }
             Catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring $EventLog Event Log"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring $EventLog Event Log"
                 Throw "Error configuring $EventLog Event Log"
             }
         }
@@ -170,7 +170,7 @@ Function Install-OSPlatformPreReqs {
                     ConfigureMSMQDomainServer
                 }
                 Catch {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the Message Queuing service"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the Message Queuing service"
                     Throw "Error configuring the Message Queuing service"
                 }
             }
