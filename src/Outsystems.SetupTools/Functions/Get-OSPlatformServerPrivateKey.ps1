@@ -13,22 +13,22 @@ Function Get-OSPlatformServerPrivateKey {
     Param()
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Try {
             $InstallDir = GetServerInstallDir
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Server is installed at $InstallDir"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Server is installed at $InstallDir"
 
         $Path = "$InstallDir\private.key"
         If ( -not (Test-Path -Path $Path)) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Cant file the file $Path"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Cant file the file $Path"
             Throw "Cant file the file $Path"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "private.key file found"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "private.key file found"
     }
 
     Process {
@@ -40,14 +40,14 @@ Function Get-OSPlatformServerPrivateKey {
         }
 
         If ( -not $PrivateKey ) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error processing the file"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error processing the file"
             Throw "Error processing the file"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $PrivateKey"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $PrivateKey"
         Return $PrivateKey
     }
 
     End {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

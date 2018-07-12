@@ -13,7 +13,7 @@ Function Get-OSPlatformServerInstallDir {
     Param()
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
     Process {
@@ -21,14 +21,16 @@ Function Get-OSPlatformServerInstallDir {
             $output = GetServerInstallDir
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            #$_.Exception.Message
+            #$_.Exception.StackTrace
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed" -Exception $_.Exception
             Throw "Outsystems platform is not installed"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $output"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"
         Return $output
     }
 
     End {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

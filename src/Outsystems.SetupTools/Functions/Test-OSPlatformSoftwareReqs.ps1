@@ -13,29 +13,29 @@ Function Test-OSPlatformSoftwareReqs {
     Param()
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
     Process {
         #Check Operating System Version
         If ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OSReqsMinOSVersion) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
             Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
         }
 
         #Check Operating System ProductType
         If ($(GetOperatingSystemProductType) -lt $OSReqsMinOSProductType) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Operating system not supported. Only Windows Server 2012 and superior is supported"
             Throw "Operating system not supported. Only Windows Server 2008R2 and superior is supported"
         }
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Operating system is a server product 2012 or higher"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Operating system is a server product 2012 or higher"
 
         # TODO: Check PS version
     }
 
     End {
         Write-Output "Your operating systems and software was validated for Outsystems"
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

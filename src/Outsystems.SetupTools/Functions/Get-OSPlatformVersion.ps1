@@ -22,7 +22,7 @@ Function Get-OSPlatformVersion {
     )
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         If( $($Host.Trim()) -eq "" ) { $Host = "127.0.0.1" }
     }
 
@@ -33,15 +33,15 @@ Function Get-OSPlatformVersion {
             $Version = $ServiceProxy.GetPlatformInfo(([ref]$RefDummy))
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error contacting service center"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error contacting service center"
             Throw "Error contacting service center"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Returning $Version"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $Version"
         Return [System.Version]$Version
     }
 
     End {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 
 }

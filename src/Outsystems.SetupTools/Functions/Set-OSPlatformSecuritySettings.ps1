@@ -17,12 +17,12 @@ Function Set-OSPlatformSecuritySettings {
     Param()
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Try {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -31,7 +31,7 @@ Function Set-OSPlatformSecuritySettings {
             GetServerInstallDir | Out-Null
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
 
@@ -39,22 +39,22 @@ Function Set-OSPlatformSecuritySettings {
 
     Process {
         # Disable unsafe SSL protocols
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Disabling unsafe SSL protocols"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling unsafe SSL protocols"
         $Protocols = @("SSL 2.0", "SSL 3.0")
         Try {
             ForEach ($Protocol in $Protocols) {
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Disabling $Protocol"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling $Protocol"
                 New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" -Force | Set-ItemProperty -Name "Enable" -Value 0
                 New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Client" -Force | Set-ItemProperty -Name "DisabledByDefault" -Value 1
             }
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error disabling unsafe SSL protocols"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling unsafe SSL protocols"
             Throw "Error disabling unsafe SSL protocols"
         }
 
         # Disable clickjacking (Server Level)
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Disabling click jacking"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling click jacking"
         Try {
             If (Get-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='X-Frame-Options']" -Name . ) {
                 Set-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='X-Frame-Options']" -Name . -Value @{name = "X-Frame-Options"; value = "SAMEORIGIN"}
@@ -71,13 +71,13 @@ Function Set-OSPlatformSecuritySettings {
             }
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error disabling click jacking"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling click jacking"
             Throw "Error disabling click jacking"
         }
     }
 
     End {
         Write-Output "Security settings successfully applied"
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

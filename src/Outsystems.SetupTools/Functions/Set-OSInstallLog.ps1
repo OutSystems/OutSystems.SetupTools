@@ -50,6 +50,6 @@ Function Set-OSInstallLog {
 
     End {
         Write-Output "Outsystems install log set to $OSLogFile"
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "************* Starting Log **************"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "************* Starting Log **************"
     }
 }

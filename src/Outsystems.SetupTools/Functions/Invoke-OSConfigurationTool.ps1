@@ -109,13 +109,13 @@ Function Invoke-OSConfigurationTool {
     }
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Write-Output "Configuring the platform. This can take a while... Please wait..."
         Try{
             CheckRunAsAdmin | Out-Null
         }
         Catch{
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
@@ -124,7 +124,7 @@ Function Invoke-OSConfigurationTool {
             $OSInstallDir = GetServerInstallDir
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Outsystems platform is not installed"
             Throw "Outsystems platform is not installed"
         }
     }
@@ -133,8 +133,8 @@ Function Invoke-OSConfigurationTool {
 
         #Write the private.key file. This needs to be done before running the configuration tool for the first time.
         If ($PrivateKey) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Environment private key specified in the command line"
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the private.key"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Environment private key specified in the command line"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the private.key"
 
             If ( ( -not (Test-Path -Path "$OSInstallDir\private.key") ) -or $OverwritePrivateKey.IsPresent  ) {
 
@@ -144,10 +144,10 @@ Function Invoke-OSConfigurationTool {
                 #Changing the contents of the file.
                 (Get-Content "$OSInstallDir\private.key") -replace '<<KEYTOREPLACE>>', "$($PSBoundParameters.PrivateKey)" | Set-Content "$OSInstallDir\private.key"
 
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File modified successfully!!."
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "File modified successfully!!."
             }
             else {
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "File NOT modified. File already exists and the OverwritePrivateKey switch was not set"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "File NOT modified. File already exists and the OverwritePrivateKey switch was not set"
             }
 
         }
@@ -157,7 +157,7 @@ Function Invoke-OSConfigurationTool {
             $Result = RunConfigTool -Arguments "/GenerateTemplates"
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error lauching the configuration tool."
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the configuration tool."
             Throw "Error lauching the configuration tool."
         }
 
@@ -165,26 +165,26 @@ Function Invoke-OSConfigurationTool {
             throw "Error generating the templates. Return code: $($Result.ExitCode)"
         }
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "hsconf templates generated"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "hsconf templates generated"
 
         #Select the template
         switch ($DBProvider) {
             {$_ -in "SQL", "AzureSQL", "SQLExpress"} {
                 $TemplateFile = "$OSInstallDir\docs\SqlServer_template.hsconf"
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Database provider is $DBProvider"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Database provider is $DBProvider"
 
                 #Loading the template
                 [xml]$HSConf = Get-Content ($TemplateFile)
 
                 #Write common parameters for all SQL server editions
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting SQL parameters common for all editions"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Writting SQL parameters common for all editions"
                 $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.Catalog.InnerText = $PSBoundParameters.DBCatalog
                 $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.Catalog.InnerText = $PSBoundParameters.DBSessionCatalog
                 $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.Server.InnerText = $PSBoundParameters.DBServer
                 $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.Server.InnerText = $PSBoundParameters.DBSessionServer
 
                 #Write auth method
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting authentication method"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Writting authentication method"
                 switch ($PSBoundParameters.DBAuth) {
                     "SQL" {
                         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.UsedAuthenticationMode.InnerText = 'Database Authentication'
@@ -193,8 +193,8 @@ Function Invoke-OSConfigurationTool {
                     "Windows" {
                         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.UsedAuthenticationMode.InnerText = 'Windows Authentication'
                         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.UsedAuthenticationMode.InnerText = 'Windows Authentication'
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "When windows authentication, the session user and password needs to be the same of the runtime User."
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Overwritting the session user"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "When windows authentication, the session user and password needs to be the same of the runtime User."
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Overwritting the session user"
                         $DBSessionUser = $DBRuntimeUser
                         $DBSessionPass = $DBRuntimePass
                     }
@@ -203,22 +203,22 @@ Function Invoke-OSConfigurationTool {
                 #Write parameters for the specific SQL server edition
                 switch ($DBProvider) {
                     "SQL" {
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting SQL parameters for Standard Edition"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Writting SQL parameters for Standard Edition"
                         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.SqlEngineEdition.InnerText = 'Standard'
                         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SqlEngineEdition.InnerText = 'Standard'
                     }
                     "AzureSQL" {
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Wrtting SQL parameters for AzureSQL"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Wrtting SQL parameters for AzureSQL"
                         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.SqlEngineEdition.InnerText = 'Azure'
                         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SqlEngineEdition.InnerText = 'Azure'
 
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "AzureSQL doesnt support Windows authentication. Forcing SQL authentication"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "AzureSQL doesnt support Windows authentication. Forcing SQL authentication"
                         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.UsedAuthenticationMode.InnerText = 'Database Authentication'
                         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.UsedAuthenticationMode.InnerText = 'Database Authentication'
 
                     }
                     "SQLExpress" {
-                        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Wrtting SQL parameters for SQL Express"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Wrtting SQL parameters for SQL Express"
                         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.SqlEngineEdition.InnerText = 'Express'
                         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SqlEngineEdition.InnerText = 'Express'
                     }
@@ -237,61 +237,61 @@ Function Invoke-OSConfigurationTool {
         }
 
         #Wrtting common parameters to all templates.
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting common parameters"
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBAdminUser and DBAdminPass"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Writting common parameters"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting DBAdminUser and DBAdminPass"
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.AdminUser.InnerText = $DBAdminUser
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.AdminPassword.InnerText = $DBAdminPass
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBRuntimeUser and DBRuntimePass"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting DBRuntimeUser and DBRuntimePass"
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.RuntimeUser.InnerText = $DBRuntimeUser
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.RuntimePassword.InnerText = $DBRuntimePass
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBLogUser and DBLogPass"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting DBLogUser and DBLogPass"
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogUser.InnerText = $DBLogUser
         $HSConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogPassword.InnerText = $DBLogPass
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DBSessionUser and DBSessionPass"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting DBSessionUser and DBSessionPass"
         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SessionUser.InnerText = $DBSessionUser
         $HSConf.EnvironmentConfiguration.SessionDatabaseConfiguration.SessionPassword.InnerText = $DBSessionPass
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Writting common parameters complete"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Writting common parameters complete"
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting DB Timeout to $OSDBTimeout"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting DB Timeout to $OSDBTimeout"
         $HSConf.EnvironmentConfiguration.OtherConfigurations.DBTimeout = "$OSDBTimeout"
 
         #Writting controller address.
         If (-not $Controller) {
             $Controller = "127.0.0.1"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Setting controller address to $Controller"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting controller address to $Controller"
         $HSConf.EnvironmentConfiguration.ServiceConfiguration.CompilerServerHostname = $Controller
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Saving server.hsconf"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Saving server.hsconf"
         $HSConf.Save("$OSInstallDir\server.hsconf")
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the platform. This can take a while..."
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the platform. This can take a while..."
         Try {
             $Result = RunConfigTool -Arguments "/silent /setupinstall $DBSAUser $DBSAPass /rebuildsession $DBSAUser $DBSAPass"
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error lauching the configuration tool"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error lauching the configuration tool"
             Throw "Error lauching the configuration tool"
         }
 
         $ConfToolOutputLog = $($Result.Output) -Split("`r`n")
         ForEach($Logline in $ConfToolOutputLog){
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "CONFTOOL: $Logline"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "CONFTOOL: $Logline"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuration tool exit code: $($Result.ExitCode)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($Result.ExitCode)"
 
         If( $Result.ExitCode -ne 0 ){
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the platform. Return code: $($Result.ExitCode)"
             throw "Error configuring the platform. Return code: $($Result.ExitCode)"
         }
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Platform successfully configured!!"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Platform successfully configured!!"
     }
 
     End {
         Write-Output "Platform successfully configured!!"
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

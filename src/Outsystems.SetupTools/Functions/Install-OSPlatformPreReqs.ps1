@@ -36,13 +36,13 @@ Function Install-OSPlatformPreReqs {
     )
 
     Begin {
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 0 -Message "Starting"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Write-Output "Starting the pre-requisites installation. This can take a while... Please wait..."
         Try {
             CheckRunAsAdmin | Out-Null
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
@@ -51,7 +51,7 @@ Function Install-OSPlatformPreReqs {
         # Check and install .NET
         If ($(GetDotNet4Version) -lt $OSReqsMinDotNetVersion) {
             Write-Output "Minimum .NET version is not installed. We will try to download and install NET 4.6.1..."
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Minimum .NET version is not installed. We will try to download and install NET 4.6.1."
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version is not installed. We will try to download and install NET 4.6.1."
 
             #Download sources from repo
             $Installer = "$ENV:TEMP\NDP461-KB3102436-x86-x64-AllOS-ENU.exe"
@@ -59,28 +59,28 @@ Function Install-OSPlatformPreReqs {
                 DownloadOSSources -URL "$OSRepoURL\NDP461-KB3102436-x86-x64-AllOS-ENU.exe" -SavePath $Installer
             }
             Catch {
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error downloading the installer from repository. Check if version is correct"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error downloading the installer from repository. Check if version is correct"
                 Throw "Error downloading the installer from repository. Check if file name is correct"
             }
 
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation. This can take a while..."
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
             $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q","/norestart","/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru
             Switch ($IntReturnCode.ExitCode){
                 0 {
-                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message ".NET 4.6.1 successfully installed."
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.6.1 successfully installed."
                 }
                 3010 {
-                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
                     Throw ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
                 }
                 Default {
-                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
                     Throw "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
                 }
             }
 
         } Else {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installed .NET is supported for OutSystems"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installed .NET is supported for OutSystems"
         }
 
         # Base Windows features
@@ -91,7 +91,7 @@ Function Install-OSPlatformPreReqs {
             $WinFeatures += "Web-Mgmt-Console"
         }
         else {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "InstallIISMgmtConsole is false. Not adding IIS Management console to the list"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "InstallIISMgmtConsole is false. Not adding IIS Management console to the list"
         }
 
         # Version specific pre-reqs install.
@@ -105,59 +105,59 @@ Function Install-OSPlatformPreReqs {
         }
 
         # Do the actual install
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing pre-requisites for Outsystems major version $MajorVersion"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing pre-requisites for Outsystems major version $MajorVersion"
 
         # Windows features
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Installing windows features"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
         $ProgressPreference = "SilentlyContinue"
 
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Starting the installation"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation"
         Try {
             InstallWindowsFeatures -Features $WinFeatures
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error installing windows features"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error installing windows features"
             Throw "Error installing windows features"
         }
 
         #Configure the WMI windows service
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the WMI windows service"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the WMI windows service"
         Try {
             ConfigureServiceWMI
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the WMI service"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the WMI service"
             Throw "Error configuring the WMI service"
         }
 
         #Configure the Windows search service
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring the Windows search service"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the Windows search service"
         Try {
             ConfigureServiceWindowsSearch
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the Windows search service"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the Windows search service"
             Throw "Error configuring the Windows search service"
         }
 
         #Disable FIPS compliant algorithms checks
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Disabling FIPS compliant algorithms checks"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling FIPS compliant algorithms checks"
         Try {
             DisableFIPS
         }
         Catch {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error disabling FIPS compliant algorithms checks"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error disabling FIPS compliant algorithms checks"
             Throw "Error disabling FIPS compliant algorithms checks"
         }
 
         #Configure event log
         ForEach ($EventLog in $OSWinEventLogName) {
-            LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configuring $EventLog Event Log"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring $EventLog Event Log"
             Try {
                 ConfigureWindowsEventLog -LogName $EventLog -LogSize $OSWinEventLogSize -LogOverflowAction $OSWinEventLogOverflowAction
             }
             Catch {
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring $EventLog Event Log"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring $EventLog Event Log"
                 Throw "Error configuring $EventLog Event Log"
             }
         }
@@ -165,12 +165,12 @@ Function Install-OSPlatformPreReqs {
         # Version specific configuration.
         Switch ($MajorVersion) {
             '10.0' {
-                LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 1 -Message "Configure Message Queuing service to to always try to contact a message queue server when running on a server registered in a domain."
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configure Message Queuing service to to always try to contact a message queue server when running on a server registered in a domain."
                 Try {
                     ConfigureMSMQDomainServer
                 }
                 Catch {
-                    LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 3 -Message "Error configuring the Message Queuing service"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_ -Stream 3 -Message "Error configuring the Message Queuing service"
                     Throw "Error configuring the Message Queuing service"
                 }
             }
@@ -182,6 +182,6 @@ Function Install-OSPlatformPreReqs {
 
     End {
         Write-Output "Pre-requisites successfully installed!!"
-        LogVerbose -FuncName $($MyInvocation.Mycommand) -Phase 2 -Message "Ending"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
