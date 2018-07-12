@@ -12,7 +12,7 @@
 RootModule = 'OutSystems.SetupTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.6.0.0'
+ModuleVersion = '1.6.10.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -48,7 +48,7 @@ Description = 'Tools for installing and manage the Outsystems platform installat
 # CLRVersion = ''
 
 # Processor architecture (None, X86, Amd64) required by this module
-# ProcessorArchitecture = ''
+ProcessorArchitecture = 'Amd64'
 
 # Modules that must be imported into the global environment prior to importing this module
 # RequiredModules = @()
