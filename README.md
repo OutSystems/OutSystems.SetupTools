@@ -1,4 +1,4 @@
-[![Build status](https://pedropintonunes.visualstudio.com/Outsystems/_apis/build/status/Outsystems-SetupTools_MainCI?branch=master)](https://pedropintonunes.visualstudio.com/Outsystems/_build/latest?definitionId=3&branch=master)]
+[![Build status](https://pedropintonunes.visualstudio.com/Outsystems/_apis/build/status/Outsystems-SetupTools_MainCI?branch=master)](https://pedropintonunes.visualstudio.com/Outsystems/_build/latest?definitionId=3&branch=master)
 
 # Outsystems.SetupTools
 
