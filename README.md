@@ -66,4 +66,4 @@ Set-OSPlatformSecuritySettings
 
 ## Documentation
 
-Function reference is available in the \docs folder as well as some script examples.
+Function reference is available at the [docs](docs) folder as well as some script examples.
