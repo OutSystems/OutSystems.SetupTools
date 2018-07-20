@@ -1,3 +1,5 @@
+[![Build status](https://pedropintonunes.visualstudio.com/Outsystems/_apis/build/status/Outsystems-SetupTools%20Main%20CI?branch=master)](https://pedropintonunes.visualstudio.com/Outsystems/_apis/build/status/Outsystems-SetupTools%20Main%20CI?branch=master)]
+
 # Outsystems.SetupTools
 
 Outsystems.SetupTools is a powershell module for installing and manage the Outsystems platform installation.
