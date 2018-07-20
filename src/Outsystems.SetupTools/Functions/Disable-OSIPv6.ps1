@@ -7,6 +7,9 @@ Function Disable-OSIPv6
     .DESCRIPTION
     This will disable IPv6 on the server. IPv6 is not supported by Outsystems
 
+    .EXAMPLE
+    Disable-OSIPv6
+
     #>
 
     [CmdletBinding()]
