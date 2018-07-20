@@ -14,7 +14,7 @@ With this module you can:
 
 ## Quick start
 
-* Install platyPS module from the [PowerShell Gallery](https://www.powershellgallery.com/packages/Outsystems.SetupTools):
+* Install the module from [PowerShell Gallery](https://www.powershellgallery.com/packages/Outsystems.SetupTools):
 
 ```powershell
 Install-Module -Name Outsystems.SetupTools
