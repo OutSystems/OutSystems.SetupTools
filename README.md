@@ -7,10 +7,11 @@ This module allows you to install and configure the Outsystems platform complete
 ## Common scenarios
 
 With this module you can:
-* Install the platform from a powershell command line
-* Create small scripts to install the platform on your environment and reuse them to reinstall or create other environments
-* Use the module functions in Docker files
-* Create small deployment scripts and use them on Azure ARM templates, AWS Cloudformation, Terraform to automatize the Outsystems deployment on the cloud
+* Install the platform from a powershell command line.
+* Create small scripts to install the platform on your environment and reuse them to reinstall or create other environments.
+* Use the module functions in Docker files.
+* Create small deployment scripts and use them on Azure ARM templates, AWS Cloudformation, Terraform to automatize the Outsystems deployment on the cloud.
+* Use it in Packer to create golden images.
 
 ## Quick start
 
@@ -62,3 +63,7 @@ Install-OSPlatformSystemComponents
 Set-OSPlatformPerformanceTunning
 Set-OSPlatformSecuritySettings
 ```
+
+## Documentation
+
+Function reference is available in the \docs folder as well as some script examples.
