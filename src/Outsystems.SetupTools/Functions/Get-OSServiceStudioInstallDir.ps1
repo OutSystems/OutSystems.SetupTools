@@ -1,4 +1,4 @@
-Function Get-OSDevEnvironmentInstallDir
+Function Get-OSServiceStudioInstallDir
 {
     <#
     .SYNOPSIS
@@ -12,7 +12,7 @@ Function Get-OSDevEnvironmentInstallDir
     Major version. 9.0, 9.1, 10.0, 11.0, ...
 
     .EXAMPLE
-    Get-OSDevEnvironmentInstallDir -MajorVersion "10.0"
+    Get-OSServiceStudioInstallDir -MajorVersion "10.0"
 
     #>
 
