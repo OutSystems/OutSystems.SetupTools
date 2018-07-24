@@ -53,7 +53,7 @@ Function Install-OSDevEnvironment {
 
         Try {
             $OSVersion = GetDevEnvVersion -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
-            $OSInstallDir = GetDevEnvInstallDir -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+            $OSInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
         }
         Catch {}
 

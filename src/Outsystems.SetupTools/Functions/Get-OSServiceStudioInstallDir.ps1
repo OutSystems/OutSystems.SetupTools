@@ -29,7 +29,7 @@ Function Get-OSServiceStudioInstallDir
 
     Process {
         Try{
-            $output = GetDevEnvInstallDir -MajorVersion $MajorVersion
+            $output = GetServiceStudioInstallDir -MajorVersion $MajorVersion
 
         } Catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed" -Exception $_.Exception

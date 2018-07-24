@@ -253,7 +253,7 @@ Function GetServerInstallDir()
     Return $output
 }
 
-Function GetDevEnvInstallDir([string]$MajorVersion)
+Function GetServiceStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
 
