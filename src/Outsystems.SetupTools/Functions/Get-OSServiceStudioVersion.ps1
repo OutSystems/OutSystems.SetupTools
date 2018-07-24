@@ -27,7 +27,7 @@ Function Get-OSServiceStudioVersion {
 
     Process {
         Try {
-            $output = GetDevEnvVersion -MajorVersion $MajorVersion
+            $output = GetServiceStudioVersion -MajorVersion $MajorVersion
         }
         Catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"

@@ -273,7 +273,7 @@ Function GetServerVersion()
     Return $output
 }
 
-Function GetDevEnvVersion([string]$MajorVersion)
+Function GetServiceStudioVersion([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
 
