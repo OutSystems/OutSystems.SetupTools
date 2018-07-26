@@ -29,14 +29,21 @@
     // Associate with test task runner
     "tasks": [
         {
-            "taskName": "Test",
+            "label": "build",
             "suppressTaskName": true,
-            "isTestCommand": true,
+            "isTestCommand": false,
+            "options": {
+                "cwd": "${workspaceRoot}/test"
+            },
             "args": [
-                "Write-Host 'Invoking Pester...'; $ProgressPreference = 'SilentlyContinue'; Invoke-Pester -Script test -PesterOption @{IncludeVSCodeMarker=$true};",
+                "Write-Host 'Invoking Pester...'; $ProgressPreference = 'SilentlyContinue'; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true};",
                 "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
             ],
-            "problemMatcher": "$pester"
+            "problemMatcher": "$pester",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
         }
-	]
+    ]
 }
