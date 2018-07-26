@@ -9,7 +9,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock CheckRunAsAdmin { Throw "The current user is not Administrator or not running this script in an elevated session" }
 
             It 'Should not run' {
-                { Install-OSPlatformSystemComponents } | Should Throw "The current user is not Administrator or not running this script in an elevated session"
+                { Publish-OSPlatformSystemComponents } | Should Throw "The current user is not Administrator or not running this script in an elevated session"
             }
 
         }
@@ -21,7 +21,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerInstallDir { Throw "Error" }
 
             It 'Should not run' {
-                { Install-OSPlatformSystemComponents } | Should Throw "Outsystems platform is not installed"
+                { Publish-OSPlatformSystemComponents } | Should Throw "Outsystems platform is not installed"
             }
 
         }
@@ -34,7 +34,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetSCCompiledVersion { Throw "Error" }
 
             It 'Should not run' {
-                { Install-OSPlatformSystemComponents } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+                { Publish-OSPlatformSystemComponents } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             }
 
         }
@@ -47,7 +47,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetSCCompiledVersion { Return "10.0.0.0" }
 
             It 'Should not run' {
-                { Install-OSPlatformSystemComponents } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+                { Publish-OSPlatformSystemComponents } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             }
 
         }
@@ -68,7 +68,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should skip the installation' {
 
-                Install-OSPlatformSystemComponents
+                Publish-OSPlatformSystemComponents
 
                 $assMParams = @{
                     'CommandName' = 'PublishSolution'
@@ -99,7 +99,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should run and not throw any error' {
 
-                { Install-OSPlatformSystemComponents | Out-Null } | Should Not Throw
+                { Publish-OSPlatformSystemComponents | Out-Null } | Should Not Throw
 
             }
 
@@ -122,7 +122,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should not throw any errors' {
 
-                { Install-OSPlatformSystemComponents -Force | Out-Null } | Should Not Throw
+                { Publish-OSPlatformSystemComponents -Force | Out-Null } | Should Not Throw
             }
 
             It 'Should run the installation' {

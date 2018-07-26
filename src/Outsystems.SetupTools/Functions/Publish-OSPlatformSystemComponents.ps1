@@ -1,4 +1,4 @@
-Function Install-OSPlatformSystemComponents {
+Function Publish-OSPlatformSystemComponents {
     <#
     .SYNOPSIS
     Install or update Outsystems System Components.
@@ -19,7 +19,7 @@ Function Install-OSPlatformSystemComponents {
     System Center password.
 
     .EXAMPLE
-    Install-OSPlatformSystemComponents -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
+    Publish-OSPlatformSystemComponents -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
 
     #>
 
@@ -78,11 +78,11 @@ Function Install-OSPlatformSystemComponents {
 
         If ($DoInstall -or $Force.IsPresent) {
 
-            If( $Force.IsPresent ){ LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!" }
+            If( $Force.IsPresent ){ LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. Will be reinstalled!!" }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems System Components. This can take a while..."
             Try {
-                $Result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$OSInstallDir\System_Components.osp") + [char]34 + " $ENV:ComputerName $SystemCenterUser $SystemCenterPass")
+                $Result = PublishSolution -Solution "$OSInstallDir\System_Components.osp" -SCUser $SystemCenterUser -SCPass $SystemCenterPass
             }
             Catch {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the system Components installer"

@@ -8,7 +8,7 @@ Function Install-OSPlatformLifetime {
     You need to specify a user and a password to connect to Service Center. If you dont specify, the default admin will be used.
     It will skip the installation if already installed with the right version.
     Service Center needs to be installed using the Install-OSPlatformServiceCenter function.
-    Outsystems system components needs to be installed using the Install-OSPlatformSystemComponents function.
+    Outsystems system components needs to be installed using the Publish-OSPlatformSystemComponents function.
 
     .PARAMETER Force
     Forces the reinstallation if already installed.
@@ -63,8 +63,8 @@ Function Install-OSPlatformLifetime {
         }
 
         If ( $SystemComponentsVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Systems components version mismatch. You should run the Install-OSPlatformSystemComponents first"
-            throw "Systems components version mismatch. You should run the Install-OSPlatformSystemComponents first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
+            throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
         }
 
         If ( $LifetimeVersion -ne $OSVersion ) {
