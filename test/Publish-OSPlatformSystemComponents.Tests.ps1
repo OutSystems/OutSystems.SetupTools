@@ -39,19 +39,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When service center is installed but has a wrong version' {
-
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.0" }
-
-            It 'Should not run' {
-                { Publish-OSPlatformSystemComponents } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-            }
-
-        }
-
         Context 'When System Components is already installed' {
 
             Mock CheckRunAsAdmin { Return "OK" }
