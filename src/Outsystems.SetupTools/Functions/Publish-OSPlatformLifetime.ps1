@@ -1,4 +1,4 @@
-Function Install-OSPlatformLifetime {
+Function Publish-OSPlatformLifetime {
     <#
     .SYNOPSIS
     Install or update Outsystems Lifetime.
@@ -20,7 +20,7 @@ Function Install-OSPlatformLifetime {
     System Center password.
 
     .EXAMPLE
-    Install-OSPlatformLifetime -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
+    Publish-OSPlatformLifetime -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
 
     #>
 
@@ -89,7 +89,7 @@ Function Install-OSPlatformLifetime {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Lifetime. This can take a while..."
 
             Try {
-                $Result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$OSInstallDir\Lifetime.osp") + [char]34 + " $ENV:ComputerName $SystemCenterUser $SystemCenterPass")
+                $Result = PublishSolution -Solution "$OSInstallDir\Lifetime.osp" -SCUser $SystemCenterUser -SCPass $SystemCenterPass
             }
             Catch {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the lifetime installer"

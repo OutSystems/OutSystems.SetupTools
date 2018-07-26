@@ -9,7 +9,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock CheckRunAsAdmin { Throw "The current user is not Administrator or not running this script in an elevated session" }
 
             It 'Should not run' {
-                { Install-OSPlatformLifetime } | Should Throw "The current user is not Administrator or not running this script in an elevated session"
+                { Publish-OSPlatformLifetime } | Should Throw "The current user is not Administrator or not running this script in an elevated session"
             }
 
         }
@@ -21,7 +21,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerInstallDir { Throw "Error" }
 
             It 'Should not run' {
-                { Install-OSPlatformLifetime } | Should Throw "Outsystems platform is not installed"
+                { Publish-OSPlatformLifetime } | Should Throw "Outsystems platform is not installed"
             }
 
         }
@@ -34,7 +34,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetSCCompiledVersion { Throw "Error" }
 
             It 'Should not run' {
-                { Install-OSPlatformLifetime } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+                { Publish-OSPlatformLifetime } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             }
 
         }
@@ -48,7 +48,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetSysComponentsCompiledVersion { Throw "Error" }
 
             It 'Should not run' {
-                { Install-OSPlatformLifetime } | Should Throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
+                { Publish-OSPlatformLifetime } | Should Throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
             }
 
         }
@@ -70,7 +70,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should skip the installation' {
 
-                Install-OSPlatformLifetime
+                Publish-OSPlatformLifetime
 
                 $assMParams = @{
                     'CommandName' = 'PublishSolution'
@@ -102,7 +102,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should run and not throw any error' {
 
-                { Install-OSPlatformLifetime | Out-Null } | Should Not Throw
+                { Publish-OSPlatformLifetime | Out-Null } | Should Not Throw
 
             }
 
@@ -126,7 +126,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should not throw any errors' {
 
-                { Install-OSPlatformLifetime -Force | Out-Null } | Should Not Throw
+                { Publish-OSPlatformLifetime -Force | Out-Null } | Should Not Throw
             }
 
             It 'Should run the installation' {
