@@ -26,7 +26,13 @@ Function Install-OSPlatformLifetime {
 
     [CmdletBinding()]
     param (
+        [Parameter()]
+        [switch]$Force,
+
+        [Parameter()]
         [string]$SystemCenterUser = $OSSCUser,
+
+        [Parameter()]
         [string]$SystemCenterPass = $OSSCPass
     )
 
