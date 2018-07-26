@@ -394,3 +394,13 @@ Function SetLifetimeCompiledVersion([string]$LifetimeVersion)
     Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -Value "$LifetimeVersion"
 }
 
+function GetHashedPassword([string]$SCPass)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password to hash $SCPass"
+    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $SCPass
+    $HashedPass = $('#' + $objPass.EncryptedValue)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password hashed $HashedPass"
+
+    Return $HashedPass
+}
+
