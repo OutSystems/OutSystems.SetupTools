@@ -29,21 +29,21 @@ Import-Module Outsystems.SetupTools
 ```powershell
 # you should have module imported in the session
 Import-Module Outsystems.SetupTools
-Test-OSPlatformHardwareReqs
-Test-OSPlatformSoftwareReqs
+Test-OSServerHardwareReqs
+Test-OSServerSoftwareReqs
 ```
 
 * Install the platform pre-requisites:
 
 ```powershell
-Install-OSPlatformPreReqs -MajorVersion 10.0
+Install-OSServerPreReqs -MajorVersion 10.0
 ```
 
 * Install the platform server and development environment:
 
 ```powershell
-Install-OSPlatformServer -Version "10.0.823.0" -InstallDir "D:\Outsystems"
-Install-OSDevEnvironment -Version "10.0.825.0" -InstallDir "D:\Outsystems"
+Install-OSServer -Version "10.0.823.0" -InstallDir "D:\Outsystems"
+Install-OSServiceStudio -Version "10.0.825.0" -InstallDir "D:\Outsystems"
 ```
 
 * Configure the platform:
@@ -56,14 +56,14 @@ Invoke-OSConfigurationTool
 
 ```powershell
 Install-OSPlatformServiceCenter
-Install-OSPlatformSystemComponents
+Publish-OSPlatformSystemComponents
 ```
 
 * Do the post configuration:
 
 ```powershell
-Set-OSPlatformPerformanceTunning
-Set-OSPlatformSecuritySettings
+Set-OSServerPerformanceTunning
+Set-OSServerSecuritySettings
 ```
 
 ## Documentation
