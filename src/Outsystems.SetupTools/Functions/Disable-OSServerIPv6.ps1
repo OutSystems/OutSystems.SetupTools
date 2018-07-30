@@ -1,4 +1,4 @@
-Function Disable-OSIPv6
+Function Disable-OSServerIPv6
 {
     <#
     .SYNOPSIS
