@@ -15,10 +15,10 @@
     - Renamed Start-OSServices to Start-OSServerServices
     - Renamed Stop-OSServices to Stop-OSServerServices
     - Renamed Restart-OSServices to Restart-OSServerServices
-    - Renamed Get-OSDevEnvironmentInstallDir to Get-OSServiceStudioInstallDir *
-    - Renamed Get-OSDevEnvironmentVersion to Get-OSServiceStudioVersion *
-    - Renamed Install-OSPlatformSystemComponents to Publish-OSPlatformSystemComponents *
-    - Renamed Install-OSPlatformLifetime to Publish-OSPlatformLifetime *
+    - Renamed Get-OSDevEnvironmentInstallDir to Get-OSServiceStudioInstallDir
+    - Renamed Get-OSDevEnvironmentVersion to Get-OSServiceStudioVersion
+    - Renamed Install-OSPlatformSystemComponents to Publish-OSPlatformSystemComponents
+    - Renamed Install-OSPlatformLifetime to Publish-OSPlatformLifetime
 
   - Added Get-OSPlatformApplications. Returns the list of Outsystems applications installed on the environment
   - Added Get-OSPlatformModules. Returns the list of Outsystems modules installed on the environment
