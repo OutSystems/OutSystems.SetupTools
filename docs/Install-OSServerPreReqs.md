@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Install-OSPlatformPreReqs
+# Install-OSServerPreReqs
 
 ## SYNOPSIS
 Install the pre-requisites for the platform server.
@@ -13,7 +13,7 @@ Install the pre-requisites for the platform server.
 ## SYNTAX
 
 ```
-Install-OSPlatformPreReqs [-MajorVersion] <String> [[-InstallIISMgmtConsole] <Boolean>] [<CommonParameters>]
+Install-OSServerPreReqs [-MajorVersion] <String> [[-InstallIISMgmtConsole] <Boolean>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -26,10 +26,10 @@ You should also run the Test-OSServerSoftwareReqs and the Test-OSServerHardwareR
 
 ### EXAMPLE 1
 ```
-Install-OSPlatformPreReqs -MajorVersion "10.0"
+Install-OSServerPreReqs -MajorVersion "10.0"
 ```
 
-Install-OSPlatformPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
 
 ## PARAMETERS
 
