@@ -130,7 +130,7 @@ If ($OSRole -eq "LT"){
 }
 
 # -- System tunning
-Set-OSPlatformPerformanceTunning -Verbose:$Verbose -IISNetCompilationPath $OSIISNetCompilationDir -IISHttpCompressionPath $OSIISHttpCompressionDir
+Set-OSServerPerformanceTunning -Verbose:$Verbose -IISNetCompilationPath $OSIISNetCompilationDir -IISHttpCompressionPath $OSIISHttpCompressionDir
 
 # -- Security settings
 Set-OSServerSecuritySettings -Verbose:$Verbose
