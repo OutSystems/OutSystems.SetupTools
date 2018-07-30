@@ -1,4 +1,4 @@
-Function Test-OSPlatformSoftwareReqs {
+Function Test-OSServerSoftwareReqs {
     <#
     .SYNOPSIS
     Checks if the server has a supported operating system and software installed.

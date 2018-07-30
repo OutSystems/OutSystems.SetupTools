@@ -6,7 +6,7 @@ Function Install-OSPlatformPreReqs {
     .DESCRIPTION
     This will install the pre-requisites for the platform server version specified.
     It will install .NET 4.6.1 if needed. After installing .NET a reboot will be probably needed.
-    You should also run the Test-OSPlatformSoftwareReqs and the Test-OSPlatformHardwareReqs to check if your server is supported for Outsystems.
+    You should also run the Test-OSServerSoftwareReqs and the Test-OSPlatformHardwareReqs to check if your server is supported for Outsystems.
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
