@@ -69,7 +69,7 @@ $ErrorActionPreference = "Stop"
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Remove-Module Outsystems.SetupTools -ErrorAction SilentlyContinue
-Install-Module Outsystems.SetupTools -Version "1.6.30.0" -Force
+Install-Module Outsystems.SetupTools -RequiredVersion "1.6.30.0" -Force
 Import-Module Outsystems.SetupTools
 
 # -- Start logging
