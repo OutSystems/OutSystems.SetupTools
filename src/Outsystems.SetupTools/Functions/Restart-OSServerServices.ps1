@@ -1,4 +1,4 @@
-Function Restart-OSServices {
+Function Restart-OSServerServices {
     <#
     .SYNOPSIS
     Restarts Outsystems services.
