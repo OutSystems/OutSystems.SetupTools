@@ -87,7 +87,7 @@ Install-OSPlatformServer -Version $OSPlatformVersion -InstallDir $OSInstallDir -
 Install-OSDevEnvironment -Version $OSDevEnvironmentVersion -InstallDir $OSInstallDir -Verbose:$Verbose
 
 # -- Configure windows firewall
-Set-OSPlatformWindowsFirewall -Verbose:$Verbose
+Set-OSServerWindowsFirewall -Verbose:$Verbose
 
 # -- Disable IPv6
 Disable-OSIPv6 -Verbose:$Verbose
