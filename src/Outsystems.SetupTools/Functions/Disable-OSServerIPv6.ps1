@@ -5,10 +5,10 @@ Function Disable-OSIPv6
     Disable IPv6.
 
     .DESCRIPTION
-    This will disable IPv6 on the server. IPv6 is not supported by Outsystems
+    This will disable IPv6 on the server.
 
     .EXAMPLE
-    Disable-OSIPv6
+    Disable-OSServerIPv6
 
     #>
 
