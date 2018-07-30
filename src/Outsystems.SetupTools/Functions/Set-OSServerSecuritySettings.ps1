@@ -1,4 +1,4 @@
-Function Set-OSPlatformSecuritySettings {
+Function Set-OSServerSecuritySettings {
     <#
     .SYNOPSIS
     Short description

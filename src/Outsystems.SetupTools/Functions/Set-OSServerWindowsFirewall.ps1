@@ -1,4 +1,4 @@
-Function Set-OSPlatformWindowsFirewall {
+Function Set-OSServerWindowsFirewall {
     <#
     .SYNOPSIS
     Creates windows firewall rule for Outsystems services.
