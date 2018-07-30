@@ -1,4 +1,4 @@
-Function Install-OSPlatformServer {
+Function Install-OSServer {
     <#
     .SYNOPSIS
     Installs or updates the Outsystems Platform server.
@@ -20,9 +20,9 @@ Function Install-OSPlatformServer {
     The version to be installed.
 
     .EXAMPLE
-    Install-OSPlatformServer -Version "10.0.823.0"
-    Install-OSPlatformServer -Version "10.0.823.0" -InstallDir D:\Outsystems
-    Install-OSPlatformServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+    Install-OSServer -Version "10.0.823.0"
+    Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
+    Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     #>
 
