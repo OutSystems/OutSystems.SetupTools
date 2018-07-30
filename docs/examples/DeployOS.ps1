@@ -126,7 +126,7 @@ If ($OSRole -eq "FE"){
 
 # -- Install Lifetime if role is LT
 If ($OSRole -eq "LT"){
-    Install-OSPlatformLifetime -Verbose:$Verbose
+    Publish-OSPlatformLifetime -Verbose:$Verbose
 }
 
 # -- System tunning
