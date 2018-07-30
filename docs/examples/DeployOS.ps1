@@ -76,7 +76,7 @@ Import-Module Outsystems.SetupTools
 Set-OSInstallLog -Path $OSLogPath -File "InstallLog-$(get-date -Format 'yyyyMMddHHmmss').log" -Verbose:$Verbose
 
 # -- Check HW and OS for compability
-Test-OSPlatformHardwareReqs -Verbose:$Verbose
+Test-OSServerHardwareReqs -Verbose:$Verbose
 Test-OSServerSoftwareReqs -Verbose:$Verbose
 
 # -- Install PreReqs
