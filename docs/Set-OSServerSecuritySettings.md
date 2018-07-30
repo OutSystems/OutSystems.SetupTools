@@ -5,45 +5,28 @@ online version:
 schema: 2.0.0
 ---
 
-# Install-OSPlatformLicense
+# Set-OSServerSecuritySettings
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Short description
 
 ## SYNTAX
 
 ```
-Install-OSPlatformLicense [[-Path] <String>] [<CommonParameters>]
+Set-OSServerSecuritySettings [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+Long description
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+An example
+```
 
 ## PARAMETERS
-
-### -Path
-{{Fill Path Description}}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 0
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
@@ -51,13 +34,9 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
 
-### System.Object
-
 ## NOTES
+General notes
 
 ## RELATED LINKS

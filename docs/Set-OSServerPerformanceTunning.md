@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-OSPlatformPerformanceTunning
+# Set-OSServerPerformanceTunning
 
 ## SYNOPSIS
 Short description
@@ -13,7 +13,7 @@ Short description
 ## SYNTAX
 
 ```
-Set-OSPlatformPerformanceTunning [[-IISNetCompilationPath] <String>] [[-IISHttpCompressionPath] <String>]
+Set-OSServerPerformanceTunning [[-IISNetCompilationPath] <String>] [[-IISHttpCompressionPath] <String>]
  [<CommonParameters>]
 ```
 
@@ -60,7 +60,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

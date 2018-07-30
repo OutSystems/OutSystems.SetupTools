@@ -5,30 +5,31 @@ online version:
 schema: 2.0.0
 ---
 
-# Install-OSPlatformSystemComponents
+# Publish-OSPlatformLifetime
 
 ## SYNOPSIS
-Install or update Outsystems System Components.
+Install or update Outsystems Lifetime.
 
 ## SYNTAX
 
 ```
-Install-OSPlatformSystemComponents [-Force] [[-SystemCenterUser] <String>] [[-SystemCenterPass] <String>]
+Publish-OSPlatformLifetime [-Force] [[-ServiceCenterUser] <String>] [[-ServiceCenterPass] <String>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will install or update the System Components.
+This will install or update Lifetime.
 You need to specify a user and a password to connect to Service Center.
 If you dont specify, the default admin will be used.
 It will skip the installation if already installed with the right version.
 Service Center needs to be installed using the Install-OSPlatformServiceCenter function.
+Outsystems system components needs to be installed using the Publish-OSPlatformSystemComponents function.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Install-OSPlatformSystemComponents -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
+Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
 ```
 
 ## PARAMETERS
@@ -48,8 +49,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -SystemCenterUser
-System Center username.
+### -ServiceCenterUser
+Service Center username.
 
 ```yaml
 Type: String
@@ -63,8 +64,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -SystemCenterPass
-System Center password.
+### -ServiceCenterPass
+Service Center password.
 
 ```yaml
 Type: String
@@ -79,7 +80,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

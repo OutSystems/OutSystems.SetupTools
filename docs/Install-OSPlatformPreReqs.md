@@ -20,7 +20,7 @@ Install-OSPlatformPreReqs [-MajorVersion] <String> [[-InstallIISMgmtConsole] <Bo
 This will install the pre-requisites for the platform server version specified.
 It will install .NET 4.6.1 if needed.
 After installing .NET a reboot will be probably needed.
-You should also run the Test-OSPlatformSoftwareReqs and the Test-OSPlatformHardwareReqs to check if your server is supported for Outsystems.
+You should also run the Test-OSServerSoftwareReqs and the Test-OSServerHardwareReqs to check if your server is supported for Outsystems.
 
 ## EXAMPLES
 
@@ -69,7 +69,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

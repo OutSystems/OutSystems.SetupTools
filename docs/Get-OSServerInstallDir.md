@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSPlatformServerInstallDir
+# Get-OSServerInstallDir
 
 ## SYNOPSIS
 Returns where the Outsystems platform server is installed.
@@ -13,7 +13,7 @@ Returns where the Outsystems platform server is installed.
 ## SYNTAX
 
 ```
-Get-OSPlatformServerInstallDir [<CommonParameters>]
+Get-OSServerInstallDir [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -32,7 +32,8 @@ PS C:\> {{ Add example code here }}
 ## PARAMETERS
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

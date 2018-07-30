@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Install-OSDevEnvironment
+# Install-OSServiceStudio
 
 ## SYNOPSIS
 Installs or updates the Outsystems development environment.
@@ -14,12 +14,12 @@ Installs or updates the Outsystems development environment.
 
 ### Remote
 ```
-Install-OSDevEnvironment [-InstallDir <String>] -Version <String> [<CommonParameters>]
+Install-OSServiceStudio [-InstallDir <String>] -Version <String> [<CommonParameters>]
 ```
 
 ### Local
 ```
-Install-OSDevEnvironment [-InstallDir <String>] -SourcePath <String> -Version <String> [<CommonParameters>]
+Install-OSServiceStudio [-InstallDir <String>] -SourcePath <String> -Version <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,11 +31,11 @@ If the development environment is already installed with an higher version it wi
 
 ### EXAMPLE 1
 ```
-Install-OSDevEnvironment -Version "10.0.823.0"
+Install-OSServiceStudio -Version "10.0.823.0"
 ```
 
-Install-OSDevEnvironment -Version "10.0.823.0" -InstallDir D:\Outsystems
-Install-OSDevEnvironment -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
+Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
 ## PARAMETERS
 
@@ -88,7 +88,8 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

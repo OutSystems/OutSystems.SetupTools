@@ -5,19 +5,19 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSDevEnvironmentVersion
+# Get-OSServiceStudioInstallDir
 
 ## SYNOPSIS
-Returns the Outsystems development environment installed version.
+Returns where the Outsystems development environment is installed.
 
 ## SYNTAX
 
 ```
-Get-OSDevEnvironmentVersion [-MajorVersion] <String> [<CommonParameters>]
+Get-OSServiceStudioInstallDir [-MajorVersion] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns the Outsystems platform installed version.
+This will returns where the Outsystems development environment is installed.
 Cause you can have multiple development environments installed, you need to specify the major version.
 Will throw an exception if the platform is not installed.
 
@@ -25,7 +25,7 @@ Will throw an exception if the platform is not installed.
 
 ### EXAMPLE 1
 ```
-Get-OSDevEnvironmentVersion -MajorVersion "10.0"
+Get-OSServiceStudioInstallDir -MajorVersion "10.0"
 ```
 
 ## PARAMETERS
@@ -47,13 +47,14 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
+For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
 ## OUTPUTS
 
-### System.Version
+### System.String
 
 ## NOTES
 
