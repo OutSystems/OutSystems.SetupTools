@@ -1,4 +1,4 @@
-Function Test-OSPlatformHardwareReqs {
+Function Test-OSServerHardwareReqs {
     <#
     .SYNOPSIS
     Checks if the server has the necessary hardware requirements.
