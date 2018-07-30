@@ -1,4 +1,4 @@
-Function Start-OSServices {
+Function Start-OSServerServices {
     <#
     .SYNOPSIS
     Starts Outsystems services.
