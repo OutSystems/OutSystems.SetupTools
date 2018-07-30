@@ -77,7 +77,7 @@ Set-OSInstallLog -Path $OSLogPath -File "InstallLog-$(get-date -Format 'yyyyMMdd
 
 # -- Check HW and OS for compability
 Test-OSPlatformHardwareReqs -Verbose:$Verbose
-Test-OSPlatformSoftwareReqs -Verbose:$Verbose
+Test-OSServerSoftwareReqs -Verbose:$Verbose
 
 # -- Install PreReqs
 Install-OSServerPreReqs -MajorVersion "$(([System.Version]$OSPlatformVersion).Major).$(([System.Version]$OSPlatformVersion).Minor)" -Verbose:$Verbose
