@@ -1,6 +1,6 @@
 # Outsystems.SetupTools Release History
 
-## 1.7.0.0 (Unreleased)
+## 1.7.0.0
   - New name convention for functions. Every function related with the server itself will have the prefix XXX-OSServer. Everything related with the platform or the environment will have the prefix XXX-OSPlatform.
     - Renamed Get-OSPlatformServerVersion to Get-OSServerVersion
     - Renamed Get-OSPlatformServerInstallDir to Get-OSServerInstallDir
