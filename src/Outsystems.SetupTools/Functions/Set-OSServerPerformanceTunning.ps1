@@ -1,4 +1,4 @@
-Function Set-OSPlatformPerformanceTunning {
+Function Set-OSServerPerformanceTunning {
     <#
     .SYNOPSIS
     Short description
