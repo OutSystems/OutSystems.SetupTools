@@ -1,4 +1,4 @@
-Function Install-OSDevEnvironment {
+Function Install-OSServiceStudio {
     <#
     .SYNOPSIS
     Installs or updates the Outsystems development environment.
@@ -20,9 +20,9 @@ Function Install-OSDevEnvironment {
     The version to be installed.
 
     .EXAMPLE
-    Install-OSDevEnvironment -Version "10.0.823.0"
-    Install-OSDevEnvironment -Version "10.0.823.0" -InstallDir D:\Outsystems
-    Install-OSDevEnvironment -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+    Install-OSServiceStudio -Version "10.0.823.0"
+    Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
+    Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     #>
 
