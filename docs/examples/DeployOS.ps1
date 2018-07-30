@@ -120,7 +120,7 @@ If ($OSRole -eq "FE"){
 } Else {
     # -- If not a frontend install Service Center, SysComponents and license
     Install-OSPlatformServiceCenter -Verbose:$Verbose
-    Install-OSPlatformSystemComponents -Verbose:$Verbose
+    Publish-OSPlatformSystemComponents -Verbose:$Verbose
     Install-OSPlatformLicense -Path $OSLicensePath -Verbose:$Verbose
 }
 
