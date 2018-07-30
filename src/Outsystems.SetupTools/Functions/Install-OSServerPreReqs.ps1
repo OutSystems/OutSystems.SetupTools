@@ -1,4 +1,4 @@
-Function Install-OSPlatformPreReqs {
+Function Install-OSServerPreReqs {
     <#
     .SYNOPSIS
     Install the pre-requisites for the platform server.
@@ -18,8 +18,8 @@ Function Install-OSPlatformPreReqs {
     Defaults to $true
 
     .EXAMPLE
-    Install-OSPlatformPreReqs -MajorVersion "10.0"
-    Install-OSPlatformPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+    Install-OSServerPreReqs -MajorVersion "10.0"
+    Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
 
     .NOTES
     General notes

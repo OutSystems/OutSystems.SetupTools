@@ -19,6 +19,7 @@
     - Renamed Get-OSDevEnvironmentVersion to Get-OSServiceStudioVersion
     - Renamed Install-OSPlatformSystemComponents to Publish-OSPlatformSystemComponents
     - Renamed Install-OSPlatformLifetime to Publish-OSPlatformLifetime
+    - Renamed Install-OSPlatformPreReqs to Install-OSServerPreReqs
 
   - Added Get-OSPlatformApplications. Returns the list of Outsystems applications installed on the environment
   - Added Get-OSPlatformModules. Returns the list of Outsystems modules installed on the environment
