@@ -1,4 +1,4 @@
-Function Get-OSPlatformServerInstallDir {
+Function Get-OSServerInstallDir {
     <#
     .SYNOPSIS
     Returns where the Outsystems platform server is installed.
