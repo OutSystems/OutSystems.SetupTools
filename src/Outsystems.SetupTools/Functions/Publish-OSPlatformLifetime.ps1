@@ -14,10 +14,10 @@ Function Publish-OSPlatformLifetime {
     Forces the reinstallation if already installed.
 
     .PARAMETER ServiceCenterUser
-    System Center username.
+    Service Center username.
 
     .PARAMETER ServiceCenterPass
-    System Center password.
+    Service Center password.
 
     .EXAMPLE
     Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "mypass"

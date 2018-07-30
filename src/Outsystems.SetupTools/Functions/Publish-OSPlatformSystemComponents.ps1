@@ -13,10 +13,10 @@ Function Publish-OSPlatformSystemComponents {
     Forces the reinstallation if already installed.
 
     .PARAMETER ServiceCenterUser
-    System Center username.
+    Service Center username.
 
     .PARAMETER ServiceCenterPass
-    System Center password.
+    Service Center password.
 
     .EXAMPLE
     Publish-OSPlatformSystemComponents -Force -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
