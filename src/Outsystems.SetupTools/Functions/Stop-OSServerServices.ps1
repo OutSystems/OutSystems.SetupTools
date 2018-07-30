@@ -1,4 +1,4 @@
-Function Stop-OSServices {
+Function Stop-OSServerServices {
     <#
     .SYNOPSIS
     Stops Outsystems services.
