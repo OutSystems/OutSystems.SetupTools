@@ -12,14 +12,14 @@ Function Publish-OSPlatformSystemComponents {
     .PARAMETER Force
     Forces the reinstallation if already installed.
 
-    .PARAMETER SystemCenterUser
+    .PARAMETER ServiceCenterUser
     System Center username.
 
-    .PARAMETER SystemCenterPass
+    .PARAMETER ServiceCenterPass
     System Center password.
 
     .EXAMPLE
-    Publish-OSPlatformSystemComponents -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
+    Publish-OSPlatformSystemComponents -Force -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
 
     #>
 
@@ -29,10 +29,10 @@ Function Publish-OSPlatformSystemComponents {
         [switch]$Force,
 
         [Parameter()]
-        [string]$SystemCenterUser = $OSSCUser,
+        [string]$ServiceCenterUser = $OSSCUser,
 
         [Parameter()]
-        [string]$SystemCenterPass = $OSSCPass
+        [string]$ServiceCenterPass = $OSSCPass
     )
 
     Begin {
@@ -82,7 +82,7 @@ Function Publish-OSPlatformSystemComponents {
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems System Components. This can take a while..."
             Try {
-                $Result = PublishSolution -Solution "$OSInstallDir\System_Components.osp" -SCUser $SystemCenterUser -SCPass $SystemCenterPass
+                $Result = PublishSolution -Solution "$OSInstallDir\System_Components.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass
             }
             Catch {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the system Components installer"

@@ -13,14 +13,14 @@ Function Publish-OSPlatformLifetime {
     .PARAMETER Force
     Forces the reinstallation if already installed.
 
-    .PARAMETER SystemCenterUser
+    .PARAMETER ServiceCenterUser
     System Center username.
 
-    .PARAMETER SystemCenterPass
+    .PARAMETER ServiceCenterPass
     System Center password.
 
     .EXAMPLE
-    Publish-OSPlatformLifetime -Force -SystemCenterUser "admin" -SystemCenterPass "mypass"
+    Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
 
     #>
 
@@ -30,10 +30,10 @@ Function Publish-OSPlatformLifetime {
         [switch]$Force,
 
         [Parameter()]
-        [string]$SystemCenterUser = $OSSCUser,
+        [string]$ServiceCenterUser = $OSSCUser,
 
         [Parameter()]
-        [string]$SystemCenterPass = $OSSCPass
+        [string]$ServiceCenterPass = $OSSCPass
     )
 
     Begin {
@@ -89,7 +89,7 @@ Function Publish-OSPlatformLifetime {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Lifetime. This can take a while..."
 
             Try {
-                $Result = PublishSolution -Solution "$OSInstallDir\Lifetime.osp" -SCUser $SystemCenterUser -SCPass $SystemCenterPass
+                $Result = PublishSolution -Solution "$OSInstallDir\Lifetime.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass
             }
             Catch {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the lifetime installer"
