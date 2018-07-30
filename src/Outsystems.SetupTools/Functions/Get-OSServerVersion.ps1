@@ -1,4 +1,4 @@
-Function Get-OSPlatformServerVersion {
+Function Get-OSServerVersion {
     <#
     .SYNOPSIS
     Returns the current Outsystems platform version
