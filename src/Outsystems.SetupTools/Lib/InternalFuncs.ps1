@@ -426,3 +426,14 @@ function GetSolutionsWS([string]$SCHost)
     Return $SolutionsWS
 }
 
+function GetOutSystemsPlatformWS([string]$SCHost)
+{
+    $OutSystemsPlatformUri = "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $OutSystemsPlatformUri"
+    $OutSystemsPlatformWS = New-WebServiceProxy -Uri $OutSystemsPlatformUri -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
+
+    Return $OutSystemsPlatformWS
+}
+
