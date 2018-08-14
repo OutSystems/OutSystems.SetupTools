@@ -1,4 +1,4 @@
-[![Build status](https://pedropintonunes.visualstudio.com/Outsystems/_apis/build/status/Outsystems-SetupTools_MainCI?branch=master)](https://pedropintonunes.visualstudio.com/Outsystems/_build/latest?definitionId=3&branch=master)
+[![Build status](https://ci.appveyor.com/api/projects/status/9fevntyq4e1lbu2a/branch/master?svg=true)](https://ci.appveyor.com/project/pintonunes/outsystems-outsystems-setuptools/branch/master)
 
 # Outsystems.SetupTools
 
