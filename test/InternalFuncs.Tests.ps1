@@ -1,5 +1,5 @@
 Get-Module Outsystems.SetupTools | Remove-Module -Force
-Import-Module .\..\src\Outsystems.SetupTools
+Import-Module $PSScriptRoot\..\src\Outsystems.SetupTools -Force
 
 . .\..\src\Outsystems.SetupTools\Lib\InternalFuncs.ps1
 
