@@ -3,6 +3,7 @@ version: 1.8.0.{build}
 only_commits:
   files:
     - 'src/'
+    - 'test/'
 
 install:
   - ps: |
