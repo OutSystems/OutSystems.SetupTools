@@ -1,7 +1,7 @@
 Get-Module Outsystems.SetupTools | Remove-Module -Force
-Import-Module $PSScriptRoot\..\src\Outsystems.SetupTools -Force
+Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 
-. $PSScriptRoot\..\src\Outsystems.SetupTools\Lib\InternalFuncs.ps1
+. $PSScriptRoot\..\..\src\Outsystems.SetupTools\Lib\InternalFuncs.ps1
 
 Describe 'GetHashedPassword Tests' {
     Context 'Normal' {

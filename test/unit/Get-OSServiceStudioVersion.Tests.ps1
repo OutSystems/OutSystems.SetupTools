@@ -1,5 +1,5 @@
 Get-Module Outsystems.SetupTools | Remove-Module -Force
-Import-Module $PSScriptRoot\..\src\Outsystems.SetupTools -Force
+Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServiceStudioVersion Tests' {
