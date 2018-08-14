@@ -17,7 +17,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'Can connect and get results' {
 
             Mock GetPlatformServicesWS {
-                $obj = New-MockObject -Type 'System.Web.Services.Protocols.SoapHttpClientProtocol'
+                $obj = [pscustomobject]@{}
                 $obj | Add-Member -MemberType ScriptMethod -Name 'Modules_Get' -Force -Value { @{ 'Name' = 'MyModule'; 'Key' = 'c36e9646-0caf-4510-ad35-28a8b97c28b8' } }
                 return $obj
             }
