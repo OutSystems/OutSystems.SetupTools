@@ -4,9 +4,13 @@ Import-Module $PSScriptRoot\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServiceStudioInstallDir Tests' {
 
-        Context 'Real GetServiceStudioInstallDir' {
+        Context 'When service studio is not installed' {
 
-            It 'Checks that Service Studio 1.0 is not installed' {
+            Mock GetServiceStudioInstallDir {
+                Throw 'Cant find registry item'
+            }
+
+            It 'Should return an exception' {
                { Get-OSServiceStudioInstallDir -MajorVersion '1.0' } | Should Throw "Outsystems development environment 1.0 is not installed"
             }
 
@@ -18,11 +22,11 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 return 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio'
             }
 
-            It 'Checks that Service Studio 10 installed' {
+            It 'Should return the install directory' {
                 Get-OSServiceStudioInstallDir -MajorVersion '10.0' | Should Be 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio'
             }
 
-            It 'Checks that GetServiceStudioInstallDir is called only once' {
+            It 'Should call the GetServiceStudioInstallDir only once' {
 
                 $assMParams = @{
                     'CommandName' = 'GetServiceStudioInstallDir'
