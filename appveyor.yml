@@ -6,11 +6,11 @@ only_commits:
 
 install:
   - ps: |
-      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force | Out-Null
-      Install-Module Pester -MinimumVersion 3.4.0 -Scope CurrentUser -Force | Out-Null
-      Install-Module psake -Scope CurrentUser -Force | Out-Null
-      Install-Module PSScriptAnalyzer -Scope CurrentUser -Force | Out-Null
-      Install-Module platyPS -Scope CurrentUser -Force | Out-Null
+      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
+      Install-Module Pester -MinimumVersion 3.4.0 -Scope CurrentUser -Force
+      Install-Module psake -Scope CurrentUser -Force
+      Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+      Install-Module platyPS -Scope CurrentUser -Force
 
 build: off
 
