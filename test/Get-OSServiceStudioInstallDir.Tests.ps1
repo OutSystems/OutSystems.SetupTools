@@ -12,7 +12,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'Mocked GetServiceStudioInstallDir' {
+        Context 'When service studio is installed' {
 
             Mock GetServiceStudioInstallDir {
                 return 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio'
