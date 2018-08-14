@@ -28,9 +28,8 @@ Function Get-OSPlatformVersion {
 
     Process {
         Try {
-            $ServiceProxy = New-WebServiceProxy -Uri "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?wsdl" -Namespace Outsystems -ErrorAction Stop
             $RefDummy = ""
-            $Version = $ServiceProxy.GetPlatformInfo(([ref]$RefDummy))
+            $Version = $(GetOutSystemsPlatformWS -SCHost $ServiceCenterHost).GetPlatformInfo(([ref]$RefDummy))
         }
         Catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error contacting service center"
