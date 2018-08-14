@@ -41,8 +41,7 @@ Function Get-OSPlatformModules {
 
     Process {
         Try{
-            $PlatformServicesProxy = GetPlatformServicesWS -SCHost $ServiceCenterHost
-            $Result = $PlatformServicesProxy.Modules_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)))
+            $Result = $(GetPlatformServicesWS -SCHost $ServiceCenterHost).Modules_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)))
         } Catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting modules" -Exception $_.Exception
             Throw "Error getting modules"

@@ -41,8 +41,7 @@ Function Get-OSPlatformApplications {
 
     Process {
         Try{
-            $PlatformServicesProxy = GetPlatformServicesWS -SCHost $ServiceCenterHost
-            $Result = $PlatformServicesProxy.Applications_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)) ,$true,$true)
+            $Result = $(GetPlatformServicesWS -SCHost $ServiceCenterHost).Applications_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)) ,$true,$true)
         } Catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications" -Exception $_.Exception
             Throw "Error getting applications"
