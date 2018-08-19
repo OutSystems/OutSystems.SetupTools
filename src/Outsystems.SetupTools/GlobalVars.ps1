@@ -1,4 +1,5 @@
 # Outsystems services
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSServices = @(
     "OutSystems Log Service",
     "OutSystems Deployment Controller Service",
@@ -8,6 +9,7 @@ $OSServices = @(
 )
 
 # Outsystems base windows features
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWindowsFeaturesBase = @(
     "Web-Default-Doc", "Web-Dir-Browsing", "Web-Http-Errors", "Web-Static-Content",
     "Web-Http-Logging", "Web-Request-Monitor",
@@ -19,17 +21,25 @@ $OSWindowsFeaturesBase = @(
 )
 
 # Hardware requirements
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinCores = 2
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinRAMGB = 4
 
 # Software and operating system requirements
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSVersion = "6.2.0.0"
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinDotNetVersion = "394254"
 
 # Windows event log configs
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWinEventLogSize = 20480KB
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWinEventLogOverflowAction = "OverwriteAsNeeded"
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWinEventLogName = @(
     "Security",
     "Application",
@@ -37,23 +47,31 @@ $OSWinEventLogName = @(
 )
 
 # Default install directories
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDefaultInstallDir = "$Env:ProgramFiles\OutSystems"
 
 # Default Service Center credentials
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSSCUser = "admin"
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSSCPass = "admin"
 
 # Sources repo
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURL = "https://myfilerepo.blob.core.windows.net/sources"
 
 # Database default timeout
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDBTimeout = "60"
 
 # Log related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSLogFile = ""
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSLogDebug = $false
 
 # IIS configuration
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSIISConfig = @(
     @{
         'PoolName' = 'OutSystemsApplications';
