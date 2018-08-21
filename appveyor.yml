@@ -13,13 +13,15 @@ install:
       Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
       Install-Module platyPS -Scope CurrentUser -Force
 
-build: off
-
-test_script:
+build_script:
     - ps: |
-        $testResultsFile = ".\TestsResults.xml"
-        $res = Invoke-Pester -OutputFormat NUnitXml -OutputFile $testResultsFile -PassThru
-        (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path $testResultsFile))
-        if ($res.FailedCount -gt 0) {
-            throw "$($res.FailedCount) tests failed."
+        $testResultsFile = Join-Path $pwd -ChildPath "$PSScriptRoot/TestResults.xml"
+        Invoke-psake build.psake.ps1 -taskList Test, BuildHelp -properties @{"TestOutputFile" = $testResultsFile}
+        if ($psake.build_success -and (Test-Path $testResultsFile)) {
+            (New-Object 'System.Net.WebClient').UploadFile("https://ci.appveyor.com/api/testresults/nunit/$($env:APPVEYOR_JOB_ID)", $testResultsFile)
+        }
+        else {
+            # Terminate the script to fail the build
+            $Error | Format-List * -Force
+            exit 1;
         }
