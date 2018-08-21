@@ -37,7 +37,7 @@ function Publish-OSPlatformSystemComponents {
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Installing Outsystems System Components. This can take a while... Please wait..."
+
         try {
             CheckRunAsAdmin | Out-Null
         } catch {
@@ -45,26 +45,19 @@ function Publish-OSPlatformSystemComponents {
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        try {
-            $OSVersion = GetServerVersion
-            $OSInstallDir = GetServerInstallDir
-        } catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+        $OSVersion = GetServerVersion
+        $OSInstallDir = GetServerInstallDir
+        if ($(-not $OSVersion) -or $(-not $OSInstallDir)){
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
 
-        try {
-            $SCVersion = GetSCCompiledVersion
-            $SystemComponentsVersion = GetSysComponentsCompiledVersion
-        } catch {
-        }
-
-        if ( $SCVersion -ne $OSVersion ) {
+        if ( $(GetSCCompiledVersion) -ne $OSVersion ) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
-        if ( $SystemComponentsVersion -ne $OSVersion ) {
+        if ( $(GetSysComponentsCompiledVersion) -ne $OSVersion ) {
             $DoInstall = $true
         } else {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "The system components were already compiled with this server version"
