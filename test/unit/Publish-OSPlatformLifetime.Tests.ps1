@@ -11,7 +11,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock GetSCCompiledVersion { return '10.0.0.1' }
         Mock GetSysComponentsCompiledVersion { return '10.0.0.1' }
         Mock GetLifetimeCompiledVersion { return '10.0.0.1' }
-
         Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
         Mock SetLifetimeCompiledVersion {}
 
