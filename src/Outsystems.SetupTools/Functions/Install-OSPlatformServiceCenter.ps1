@@ -22,7 +22,7 @@ Function Install-OSPlatformServiceCenter {
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Installing Outsystems Service Center. This can take a while... Please wait..."
+
         try {
             CheckRunAsAdmin | Out-Null
         } catch {
