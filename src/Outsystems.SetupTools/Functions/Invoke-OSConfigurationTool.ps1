@@ -119,13 +119,10 @@ Function Invoke-OSConfigurationTool {
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        Try {
-            GetServerVersion | Out-Null
-            $OSInstallDir = GetServerInstallDir
-        }
-        Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
-            Throw "Outsystems platform is not installed"
+        $OSInstallDir = GetServerInstallDir
+        if ($(-not $(GetServerVersion)) -or $(-not $OSInstallDir)){
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+            throw "Outsystems platform is not installed"
         }
     }
 
