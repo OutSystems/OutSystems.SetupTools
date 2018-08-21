@@ -28,7 +28,7 @@ Function Set-OSServerPerformanceTunning {
         [string]$IISHttpCompressionPath
     )
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Try {
             CheckRunAsAdmin | Out-Null
@@ -38,17 +38,13 @@ Function Set-OSServerPerformanceTunning {
             Throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        Try {
-            GetServerVersion | Out-Null
-            GetServerInstallDir | Out-Null
-        }
-        Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
-            Throw "Outsystems platform is not installed"
+        if ($(-not $(GetServerVersion)) -or $(-not $(GetServerInstallDir))){
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+            throw "Outsystems platform is not installed"
         }
     }
 
-    Process {
+    process {
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "---- Tuning Windows ----"
 
@@ -222,8 +218,7 @@ Function Set-OSServerPerformanceTunning {
         }
     }
 
-    End {
-        Write-Output "Performance settings successfully applied"
+    end {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
