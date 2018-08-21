@@ -47,33 +47,31 @@ function Install-OSServer {
             CheckRunAsAdmin | Out-Null
         }
         catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        try {
-            $OSVersion = GetServerVersion
-            $OSInstallDir = GetServerInstallDir
-        } catch {}
+        $OSVersion = GetServerVersion
+        $OSInstallDir = GetServerInstallDir
 
         if (-not $OSVersion){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems platform server is not installed"
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Outsystems platform server is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Proceeding with normal installation"
             $InstallDir = "$InstallDir\Platform Server"
             $DoInstall = $true
         } elseif ([version]$OSVersion -lt [version]$Version) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems platform server already installed. Updating!!"
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Current version $OSVersion will be updated to $Version"
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Ignoring InstallDir since this is an update"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Outsystems platform server already installed. Updating!!"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Current version $OSVersion will be updated to $Version"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Ignoring InstallDir since this is an update"
             $InstallDir = $OSInstallDir
             $DoInstall = $true
         } elseif ([version]$OSVersion -gt [version]$Version) {
             $DoInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform server already installed with an higher version $OSVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Outsystems platform server already installed with an higher version $OSVersion"
             throw "Outsystems platform server already installed with an higher version $OSVersion"
         } else {
             $DoInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems platform server already installed with the specified version $OSVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Outsystems platform server already installed with the specified version $OSVersion"
         }
     }
 
@@ -104,8 +102,8 @@ function Install-OSServer {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SourcePath specified. Using the local installer"
                     $Installer = "$SourcePath\PlatformServer-$Version.exe"
                     if ( -not (Test-Path -Path $Installer)) {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant file the setup file at $Installer"
-                        throw "Cant file the setup file at $Installer"
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant find the setup file at $Installer"
+                        throw "Cant find the setup file at $Installer"
                     }
                 }
             }
