@@ -11,7 +11,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should return an exception' {
-                { Get-OSServerVersion } | Should throw "Error checking for Outsystems version"
+                { Get-OSServerVersion } | Should throw "Error getting the Outsystems version"
             }
 
         }

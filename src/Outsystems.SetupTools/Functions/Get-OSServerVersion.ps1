@@ -24,8 +24,8 @@ function Get-OSServerVersion {
             $output = GetServerVersion
         }
         catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error checking for Outsystems version"
-            throw "Error checking for Outsystems version"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the Outsystems version"
+            throw "Error getting the Outsystems version"
         }
 
         if (-not $output) {
