@@ -2,13 +2,34 @@
 
 ## 1.8.0.0 - Unreleased
 
-### Changed
+### Changes
 
-### Fixed
+- Install-OSPlatformServiceCenter:
+  - Removed the write-output. Function by default will not output anything.
+
+- Install-OSServer:
+  - Removed the write-output. Function by default will not output anything.
+
+- Publish-OSPlatformLifetime:
+  - Removed the write-output. Function by default will not output anything.
+
+- Publish-OSPlatformSystemComponents:
+  - Removed the write-output. Function by default will not output anything.
+
+- Set-OSServerPerformanceTunning:
+  - Removed the write-output. Function by default will not output anything.
+
+- Get-OSPlatformVersion:
+  - Changed parameter -Host by -ServiceCenterHost to standarize with the other functions. -Host is still accepted, so this is not a breaking change.
+
+- General:
+  - Code refactoring to allow better testing and error handling.
+
+### Fixes
 
 ## 1.7.0.0
 
-### Changed
+### Changes
 
 - New name convention for functions. Every function related with the server itself will have the prefix XXX-OSServer. Everything related with the platform or the environment will have the prefix XXX-OSPlatform.
   - Renamed Get-OSPlatformServerVersion to Get-OSServerVersion
