@@ -42,7 +42,7 @@ function Install-OSServer {
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Starting the Outsystems platform server installation. This can take a while... Please wait..."
+
         try {
             CheckRunAsAdmin | Out-Null
         }
