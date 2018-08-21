@@ -4,6 +4,15 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformSystemComponents Tests' {
 
+        # Global mocks
+        Mock CheckRunAsAdmin {}
+        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+        Mock GetSCCompiledVersion { return '10.0.0.1' }
+        Mock GetSysComponentsCompiledVersion { return '10.0.0.1' }
+        Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
+        Mock SetSysComponentsCompiledVersion {}
+
         Context 'When user is not admin' {
 
             Mock CheckRunAsAdmin { Throw "The current user is not Administrator or not running this script in an elevated session" }
@@ -16,9 +25,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When platform is not installed' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Throw "Can find reg key" }
-            Mock GetServerInstallDir { Throw "Error" }
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
 
             It 'Should not run' {
                 { Publish-OSPlatformSystemComponents } | Should Throw "Outsystems platform is not installed"
@@ -28,10 +36,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When service center is not installed' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Throw "Error" }
+            Mock GetSCCompiledVersion { return $null }
 
             It 'Should not run' {
                 { Publish-OSPlatformSystemComponents } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
@@ -40,18 +45,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         }
 
         Context 'When System Components is already installed' {
-
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Return "10.0.0.1" }
-            Mock PublishSolution {
-                Return @{
-                    'Output' = 'Evertyhing installed'
-                    'ExitCode' = 0
-                }
-            }
 
             It 'Should skip the installation' {
 
@@ -71,45 +64,33 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When System Components needs to be installed' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Return "10.0.0.1" }
-            Mock PublishSolution {
-                Return @{
-                    'Output' = 'Evertyhing installed'
-                    'ExitCode' = 0
-                }
-            }
-            Mock SetSysComponentsCompiledVersion {}
+            Mock GetSysComponentsCompiledVersion { return $null }
 
             It 'Should run and not throw any error' {
 
-                { Publish-OSPlatformSystemComponents | Out-Null } | Should Not Throw
+                { Publish-OSPlatformSystemComponents } | Should Not Throw
 
+            }
+
+            It 'Should run the installation' {
+
+                $assMParams = @{
+                    'CommandName' = 'PublishSolution'
+                    'Times' = 1
+                    'Exactly' = $true
+                    'Scope' = 'Context'
+                }
+
+                Assert-MockCalled @assMParams
             }
 
         }
 
         Context 'When System Components is already installed and the force switch is specified' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Return "10.0.0.1" }
-            Mock PublishSolution {
-                Return @{
-                    'Output' = 'Evertyhing installed'
-                    'ExitCode' = 0
-                }
-            }
-            Mock SetSysComponentsCompiledVersion {}
-
             It 'Should not throw any errors' {
 
-                { Publish-OSPlatformSystemComponents -Force | Out-Null } | Should Not Throw
+                { Publish-OSPlatformSystemComponents -Force } | Should Not throw
             }
 
             It 'Should run the installation' {
