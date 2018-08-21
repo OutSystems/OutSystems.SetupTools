@@ -1,4 +1,4 @@
-Function Install-OSPlatformServiceCenter {
+function Install-OSPlatformServiceCenter {
     <#
     .SYNOPSIS
     Install or update Outsystems Service Center.
@@ -30,20 +30,13 @@ Function Install-OSPlatformServiceCenter {
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        try {
-            $OSVersion = GetServerVersion
-            GetServerInstallDir | Out-Null
-        } catch {
+        $OSVersion = GetServerVersion
+        if ($(-not $OSVersion) -or $(-not $(GetServerInstallDir))){
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
 
-        try {
-            $SCVersion = GetSCCompiledVersion
-        } catch {
-        }
-
-        if ( $SCVersion -ne $OSVersion ) {
+        if ( $(GetSCCompiledVersion) -ne $OSVersion ) {
             $DoInstall = $true
         } else {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Service Center was already compiled with this server version"
