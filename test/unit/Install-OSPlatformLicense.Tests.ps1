@@ -43,6 +43,16 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
+        Context 'When service center is not installed' {
+
+            Mock GetSCCompiledVersion { return $null }
+
+            It 'Should return an exception' {
+                { Install-OSPlatformLicense } | Should throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            }
+
+        }
+
         Context 'When license path specified but the license file doesnt exist' {
 
             Mock Test-Path { return $false }
