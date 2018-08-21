@@ -43,37 +43,28 @@ function Publish-OSPlatformLifetime {
             CheckRunAsAdmin | Out-Null
         }
         catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        try {
-            $OSVersion = GetServerVersion
-            $OSInstallDir = GetServerInstallDir
-        }
-        catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+        $OSVersion = GetServerVersion
+        $OSInstallDir = GetServerInstallDir
+        if ($(-not $OSVersion) -or $(-not $OSInstallDir)){
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
 
-        try {
-            $SCVersion = GetSCCompiledVersion
-            $SystemComponentsVersion = GetSysComponentsCompiledVersion
-            $LifetimeVersion = GetLifetimeCompiledVersion
-        }
-        catch {}
-
-        if ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+        if ($(GetSCCompiledVersion) -ne $OSVersion) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
-        if ( $SystemComponentsVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
+        if ($(GetSysComponentsCompiledVersion) -ne $OSVersion) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
             throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
         }
 
-        if ( $LifetimeVersion -ne $OSVersion ) {
+        if ($(GetLifetimeCompiledVersion) -ne $OSVersion) {
             $DoInstall = $true
         }
         else {
