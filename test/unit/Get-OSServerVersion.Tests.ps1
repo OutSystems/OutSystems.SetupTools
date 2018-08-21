@@ -4,18 +4,6 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServerVersion Tests' {
 
-        Context 'When is not possible to check the platform server version' {
-
-            Mock GetServerVersion {
-                throw "Unknow error"
-            }
-
-            It 'Should return an exception' {
-                { Get-OSServerVersion } | Should throw "Error getting the Outsystems version"
-            }
-
-        }
-
         Context 'When the platform server is not installed' {
 
             Mock GetServerVersion {

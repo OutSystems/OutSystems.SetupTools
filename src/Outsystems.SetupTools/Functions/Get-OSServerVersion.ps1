@@ -20,13 +20,7 @@ function Get-OSServerVersion {
     }
 
     process {
-        try {
-            $output = GetServerVersion
-        }
-        catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the Outsystems version"
-            throw "Error getting the Outsystems version"
-        }
+        $output = GetServerVersion
 
         if (-not $output) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
