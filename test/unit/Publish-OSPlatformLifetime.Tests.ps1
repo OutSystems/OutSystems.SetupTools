@@ -4,21 +4,31 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformLifetime Tests' {
 
+        # Global mocks
+        Mock CheckRunAsAdmin {}
+        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+        Mock GetSCCompiledVersion { return '10.0.0.1' }
+        Mock GetSysComponentsCompiledVersion { return '10.0.0.1' }
+        Mock GetLifetimeCompiledVersion { return '10.0.0.1' }
+
+        Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
+        Mock SetLifetimeCompiledVersion {}
+
         Context 'When user is not admin' {
 
-            Mock CheckRunAsAdmin { Throw "The current user is not Administrator or not running this script in an elevated session" }
+            Mock CheckRunAsAdmin { throw "The current user is not Administrator or not running this script in an elevated session" }
 
             It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should Throw "The current user is not Administrator or not running this script in an elevated session"
+                { Publish-OSPlatformLifetime } | Should throw "The current user is not Administrator or not running this script in an elevated session"
             }
 
         }
 
         Context 'When platform is not installed' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Throw "Can find reg key" }
-            Mock GetServerInstallDir { Throw "Error" }
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
 
             It 'Should not run' {
                 { Publish-OSPlatformLifetime } | Should Throw "Outsystems platform is not installed"
@@ -26,12 +36,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When service center is not installed or has a wrong version' {
+        Context 'When service center has a wrong version' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Throw "Error" }
+            Mock GetSCCompiledVersion { return '10.0.0.0' }
 
             It 'Should not run' {
                 { Publish-OSPlatformLifetime } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
@@ -39,13 +46,19 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When systems components is not installed or has a wrong version' {
+        Context 'When service center is not installed' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Throw "Error" }
+            Mock GetSCCompiledVersion { return $null }
+
+            It 'Should not run' {
+                { Publish-OSPlatformLifetime } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            }
+
+        }
+
+        Context 'When systems components has a wrong version' {
+
+            Mock GetSysComponentsCompiledVersion { return '10.0.0.0' }
 
             It 'Should not run' {
                 { Publish-OSPlatformLifetime } | Should Throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
@@ -53,20 +66,40 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When lifetime is already installed' {
+        Context 'When systems components is not installed' {
 
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Return "10.0.0.1" }
-            Mock GetLifetimeCompiledVersion { Return "10.0.0.1" }
-            Mock PublishSolution {
-                Return @{
-                    'Output' = 'Evertyhing installed'
-                    'ExitCode' = 0
-                }
+            Mock GetSysComponentsCompiledVersion { return $null }
+
+            It 'Should not run' {
+                { Publish-OSPlatformLifetime } | Should Throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
             }
+
+        }
+
+        Context 'When lifetime is not installed' {
+
+            Mock GetLifetimeCompiledVersion { return $null }
+
+            It 'Should not throw any errors' {
+
+                { Publish-OSPlatformLifetime -Force } | Should Not throw
+            }
+
+            It 'Should run the installation' {
+
+                $assMParams = @{
+                    'CommandName' = 'PublishSolution'
+                    'Times' = 1
+                    'Exactly' = $true
+                    'Scope' = 'Context'
+                }
+
+                Assert-MockCalled @assMParams
+            }
+
+        }
+
+        Context 'When lifetime is already installed' {
 
             It 'Should skip the installation' {
 
@@ -84,49 +117,11 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When lifetime needs to be installed' {
-
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Return "10.0.0.1" }
-            Mock GetLifetimeCompiledVersion { Throw "Error" }
-            Mock PublishSolution {
-                Return @{
-                    'Output' = 'Evertyhing installed'
-                    'ExitCode' = 0
-                }
-            }
-            Mock SetLifetimeCompiledVersion {}
-
-            It 'Should run and not throw any error' {
-
-                { Publish-OSPlatformLifetime | Out-Null } | Should Not Throw
-
-            }
-
-        }
-
         Context 'When lifetime is already installed and the force switch is specified' {
-
-            Mock CheckRunAsAdmin { Return "OK" }
-            Mock GetServerVersion { Return "10.0.0.1" }
-            Mock GetServerInstallDir { Return "C:\Program Files\OutSystems\" }
-            Mock GetSCCompiledVersion { Return "10.0.0.1" }
-            Mock GetSysComponentsCompiledVersion { Return "10.0.0.1" }
-            Mock GetLifetimeCompiledVersion { Return "10.0.0.1" }
-            Mock PublishSolution {
-                Return @{
-                    'Output' = 'Evertyhing installed'
-                    'ExitCode' = 0
-                }
-            }
-            Mock SetLifetimeCompiledVersion {}
 
             It 'Should not throw any errors' {
 
-                { Publish-OSPlatformLifetime -Force | Out-Null } | Should Not Throw
+                { Publish-OSPlatformLifetime -Force } | Should Not throw
             }
 
             It 'Should run the installation' {
