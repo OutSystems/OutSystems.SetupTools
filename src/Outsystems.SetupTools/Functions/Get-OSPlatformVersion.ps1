@@ -1,4 +1,4 @@
-Function Get-OSPlatformVersion {
+function Get-OSPlatformVersion {
     <#
     .SYNOPSIS
     Gets the platform version from Service Center.
@@ -16,30 +16,32 @@ Function Get-OSPlatformVersion {
 
     [CmdletBinding()]
     [OutputType([System.Version])]
-    Param(
+    param(
         [Parameter()]
-        [string]$Host = "127.0.0.1"
+        [Alias('Host')]
+        [string]$ServiceCenterHost = '127.0.0.1'
     )
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        If( $($Host.Trim()) -eq "" ) { $Host = "127.0.0.1" }
+        if ( $($ServiceCenterHost.Trim()) -eq "" ) {
+            $ServiceCenterHost = "127.0.0.1"
+        }
     }
 
-    Process {
-        Try {
+    process {
+        try {
             $RefDummy = ""
             $Version = $(GetOutSystemsPlatformWS -SCHost $ServiceCenterHost).GetPlatformInfo(([ref]$RefDummy))
-        }
-        Catch {
+        } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error contacting service center"
-            Throw "Error contacting service center"
+            throw "Error contacting service center"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $Version"
-        Return [System.Version]$Version
+        return [System.Version]$Version
     }
 
-    End {
+    end {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 
