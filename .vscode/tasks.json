@@ -29,21 +29,54 @@
     // Associate with test task runner
     "tasks": [
         {
-            "label": "build",
-            "suppressTaskName": true,
-            "isTestCommand": false,
-            "options": {
-                "cwd": "${workspaceRoot}/test"
-            },
-            "args": [
-                "Write-Host 'Invoking Pester...'; $ProgressPreference = 'SilentlyContinue'; Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true};",
-                "Invoke-Command { Write-Host 'Completed Test task in task runner.' }"
-            ],
-            "problemMatcher": "$pester",
+            "label": "Clean",
+            "type": "shell",
+            "command": "Invoke-psake build.psake.ps1 -taskList Clean",
+            "problemMatcher": []
+        },
+        {
+            "label": "Build",
+            "type": "shell",
+            "command": "Invoke-psake build.psake.ps1 -taskList Build",
             "group": {
                 "kind": "build",
                 "isDefault": true
-            }
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "BuildHelp",
+            "type": "shell",
+            "command": "Invoke-psake build.psake.ps1 -taskList BuildHelp",
+            "problemMatcher": []
+        },
+        {
+            "label": "Analyze",
+            "type": "shell",
+            "command": "Invoke-psake build.psake.ps1 -taskList Analyze",
+            "problemMatcher": []
+        },
+        {
+            "label": "Install",
+            "type": "shell",
+            "command": "Invoke-psake build.psake.ps1 -taskList Install",
+            "problemMatcher": []
+        },
+        {
+            "label": "Publish",
+            "type": "shell",
+            "command": "Invoke-psake build.psake.ps1 -taskList Publish",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "type": "shell",
+            "command": "Invoke-Pester -PesterOption @{IncludeVSCodeMarker=$true}",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "problemMatcher": [ "$pester" ]
         }
     ]
 }
