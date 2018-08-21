@@ -43,12 +43,10 @@ function Install-OSPlatformLicense {
         }
 
         if ($Path -and ($Path -ne "")) {
-
             if ( -not (Test-Path -Path "$Path\license.lic")) {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "License file not found at $Path\license.lic"
                 throw "License file not found at $Path\license.lic"
             }
-
         } else {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "License path not specified. We will install a trial one"
             $Path = $ENV:TEMP
