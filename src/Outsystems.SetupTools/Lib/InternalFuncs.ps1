@@ -381,10 +381,15 @@ Function GetSysComponentsCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\SystemComponents"
 
-    $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -ErrorAction Stop).SystemComponents
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+    try {
+        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -ErrorAction Stop).SystemComponents
+    } catch {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the system components version"
+        throw "Error getting the system components version"
+    }
 
-    Return $output
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+    return $output
 }
 
 Function SetSysComponentsCompiledVersion([string]$SysComponentsVersion)
