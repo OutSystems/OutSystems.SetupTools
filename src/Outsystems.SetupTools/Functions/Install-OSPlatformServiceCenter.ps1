@@ -26,13 +26,13 @@ function Install-OSPlatformServiceCenter {
         try {
             CheckRunAsAdmin | Out-Null
         } catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
         $OSVersion = GetServerVersion
         if ($(-not $OSVersion) -or $(-not $(GetServerInstallDir))){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
 
