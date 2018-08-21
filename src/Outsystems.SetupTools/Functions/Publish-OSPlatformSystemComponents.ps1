@@ -1,4 +1,4 @@
-Function Publish-OSPlatformSystemComponents {
+function Publish-OSPlatformSystemComponents {
     <#
     .SYNOPSIS
     Install or update Outsystems System Components.
@@ -35,7 +35,7 @@ Function Publish-OSPlatformSystemComponents {
         [string]$ServiceCenterPass = $OSSCPass
     )
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Write-Output "Installing Outsystems System Components. This can take a while... Please wait..."
         Try {
@@ -74,7 +74,7 @@ Function Publish-OSPlatformSystemComponents {
         }
     }
 
-    Process {
+    process {
 
         If ($DoInstall -or $Force.IsPresent) {
 
@@ -105,7 +105,7 @@ Function Publish-OSPlatformSystemComponents {
         }
     }
 
-    End {
+    end {
         Write-Output "Outystems System components successfully installed!!"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
