@@ -1,4 +1,4 @@
-Function Get-OSServerVersion {
+function Get-OSServerVersion {
     <#
     .SYNOPSIS
     Returns the current Outsystems platform version
@@ -6,29 +6,38 @@ Function Get-OSServerVersion {
     .DESCRIPTION
     This will returns the current Outsystems platform installed version. Will throw an exception if the platform is not installed.
 
+    .EXAMPLE
+    Get-OSServerVersion
+
     #>
 
     [CmdletBinding()]
     [OutputType([System.Version])]
-    Param()
+    param ()
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    Process {
-        Try {
+    process {
+        try {
             $output = GetServerVersion
         }
-        Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
-            Throw "Outsystems platform is not installed"
+        catch {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error checking for Outsystems version"
+            throw "Error checking for Outsystems version"
         }
+
+        if (-not $output) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
+            throw "Outsystems platform is not installed"
+        }
+
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"
-        Return [System.Version]$output
+        return [System.Version]$output
     }
 
-    End {
+    end {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
