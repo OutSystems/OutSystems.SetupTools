@@ -30,13 +30,13 @@ function Install-OSPlatformLicense {
         }
 
         if ($SCVersion -ne $OSVersion) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
         }
 
         if ($Path -and ($Path -ne "")) {
             if ( -not (Test-Path -Path "$Path\license.lic")) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "License file not found at $Path\license.lic"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "License file not found at $Path\license.lic"
                 throw "License file not found at $Path\license.lic"
             }
         }
@@ -49,7 +49,7 @@ function Install-OSPlatformLicense {
                 $Path = "$Path\license.lic"
             }
             catch {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading the license from the repository"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Error downloading the license from the repository"
                 throw "Error downloading the license from the repository"
             }
         }
