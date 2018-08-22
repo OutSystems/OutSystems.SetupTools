@@ -4,23 +4,20 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServerInstallDir Tests' {
 
+        # Global mocks
+        Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+
         Context 'When the platform server is not installed' {
 
-            Mock GetServerInstallDir {
-                Throw 'Cant find registry item'
-            }
+            Mock GetServerInstallDir { return $null }
 
             It 'Should return an exception' {
-               { Get-OSServerInstallDir } | Should Throw "Outsystems platform is not installed"
+               { Get-OSServerInstallDir } | Should throw "Outsystems platform is not installed"
             }
 
         }
 
         Context 'When the platform server is installed' {
-
-            Mock GetServerInstallDir {
-                return 'C:\Program Files\OutSystems\Platform Server'
-            }
 
             It 'Should return the install directory' {
                 Get-OSServerInstallDir | Should Be 'C:\Program Files\OutSystems\Platform Server'
