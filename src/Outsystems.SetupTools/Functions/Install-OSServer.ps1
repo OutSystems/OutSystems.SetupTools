@@ -45,8 +45,7 @@ function Install-OSServer {
 
         try {
             CheckRunAsAdmin | Out-Null
-        }
-        catch {
+        } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
@@ -54,7 +53,7 @@ function Install-OSServer {
         $OSVersion = GetServerVersion
         $OSInstallDir = GetServerInstallDir
 
-        if (-not $OSVersion){
+        if (-not $OSVersion) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Outsystems platform server is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Proceeding with normal installation"
             $InstallDir = "$InstallDir\Platform Server"
@@ -91,8 +90,7 @@ function Install-OSServer {
 
                     try {
                         DownloadOSSources -URL "$OSRepoURL\PlatformServer-$Version.exe" -SavePath $Installer
-                    }
-                    catch {
+                    } catch {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading the installer from repository. Check if version is correct"
                         throw "Error downloading the installer from repository. Check if version is correct"
                     }
@@ -119,7 +117,6 @@ function Install-OSServer {
     }
 
     end {
-        Write-Output "Outsystems platform installation server successfully installed!! Version $Version"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
