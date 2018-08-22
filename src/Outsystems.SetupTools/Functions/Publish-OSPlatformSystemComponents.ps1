@@ -97,7 +97,6 @@ function Publish-OSPlatformSystemComponents {
     }
 
     end {
-        Write-Output "Outystems System components successfully installed!!"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

@@ -22,6 +22,9 @@
 - Get-OSPlatformVersion:
   - Changed parameter -Host by -ServiceCenterHost to standarize with the other functions. -Host is still accepted, so this is not a breaking change.
 
+- Install-OSPlatformLicense:
+  - Removed the write-output. Function by default will not output anything.
+
 - General:
   - Code refactoring to allow better testing and error handling.
 
