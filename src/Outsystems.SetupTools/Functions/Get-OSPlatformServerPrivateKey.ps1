@@ -20,14 +20,14 @@ function Get-OSPlatformServerPrivateKey {
 
         $OSInstallDir = GetServerInstallDir
         if ($(-not $(GetServerVersion)) -or $(-not $OSInstallDir)){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Server is installed at $OSInstallDir"
 
         $Path = "$OSInstallDir\private.key"
         if (-not (Test-Path -Path $Path)) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant find the private key at $Path"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Cant find the private key at $Path"
             throw "Cant find the private key at $Path"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "private key file found at $Path"

@@ -32,7 +32,7 @@ function Install-OSPlatformServiceCenter {
 
         $OSVersion = GetServerVersion
         if ($(-not $OSVersion) -or $(-not $(GetServerInstallDir))){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
 

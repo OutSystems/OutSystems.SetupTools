@@ -50,7 +50,7 @@ function Publish-OSPlatformLifetime {
         $OSVersion = GetServerVersion
         $OSInstallDir = GetServerInstallDir
         if ($(-not $OSVersion) -or $(-not $OSInstallDir)){
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Outsystems platform is not installed"
             throw "Outsystems platform is not installed"
         }
 
