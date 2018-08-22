@@ -38,7 +38,7 @@ function Publish-OSPlatformLifetime {
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Starting Lifetime installation. This can take a while... Please wait..."
+
         try {
             CheckRunAsAdmin | Out-Null
         }
@@ -104,7 +104,6 @@ function Publish-OSPlatformLifetime {
     }
 
     end {
-        Write-Output "Outystems Lifetime successfully installed!!"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
