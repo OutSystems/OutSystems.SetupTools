@@ -109,7 +109,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock Test-Path { return $false }
 
             It 'Should return an exception' {
-               { Install-OSServer -Version '10.0.0.1' -SourcePath 'c:\whatever'} | Should throw "Cant find the setup file at c:\whatever"
+               { Install-OSServer -Version '10.0.0.1' -SourcePath 'c:\whatever'} | Should throw "Cant find the setup file at c:\whatever\PlatformServer-10.0.0.1.exe"
             }
 
         }
