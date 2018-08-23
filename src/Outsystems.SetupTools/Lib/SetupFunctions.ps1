@@ -1,60 +1,3 @@
-Function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Message, [object]$Exception){
-
-    # Log types
-    switch ($Phase) {
-        0 { $PhaseMessage += ' [BEGIN  ]' }
-        1 { $PhaseMessage += ' [PROCESS]' }
-        2 { $PhaseMessage += ' [END    ]' }
-    }
-
-    $LogLineTemplate = $((get-date).TimeOfDay.ToString()) + " [" + $Function.PadRight(40) + "] $PhaseMessage "
-
-    switch ($Stream) {
-        0 {
-            Write-Verbose  "$LogLineTemplate $Message"
-            If($script:OSLogFile -and ($script:OSLogFile -ne "")){
-                Add-Content -Path $script:OSLogFile -Value "VERBOSE : $LogLineTemplate $Message"
-            }
-        }
-        1 {
-            Write-Warning  "$LogLineTemplate $Message"
-            If($script:OSLogFile -and ($script:OSLogFile -ne "")){
-                Add-Content -Path $script:OSLogFile -Value "WARNING : $LogLineTemplate $Message"
-            }
-        }
-        2 {
-            Write-Debug  "$LogLineTemplate $Message"
-            If($script:OSLogFile -and ($script:OSLogFile -ne "") -and $script:OSLogDebug){
-                Add-Content -Path $script:OSLogFile -Value "DEBUG   : $LogLineTemplate $Message"
-            }
-        }
-        3 {
-            Write-Verbose "$LogLineTemplate $Message"
-
-            # Exception info
-            If ($Exception){
-                $E = $Exception
-                Write-Verbose "$LogLineTemplate $($E.Message)"
-                If($script:OSLogFile -and ($script:OSLogFile -ne "")){
-                    Add-Content -Path $script:OSLogFile -Value "ERROR   : $LogLineTemplate $Message"
-                    Add-Content -Path $script:OSLogFile -Value "InnerException:"
-                    Add-Content -Path $script:OSLogFile -Value $($E.Message)
-                    Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
-                }
-
-                # Drill down to show the full exception chain
-                While ($E.InnerException) {
-                    $E = $E.InnerException
-                    Write-Verbose "$LogLineTemplate $($E.Message)"
-                    If($script:OSLogFile -and ($script:OSLogFile -ne "")){
-                        Add-Content -Path $script:OSLogFile -Value $($E.Message)
-                        Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
-                    }
-                }
-            }
-        }
-    }
-}
 
 Function InstallWindowsFeatures([string[]]$Features)
 {
@@ -430,46 +373,11 @@ Function SetLifetimeCompiledVersion([string]$LifetimeVersion)
     Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -Value "$LifetimeVersion"
 }
 
-function GetHashedPassword([string]$SCPass)
+function GenerateEncryptKey()
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password to hash $SCPass"
-    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $SCPass
-    $HashedPass = $('#' + $objPass.EncryptedValue)
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password hashed $HashedPass"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Generating a new encrypted key"
+    $Key = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $Key"
 
-    Return $HashedPass
+    return $Key
 }
-
-function GetPlatformServicesWS([string]$SCHost)
-{
-    $PlatformServicesUri = "http://$SCHost/ServiceCenter/PlatformServices_v8_0_0.asmx?WSDL"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $PlatformServicesUri"
-    $PlatformServicesWS = New-WebServiceProxy -Uri $PlatformServicesUri -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
-
-    Return $PlatformServicesWS
-}
-
-function GetSolutionsWS([string]$SCHost)
-{
-    $SolutionsUri = "http://$SCHost/ServiceCenter/Solutions.asmx?WSDL"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $SolutionsUri"
-    $SolutionsWS = New-WebServiceProxy -Uri $SolutionsUri -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
-
-    Return $SolutionsWS
-}
-
-function GetOutSystemsPlatformWS([string]$SCHost)
-{
-    $OutSystemsPlatformUri = "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $OutSystemsPlatformUri"
-    $OutSystemsPlatformWS = New-WebServiceProxy -Uri $OutSystemsPlatformUri -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
-
-    Return $OutSystemsPlatformWS
-}
-
