@@ -1,4 +1,4 @@
-Function Install-OSServiceStudio {
+function Install-OSServiceStudio {
     <#
     .SYNOPSIS
     Installs or updates the Outsystems development environment.
@@ -40,7 +40,7 @@ Function Install-OSServiceStudio {
         [string]$Version
     )
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Write-Output "Starting the Outsystems development environment installation. This can take a while... Please wait..."
         Try{
@@ -81,7 +81,7 @@ Function Install-OSServiceStudio {
         }
     }
 
-    Process {
+    process {
         If ( $DoInstall ) {
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing version $Version"
@@ -124,7 +124,7 @@ Function Install-OSServiceStudio {
         }
     }
 
-    End {
+    end {
         Write-Output "Outsystems development environment successfully installed!! Version $Version"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
