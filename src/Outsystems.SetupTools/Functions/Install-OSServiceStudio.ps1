@@ -43,10 +43,9 @@ function Install-OSServiceStudio {
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         Write-Output "Starting the Outsystems development environment installation. This can take a while... Please wait..."
-        try{
+        try {
             CheckRunAsAdmin | Out-Null
-        }
-        catch{
+        } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
@@ -54,28 +53,25 @@ function Install-OSServiceStudio {
         try {
             $OSVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
             $OSInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+        } catch {
         }
-        catch {}
 
         if ( -not $OSVersion ) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
             $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
             $DoInstall = $true
-        }
-        elseif ( [version]$OSVersion -lt [version]$Version) {
+        } elseif ( [version]$OSVersion -lt [version]$Version) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment already installed. Updating!!"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Current version $OSVersion will be updated to $Version"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Ignoring InstallDir since this is an update"
             $InstallDir = $OSInstallDir
             $DoInstall = $true
-        }
-        elseif ( [version]$OSVersion -gt [version]$Version) {
+        } elseif ( [version]$OSVersion -gt [version]$Version) {
             $DoInstall = $false
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment already installed with an higher version $OSVersion"
             throw "Outsystems development environment already installed with an higher version $OSVersion"
-        }
-        else {
+        } else {
             $DoInstall = $false
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment already installed with the specified version $OSVersion"
         }
@@ -97,8 +93,7 @@ function Install-OSServiceStudio {
 
                     try {
                         DownloadOSSources -URL "$OSRepoURL\DevelopmentEnvironment-$Version.exe" -SavePath $Installer
-                    }
-                    catch {
+                    } catch {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading the installer from repository. Check if version is correct"
                         throw "Error downloading the installer from repository. Check if version is correct"
                     }
@@ -125,7 +120,6 @@ function Install-OSServiceStudio {
     }
 
     end {
-        Write-Output "Outsystems development environment successfully installed!! Version $Version"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
