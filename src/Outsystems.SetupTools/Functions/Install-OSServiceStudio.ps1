@@ -50,30 +50,27 @@ function Install-OSServiceStudio {
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
 
-        try {
-            $OSVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
-            $OSInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
-        } catch {
-        }
+        $OSVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+        $OSInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
 
         if ( -not $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
             $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
             $DoInstall = $true
         } elseif ( [version]$OSVersion -lt [version]$Version) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment already installed. Updating!!"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio already installed. Updating!!"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Current version $OSVersion will be updated to $Version"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Ignoring InstallDir since this is an update"
             $InstallDir = $OSInstallDir
             $DoInstall = $true
         } elseif ( [version]$OSVersion -gt [version]$Version) {
             $DoInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment already installed with an higher version $OSVersion"
-            throw "Outsystems development environment already installed with an higher version $OSVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems service studio already installed with an higher version $OSVersion"
+            throw "Outsystems service studio already installed with an higher version $OSVersion"
         } else {
             $DoInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment already installed with the specified version $OSVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio already installed with the specified version $OSVersion"
         }
     }
 
@@ -112,10 +109,10 @@ function Install-OSServiceStudio {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
             $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru
             if ( $IntReturnCode.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Outsystems development environment. Exit code: $($IntReturnCode.ExitCode)"
-                throw "Error installing Outsystems development environment. Exit code: $($IntReturnCode.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Outsystems service studio. Exit code: $($IntReturnCode.ExitCode)"
+                throw "Error installing Outsystems service studio. Exit code: $($IntReturnCode.ExitCode)"
             }
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems development environment server successfully installed."
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio successfully installed."
         }
     }
 
