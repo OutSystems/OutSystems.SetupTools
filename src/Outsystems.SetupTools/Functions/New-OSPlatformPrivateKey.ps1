@@ -1,4 +1,4 @@
-Function New-OSPlatformPrivateKey {
+function New-OSPlatformPrivateKey {
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
 
     <#
