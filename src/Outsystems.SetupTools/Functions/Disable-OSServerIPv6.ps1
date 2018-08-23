@@ -1,4 +1,4 @@
-Function Disable-OSServerIPv6
+function Disable-OSServerIPv6
 {
     <#
     .SYNOPSIS
@@ -13,31 +13,31 @@ Function Disable-OSServerIPv6
     #>
 
     [CmdletBinding()]
-    Param()
+    param()
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Try{
+        try{
             CheckRunAsAdmin | Out-Null
         }
-        Catch{
+        catch{
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            Throw "The current user is not Administrator or not running this script in an elevated session"
+            throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
 
-    Process {
-        Try{
+    process {
+        try{
             Get-NetAdapterBinding -ComponentID 'ms_tcpip6' | Disable-NetAdapterBinding -ComponentID ms_tcpip6
             New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\" -Name "DisabledComponents" -Value 0xffffffff -PropertyType "DWORD" -Force | Out-Null
-        } Catch {
+        } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling IPv6"
-            Throw "Error disabling IPv6"
+            throw "Error disabling IPv6"
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "IPv6 successfully disabled"
     }
 
-    End {
+    end {
         Write-Output "IPv6 successfully disabled"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
