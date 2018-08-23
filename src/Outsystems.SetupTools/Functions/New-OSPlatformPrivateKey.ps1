@@ -1,4 +1,6 @@
 Function New-OSPlatformPrivateKey {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
+
     <#
     .SYNOPSIS
     Returns a new Outsystems environment private key.
@@ -16,24 +18,25 @@ Function New-OSPlatformPrivateKey {
     [OutputType([System.String])]
     param ()
 
-    Begin {
+    begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    Process {
+    process {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Generating private key"
-        Try {
+
+        try {
             $NewKey = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
-        }
-        Catch {
+        } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error generating a new private key"
-            Throw "Error generating a new private key"
+            throw "Error generating a new private key"
         }
+
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning: $NewKey"
-        Return $NewKey
+        return $NewKey
     }
 
-    End {
+    end {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
