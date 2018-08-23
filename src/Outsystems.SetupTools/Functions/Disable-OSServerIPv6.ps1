@@ -5,6 +5,7 @@ function Disable-OSServerIPv6 {
 
     .DESCRIPTION
     This will disable IPv6 on the server.
+    It will remove the IPv6 checkbox on all network interfaces and will also disable IPv6 globally.
 
     .EXAMPLE
     Disable-OSServerIPv6
@@ -26,8 +27,9 @@ function Disable-OSServerIPv6 {
 
     process {
         try {
+            # https://support.microsoft.com/en-us/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users
             Get-NetAdapterBinding -ComponentID 'ms_tcpip6' | Disable-NetAdapterBinding -ComponentID ms_tcpip6
-            New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\" -Name "DisabledComponents" -Value 0xffffffff -PropertyType "DWORD" -Force | Out-Null
+            New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\" -Name "DisabledComponents" -Value 0xff -PropertyType "DWORD" -Force | Out-Null
         } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling IPv6"
             throw "Error disabling IPv6"
