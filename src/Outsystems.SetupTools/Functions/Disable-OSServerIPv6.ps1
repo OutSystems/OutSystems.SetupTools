@@ -1,5 +1,4 @@
-function Disable-OSServerIPv6
-{
+function Disable-OSServerIPv6 {
     <#
     .SYNOPSIS
     Disable IPv6.
@@ -17,17 +16,16 @@ function Disable-OSServerIPv6
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        try{
+        try {
             CheckRunAsAdmin | Out-Null
-        }
-        catch{
+        } catch {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             throw "The current user is not Administrator or not running this script in an elevated session"
         }
     }
 
     process {
-        try{
+        try {
             Get-NetAdapterBinding -ComponentID 'ms_tcpip6' | Disable-NetAdapterBinding -ComponentID ms_tcpip6
             New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\" -Name "DisabledComponents" -Value 0xffffffff -PropertyType "DWORD" -Force | Out-Null
         } catch {
@@ -38,7 +36,6 @@ function Disable-OSServerIPv6
     }
 
     end {
-        Write-Output "IPv6 successfully disabled"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
