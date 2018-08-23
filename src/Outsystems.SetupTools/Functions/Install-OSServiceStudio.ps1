@@ -42,7 +42,7 @@ function Install-OSServiceStudio {
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Starting the Outsystems development environment installation. This can take a while... Please wait..."
+
         try {
             CheckRunAsAdmin | Out-Null
         } catch {
