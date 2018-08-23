@@ -6,7 +6,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When cannot connect to service center or the webservice returns error' {
 
-            Mock GetPlatformServicesWS { Throw "Error" }
+            Mock GetPlatformServicesWS { throw "Error" }
 
             It 'Should throw an error' {
                 { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin" } | Should Throw "Error getting applications"
