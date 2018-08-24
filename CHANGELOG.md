@@ -11,7 +11,7 @@
   - Exports a solution to a file (OSP file).
 
 - Publish-OSPlatformSolution
-  - Publish a solution to a file (OSP/OAP file).
+  - Publish a solution to the OutSystems environment (OSP/OAP file).
 
 ### Changed
 
