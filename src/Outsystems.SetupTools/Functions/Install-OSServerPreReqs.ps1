@@ -35,7 +35,7 @@ function Install-OSServerPreReqs {
 
     begin {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Starting the pre-requisites installation. This can take a while... Please wait..."
+
         try {
             CheckRunAsAdmin | Out-Null
         }
@@ -48,7 +48,7 @@ function Install-OSServerPreReqs {
     process {
         # Check and install .NET
         if ($(GetDotNet4Version) -lt $OSReqsMinDotNetVersion) {
-            Write-Output "Minimum .NET version is not installed. We will try to download and install NET 4.6.1..."
+
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version is not installed. We will try to download and install NET 4.6.1."
 
             #Download sources from repo
@@ -179,7 +179,6 @@ function Install-OSServerPreReqs {
     }
 
     end {
-        Write-Output "Pre-requisites successfully installed!!"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
