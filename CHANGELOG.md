@@ -2,37 +2,77 @@
 
 ## 1.8.0.0 - Unreleased
 
-### Changes
+### Added
+
+- New-OSPlatformAllFactorySolution
+  - Creates a solution with all apps and modules in the factory. System modules and apps are excluded.
+
+- Export-OSPlatformSolution
+  - Exports a solution to a file (OSP file).
+
+- Publish-OSPlatformSolution
+  - Publish a solution to a file (OSP/OAP file).
+
+### Changed
 
 - Install-OSPlatformServiceCenter:
-  - Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function by default will not output anything.
 
 - Install-OSServer:
-  - Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function by default will not output anything.
 
 - Publish-OSPlatformLifetime:
-  - Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function by default will not output anything.
 
 - Publish-OSPlatformSystemComponents:
-  - Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function by default will not output anything.
 
 - Set-OSServerPerformanceTunning:
-  - Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function by default will not output anything.
 
 - Get-OSPlatformVersion:
-  - Changed parameter -Host by -ServiceCenterHost to standarize with the other functions. -Host is still accepted, so this is not a breaking change.
+  - Change: Changed parameter -Host to -ServiceCenterHost to standarize with the other functions. -Host is still accepted, so this is not a breaking change.
 
 - Install-OSPlatformLicense:
-  - Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function by default will not output anything.
+
+- Disable-OSServerIPv6:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Fix: Fixed the registry value from 0xffffffff to right value 0xff.  (https://support.microsoft.com/en-us/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users)
+
+- Install-OSServiceStudio:
+  - Change: Removed the write-output. Function by default will not output anything.
+
+- Install-OSServerPreReqs:
+  - Change: Removed the write-output. Function by default will not output anything.
+
+- Start-OSServerServices:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Change: Improved function.
+
+- Stop-OSServerServices:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Change: Improved function.
+
+- Restart-OSServerServices:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Change: Improved function.
 
 - General:
   - Code refactoring to allow better testing and error handling.
-
-### Fixes
+  - Added unit testing for all public functions.
 
 ## 1.7.0.0
 
-### Changes
+### Added
+
+- Get-OSPlatformApplications.
+  - Returns the list of Outsystems applications installed on the environment
+
+- Get-OSPlatformModules.
+  - Returns the list of Outsystems modules installed on the environment
+
+### Changed
 
 - New name convention for functions. Every function related with the server itself will have the prefix XXX-OSServer. Everything related with the platform or the environment will have the prefix XXX-OSPlatform.
   - Renamed Get-OSPlatformServerVersion to Get-OSServerVersion
@@ -53,10 +93,5 @@
   - Renamed Install-OSPlatformSystemComponents to Publish-OSPlatformSystemComponents
   - Renamed Install-OSPlatformLifetime to Publish-OSPlatformLifetime
   - Renamed Install-OSPlatformPreReqs to Install-OSServerPreReqs
-
-- Added Get-OSPlatformApplications. Returns the list of Outsystems applications installed on the environment
-- Added Get-OSPlatformModules. Returns the list of Outsystems modules installed on the environment
-
-### Fixed
 
 - Code improvements and bug fixes
