@@ -9,6 +9,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock Get-Service { [PSCustomObject]@{ Name = 'OutSystems Log Service'; Status = 'Running'; StartType = 'Automatic' } }
         Mock Start-Service {}
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
         $OSServices = @( "OutSystems Log Service" )
 
         Context 'When user is not admin' {
