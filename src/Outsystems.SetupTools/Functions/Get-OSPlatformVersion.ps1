@@ -10,7 +10,7 @@ function Get-OSPlatformVersion {
     Service Center address. If not specofied will default to localhost (127.0.0.1).
 
     .EXAMPLE
-    Get-OSPlatformVersion -Host "10.0.0.1"
+    Get-OSPlatformVersion -ServiceCenterHost "10.0.0.1"
 
     #>
 
