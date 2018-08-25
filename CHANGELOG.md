@@ -59,7 +59,11 @@
   - Change: Improved function.
 
 - Get-OSPlatformApplications:
-  - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
+  - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
+  - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
+
+- Get-OSPlatformModules:
+  - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
   - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
 
 - General:
