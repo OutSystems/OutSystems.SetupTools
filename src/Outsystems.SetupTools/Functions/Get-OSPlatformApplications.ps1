@@ -13,10 +13,13 @@ function Get-OSPlatformApplications
     Service Center hostname or IP. If not specified, defaults to localhost.
 
     .PARAMETER ServiceCenterUser
-    Service Center username. If not specified, defaults to admin
+    Service Center username. If not specified, defaults to admin.
 
     .PARAMETER ServiceCenterPass
-    Service Center password. If not specified, defaults to admin
+    Service Center password. If not specified, defaults to admin.
+
+    .PARAMETER Credential
+    Username or PSCredential object. When you submit the command, you will be prompted for a password.
 
     .EXAMPLE
     $Credential = Get-Credential
@@ -24,6 +27,9 @@ function Get-OSPlatformApplications
 
     Unsecure way:
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceenterPass "mypass"
+
+    .NOTES
+    Supports both local and remote systems.
 
     #>
 
