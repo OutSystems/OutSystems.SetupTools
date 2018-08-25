@@ -25,6 +25,10 @@ Function Get-OSPlatformModules
     $Credential = Get-Credential
     Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
+    $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
+    Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
+
     Unsecure way:
     Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
 
