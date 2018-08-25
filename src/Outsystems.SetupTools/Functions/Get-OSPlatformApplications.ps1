@@ -26,7 +26,7 @@ function Get-OSPlatformApplications
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
     Unsecure way:
-    Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceenterPass "mypass"
+    Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
 
     .NOTES
     Supports both local and remote systems.
