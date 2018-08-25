@@ -58,6 +58,10 @@
   - Change: Removed the write-output. Function by default will not output anything.
   - Change: Improved function.
 
+- Get-OSPlatformApplications:
+  - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
+  - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
+
 - General:
   - Code refactoring to allow better testing and error handling.
   - Added unit testing for all public functions.
