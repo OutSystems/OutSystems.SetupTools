@@ -8,7 +8,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock GetSolutionsWS {
             $obj = [pscustomobject]@{}
             $obj | Add-Member -MemberType ScriptMethod -Name 'CreateAllSolution' -Force -Value {
-                param( [string]$SolutionName, [string]$ServiceCenterUser, [bool]$ServiceCenterPass )
+                param( [string]$SolutionName, [string]$ServiceCenterUser, [string]$ServiceCenterPass )
 
                 if ($ServiceCenterUser -eq 'SuperUser' -and $ServiceCenterPass -eq 'SuperPass') {
                     return 100
