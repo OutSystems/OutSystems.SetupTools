@@ -1,4 +1,5 @@
-Function Get-OSPlatformApplications {
+function Get-OSPlatformApplications
+{
     <#
     .SYNOPSIS
     Returns the list of applications installed on an Outsystems environment.
@@ -20,38 +21,68 @@ Function Get-OSPlatformApplications {
     .EXAMPLE
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceenterPass "mypass"
 
+
+    Using PSCredential:
+
+    $Credential = Get-Credential
+    Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
+
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParametersetname = 'UserAndPass')]
     [OutputType([System.Array])]
     param (
-        [Parameter()]
+        [Parameter(ParameterSetName = 'UserAndPass')]
+        [Parameter(ParameterSetName = 'PSCred')]
+        [Alias('Host')]
         [string]$ServiceCenterHost = '127.0.0.1',
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'UserAndPass')]
+        [Alias('User')]
         [string]$ServiceCenterUser = $OSSCUser,
 
-        [Parameter()]
-        [string]$ServiceCenterPass = $OSSCPass
+        [Parameter(ParameterSetName = 'UserAndPass')]
+        [Alias('Pass','Password')]
+        [string]$ServiceCenterPass = $OSSCPass,
+
+        [Parameter(ParameterSetName = 'PSCred')]
+        [ValidateNotNull()]
+        [System.Management.Automation.Credential()]
+        [System.Management.Automation.PSCredential]$Credential
     )
 
-    Begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    Process {
-        Try{
-            $Result = $(GetPlatformServicesWS -SCHost $ServiceCenterHost).Applications_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)) ,$true,$true)
-        } Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications" -Exception $_.Exception
-            Throw "Error getting applications"
+    process
+    {
+        switch ($PsCmdlet.ParameterSetName)
+        {
+            "PSCred"
+            {
+                $ServiceCenterUser = $Credential.UserName
+                $ServiceCenterPass = $Credential.GetNetworkCredential().Password
+            }
         }
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($Result.Count) applications"
-        Return $Result
+        try
+        {
+            $result = $(GetPlatformServicesWS -SCHost $ServiceCenterHost).Applications_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)), $true, $true)
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications" -Exception $_.Exception
+            throw "Error getting applications"
+        }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) applications"
+        return $result
     }
 
-    End {
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
