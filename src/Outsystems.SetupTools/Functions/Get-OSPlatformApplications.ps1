@@ -19,13 +19,11 @@ function Get-OSPlatformApplications
     Service Center password. If not specified, defaults to admin
 
     .EXAMPLE
-    Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceenterPass "mypass"
-
-
-    Using PSCredential:
-
     $Credential = Get-Credential
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
+
+    Unsecure way:
+    Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceenterPass "mypass"
 
     #>
 
