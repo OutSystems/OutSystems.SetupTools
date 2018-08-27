@@ -8,7 +8,6 @@ function Install-OSServer {
     if the platform is already installed it will check if version to be installed is higher than the current one.
     if the platform is already installed with an higher version it will throw an exception.
 
-
     .PARAMETER InstallDir
     Where the platform will be installed. if the platform is already installed, this parameter has no effect.
     if not specified will default to %ProgramFiles%\Outsystems
@@ -26,7 +25,7 @@ function Install-OSServer {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='Remote')]
     param(
         [Parameter(ParameterSetName = 'Local')]
         [Parameter(ParameterSetName = 'Remote')]
