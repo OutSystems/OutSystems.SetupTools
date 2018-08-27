@@ -57,7 +57,73 @@ Function GetDotNet4Version()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\<langid>\Release."
     $DotNetVersion = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction SilentlyContinue | Get-ItemProperty).Release
 
-    Return $DotNetVersion
+    return $DotNetVersion
+}
+
+function InstallDotNet()
+{
+    #Download sources from repo
+    $Installer = "$ENV:TEMP\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
+    try
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
+        DownloadOSSources -URL $OSRepoURLDotNET -SavePath $Installer
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error downloading the installer from repository. Check if version is correct"
+        throw "Error downloading the installer from repository. Check if file name is correct"
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+
+    return $($intReturnCode.ExitCode)
+}
+
+function InstallBuildTools()
+{
+    #Download sources from repo
+    $Installer = "$ENV:TEMP\BuildTools_Full.exe"
+    try
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLBuildTools"
+        DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $Installer
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error downloading the installer from repository. Check if version is correct"
+        throw "Error downloading the installer from repository. Check if file name is correct"
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "-quiet" -Wait -PassThru
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+
+    return $($intReturnCode.ExitCode)
+}
+
+function IsMSIInstalled([string]$ProductCode)
+{
+    try
+    {
+        $objInstaller = New-Object -ComObject WindowsInstaller.Installer
+	    $objType = $objInstaller.GetType()
+	    $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error querying the windows installer database"
+        throw "Error querying the windows installer database"
+    }
+    if ($Products -match $ProductCode){
+        return $true
+    }
+    else
+    {
+        return $false
+    }
 }
 
 Function GetNumberOfCores()
