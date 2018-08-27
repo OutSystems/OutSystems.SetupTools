@@ -38,12 +38,12 @@ function Get-OSPlatformApplications
     #>
 
     [CmdletBinding(DefaultParametersetname = 'UserAndPass')]
-    [OutputType([System.Array])]
+    [OutputType([PSCustomObject])]
     param (
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Parameter(ParameterSetName = 'PSCred')]
+        [Parameter(ParameterSetName = 'UserAndPass', ValueFromPipeline)]
+        [Parameter(ParameterSetName = 'PSCred', ValueFromPipeline)]
         [Alias('Host')]
-        [string]$ServiceCenterHost = '127.0.0.1',
+        [string[]]$ServiceCenterHost = '127.0.0.1',
 
         [Parameter(ParameterSetName = 'UserAndPass')]
         [Alias('User')]

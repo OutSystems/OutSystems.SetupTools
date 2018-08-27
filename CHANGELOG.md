@@ -4,15 +4,6 @@
 
 ### Added
 
-- New-OSPlatformAllFactorySolution
-  - Creates a solution with all apps and modules in the factory. System modules and apps are excluded.
-
-- Export-OSPlatformSolution
-  - Exports a solution to a file (OSP file).
-
-- Publish-OSPlatformSolution
-  - Publish a solution to the OutSystems environment (OSP/OAP file).
-
 ### Changed
 
 - Install-OSPlatformServiceCenter:

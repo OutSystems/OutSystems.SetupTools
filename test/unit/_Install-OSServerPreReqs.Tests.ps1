@@ -19,7 +19,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When user is not admin' {
             Mock CheckRunAsAdmin { throw "The current user is not Administrator or not running this script in an elevated session" }
 
-            It 'Should not run' {
+            It 'Should throw exception' {
                 { Install-OSServerPreReqs -MajorVersion '10.0' } | Should throw "The current user is not Administrator or not running this script in an elevated session"
             }
         }
