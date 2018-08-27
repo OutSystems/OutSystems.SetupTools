@@ -37,7 +37,6 @@ function Install-OSServerPreReqs
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-
         try
         {
             CheckRunAsAdmin | Out-Null
@@ -51,62 +50,14 @@ function Install-OSServerPreReqs
 
     process
     {
-        # Check and install .NET
-        if ($(GetDotNet4Version) -lt $OSReqsMinDotNetVersion)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version is not installed. We will try to download and install NET 4.6.1."
-
-            #Download sources from repo
-            $Installer = "$ENV:TEMP\NDP461-KB3102436-x86-x64-AllOS-ENU.exe"
-            try
-            {
-                DownloadOSSources -URL "$OSRepoURL\NDP461-KB3102436-x86-x64-AllOS-ENU.exe" -SavePath $Installer
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading the installer from repository. Check if version is correct"
-                throw "Error downloading the installer from repository. Check if file name is correct"
-            }
-
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
-            $IntReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru
-            switch ($IntReturnCode.ExitCode)
-            {
-                0
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.6.1 successfully installed."
-                }
-
-                3010
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
-                    throw ".NET 4.6.1 successfully installed but a reboot is needed!!!!! Exit code: $($IntReturnCode.ExitCode)"
-                }
-
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
-                    throw "Error installing .NET 4.6.1. Exit code: $($IntReturnCode.ExitCode)"
-                }
-            }
-
-        }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installed .NET is supported for OutSystems"
-        }
-
         # Base Windows features
         $WinFeatures = $OSWindowsFeaturesBase
 
         # Check if IISMgmtConsole is needed. In a server without GUI, the management console is not available
         if ($InstallIISMgmtConsole)
         {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding IIS Management console feature to the windows features list"
             $WinFeatures += "Web-Mgmt-Console"
-        }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "InstallIISMgmtConsole is false. Not adding IIS Management console to the list"
         }
 
         # Version specific pre-reqs install.
@@ -114,16 +65,102 @@ function Install-OSServerPreReqs
         {
             '10.0'
             {
+                # Check .NET version
+                if ($(GetDotNet4Version) -lt $OS10ReqsMinDotNetVersion)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET 4.7.1."
+                    $installDotNet = $true
+                }
+
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the windows features list"
                 $WinFeatures += "MSMQ"
             }
+
             '11.0'
             {
+                # Check .NET version
+                if ($(GetDotNet4Version) -lt $OS11ReqsMinDotNetVersion)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET 4.7.1."
+                    $installDotNet = $true
+                }
+
                 #TODO. Install RabbitMQ?
             }
         }
 
         # Do the actual install
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing pre-requisites for Outsystems major version $MajorVersion"
+
+        # Install .NET
+        if ($installDotNet)
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 4.7.1"
+                $intReturnCode = InstallDotNet
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET installation"
+                throw "Error downloading or starting the .NET installation"
+            }
+
+            switch ($intReturnCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed."
+                }
+
+                3010
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed but a reboot is needed!!!!! Exit code: $intReturnCode"
+                    throw ".NET 4.7.1 successfully installed but a reboot is needed!!!!! Exit code: $intReturnCode"
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.7.1. Exit code: $intReturnCode"
+                    throw "Error installing .NET 4.7.1. Exit code: $intReturnCode"
+                }
+            }
+        }
+
+        # Install build tools 2015
+        if (-not $(IsMSIInstalled -ProductCode '{8C918E5B-E238-401F-9F6E-4FB84B024CA2}'))
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Build Tools 2015"
+                $intReturnCode = InstallBuildTools
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the Build Tools installation"
+                throw "Error downloading or starting the Build Tools installation"
+            }
+
+            switch ($intReturnCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools successfully installed."
+                }
+
+                3010
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools successfully installed but a reboot is needed!!!!! Exit code: $intReturnCode"
+                    throw "Build Tools successfully installed but a reboot is needed!!!!! Exit code: $intReturnCode"
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Build Tools. Exit code: $intReturnCode"
+                    throw "Error installing Build Tools. Exit code: $intReturnCode"
+                }
+            }
+        }
 
         # Windows features
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
