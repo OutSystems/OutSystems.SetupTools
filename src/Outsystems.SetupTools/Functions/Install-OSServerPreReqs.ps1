@@ -129,7 +129,6 @@ function Install-OSServerPreReqs
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
         $ProgressPreference = "SilentlyContinue"
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation"
         try
         {
             InstallWindowsFeatures -Features $WinFeatures
