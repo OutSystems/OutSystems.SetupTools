@@ -32,7 +32,9 @@ $OSReqsMinOSVersion = "6.2.0.0"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSReqsMinDotNetVersion = "394254"
+$OS10ReqsMinDotNetVersion = "394254"
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OS11ReqsMinDotNetVersion = "461308"
 
 # Windows event log configs
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
