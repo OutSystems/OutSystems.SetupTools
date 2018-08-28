@@ -141,5 +141,49 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
+        Context 'When the platform is the version 10' {
+
+            Mock GetServerVersion { return '10.0.0.1' }
+            Mock GetSCCompiledVersion { return $null }
+
+            It 'Should run the RunSCInstaller with specific parameters' {
+
+                Install-OSPlatformServiceCenter
+
+                $assMParams = @{
+                                'CommandName' = 'RunSCInstaller'
+                                'Times'       = 1
+                                'Exactly'     = $true
+                                'Scope'       = 'Context'
+                                'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" }
+                }
+
+                Assert-MockCalled @assMParams
+            }
+
+        }
+
+        Context 'When the platform is the version 11' {
+
+            Mock GetServerVersion { return '11.0.0.1' }
+            Mock GetSCCompiledVersion { return $null }
+
+            It 'Should run the RunSCInstaller with specific parameters' {
+
+                Install-OSPlatformServiceCenter
+
+                $assMParams = @{
+                                'CommandName' = 'RunSCInstaller'
+                                'Times'       = 1
+                                'Exactly'     = $true
+                                'Scope'       = 'Context'
+                                'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogData.xif" }
+                }
+
+                Assert-MockCalled @assMParams
+            }
+
+        }
+
     }
 }
