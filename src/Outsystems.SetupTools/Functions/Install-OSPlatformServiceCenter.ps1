@@ -62,7 +62,7 @@ function Install-OSPlatformServiceCenter
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
             }
 
-            switch ($(([version]$OSVersion).Major).$(([version]$OSVersion).Minor))
+            switch ("$(([version]$OSVersion).Major).$(([version]$OSVersion).Minor)")
             {
                 '10.0'
                 {
