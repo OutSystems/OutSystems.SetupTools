@@ -1,10 +1,9 @@
 #Get definition files.
-$GlobalVars = @( Get-ChildItem -Path $PSScriptRoot\GlobalVars.ps1 -ErrorAction SilentlyContinue )
 $Lib  = @( Get-ChildItem -Path $PSScriptRoot\Lib\*.ps1 -ErrorAction SilentlyContinue )
 $Functions = @( Get-ChildItem -Path $PSScriptRoot\Functions\*.ps1 -ErrorAction SilentlyContinue )
 
 #Dot source the files
-Foreach($Import in @($GlobalVars + $Lib + $Functions))
+Foreach($Import in @($Lib + $Functions))
 {
     Try
     {
