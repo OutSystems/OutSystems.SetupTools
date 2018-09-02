@@ -5,88 +5,87 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Install-OSServer Tests' {
 
         # Global mocks
-        Mock CheckRunAsAdmin {}
+        Mock IsAdmin { return $true }
         Mock GetServerVersion { return '10.0.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
         Mock DownloadOSSources {}
         Mock Start-Process { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
 
-        Context 'When user is not admin' {
-
-            Mock CheckRunAsAdmin { throw "The current user is not Administrator or not running this script in an elevated session" }
-
-            It 'Should not run' {
-                { Install-OSServer -Version '10.0.0.1' } | Should throw "The current user is not Administrator or not running this script in an elevated session"
-            }
-
+        $assRunParams = @{
+            'CommandName' = 'Start-Process'
+            'Times'       = 1
+            'Exactly'     = $true
+            'Scope'       = 'Context'
         }
 
-        Context 'When the platform server is not installed' {
+        $assNotRunParams = @{
+            'CommandName' = 'Start-Process'
+            'Times'       = 0
+            'Exactly'     = $true
+            'Scope'       = 'Context'
+        }
 
-            Mock GetServerVersion { return $null }
-            Mock GetServerInstallDir { return $null }
+        Context 'When user is not admin' {
 
-            It 'Should run the installation' {
+            Mock IsAdmin { return $false }
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Install-OSServer -Version '10.0.0.1'
-
-                $assMParams = @{
-                    'CommandName' = 'Start-Process'
-                    'Times'       = 1
-                    'Exactly'     = $true
-                    'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'The current user is not Administrator or not running this script in an elevated session'
             }
-
+            It 'Should output an error' { $err[-1] | Should Be 'The current user is not Administrator or not running this script in an elevated session' }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform server is installed with a lower version' {
 
             Mock GetServerVersion { return '10.0.0.0' }
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' {
-
-                Install-OSServer -Version '10.0.0.1'
-
-                $assMParams = @{
-                    'CommandName' = 'Start-Process'
-                    'Times'       = 1
-                    'Exactly'     = $true
-                    'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform server is installed with a higher version' {
 
             Mock GetServerVersion { return '10.0.0.2' }
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should return an exception' {
-               { Install-OSServer -Version '10.0.0.1' } | Should throw "Outsystems platform server already installed with an higher version 10.0.0.2"
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Outsystems platform server already installed with an higher version 10.0.0.2'
             }
-
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems platform server already installed with an higher version 10.0.0.2' }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform server is already installed with the right version' {
 
-            It 'Should not run the installation' {
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Install-OSServer -Version '10.0.0.1'
-
-                $assMParams = @{
-                    'CommandName' = 'Start-Process'
-                    'Times'       = 0
-                    'Exactly'     = $true
-                    'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server successfully installed'
             }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
 
         }
 
@@ -96,23 +95,99 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerInstallDir { return $null }
             Mock DownloadOSSources { throw "Error" }
 
-            It 'Should return an exception' {
-               { Install-OSServer -Version '10.0.0.1' } | Should throw "Error downloading the installer from repository. Check if version is correct"
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error downloading the installer from repository. Check if version is correct'
             }
+            It 'Should output an error' { $err[-1] | Should Be 'Error downloading the installer from repository. Check if version is correct' }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
 
         }
 
-        Context 'When local source is specified but the file doesnt exists' {
+        Context 'When the platform server is not installed and installs successfully' {
 
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
-            Mock Test-Path { return $false }
 
-            It 'Should return an exception' {
-               { Install-OSServer -Version '10.0.0.1' -SourcePath 'c:\whatever'} | Should throw "Cant find the setup file at c:\whatever\PlatformServer-10.0.0.1.exe"
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When the platform installer returns an error' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+            Mock Start-Process { return @{ 'Output' = 'Not good'; 'ExitCode' = 10} }
+
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 10
+                $result.Message | Should Be 'Error installing the Outsystems platform server. Exit code: 10'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error installing the Outsystems platform server. Exit code: 10' }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When the platform installer asks for reboot' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+            Mock Start-Process { return @{ 'Output' = 'Not good'; 'ExitCode' = 3011} }
+
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $true
+                $result.ExitCode | Should Be 3010
+                $result.Message | Should Be 'Outsystems platform server successfully installed but a reboot is needed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When the platform installer throws an exception' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+            Mock Start-Process { throw "Big error" }
+
+            $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error starting the plaform server installation'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error starting the plaform server installation' }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When the caller changes the ErrorAction to stop' {
+
+            Mock IsAdmin { return $false }
+            It 'Should throw an exception' { { Install-OSServer -Version '10.0.0.1' -ErrorAction Stop } | Should throw }
+        }
     }
 }
