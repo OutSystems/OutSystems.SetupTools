@@ -5,18 +5,29 @@
 ### What's new
 
 - Support for Outsystems 11 (beta). You can now install and setup Outsystems 11 using this module.
+- Lots of code refactoring and improvements. Added unit testing to almost all Cmdlets.
+- Redesigned error handling. As best pratices, all errors are now non-terminating.
 
 ### Changes
 
 - Install-OSServerPreReqs:
-  - Change: Removed output messages. Function by default will not output anything.
+  - Change: Removed the old output messages. Function will now return an object with the result of the installation.
+  - Change: We will not throw an exception anymore if a reboot is needed. User should now check the object returned and take care of the reboot.
   - Change: .NET version Change to 4.7.1 to support Outsystems 11.
-  - Change: Microsoft repo is now used to download of .NET and build tools.
+  - Change: Microsoft repo is now used to download all Microsoft pre-requisites.
   - Fix: Build tools 2015 are now included in the pre-requisites.
+  - Added: DotNetCore for Outsystems 11.
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Install-OSServer:
+  - Change: Removed the old output messages. Function will now return an object with the result of the installation.
+  - Fix: Added DefaultParameterSetName to remote install. Function will default to download sources from repo if no parameter is specified.
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
+- Install-OSServiceStudio:
   - Change: Removed the write-output. Function by default will not output anything.
-  - Fixed: Added DefaultParameterSetName to remote install. Function will default to download sources from repo if no parameter is specified.
+  - Fix: Added DefaultParameterSetName to remote install. Function will default to download sources from repo if no parameter is specified.
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Publish-OSPlatformLifetime:
   - Change: Removed the write-output. Function by default will not output anything.
@@ -40,9 +51,6 @@
   - Change: Removed the write-output. Function by default will not output anything.
   - Fixed: Change the registry value from 0xffffffff to right value 0xff.  (https://support.microsoft.com/en-us/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users)
 
-- Install-OSServiceStudio:
-  - Change: Removed the write-output. Function by default will not output anything.
-
 - Start-OSServerServices:
   - Change: Removed the write-output. Function by default will not output anything.
   - Change: Improved function.
@@ -62,10 +70,6 @@
 - Get-OSPlatformModules!!!!!:
   - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
   - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
-
-- General:
-  - Lots of code refactoring to allow better testing and error handling.
-  - Added unit testing for all public functions.
 
 ## 1.7.0.0
 
