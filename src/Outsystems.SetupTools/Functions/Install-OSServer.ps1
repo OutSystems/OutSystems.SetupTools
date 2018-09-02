@@ -188,7 +188,7 @@ function Install-OSServer
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = "Error installing the Outsystems platform server. Exit code: $exitCode"
+                    $installResult.Message = "Error installing the Outsystems platform server"
 
                     return $installResult
                 }

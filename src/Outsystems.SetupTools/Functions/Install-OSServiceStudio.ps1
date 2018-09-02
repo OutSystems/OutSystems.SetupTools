@@ -185,7 +185,7 @@ function Install-OSServiceStudio
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = "Error installing the Outsystems service studio. Exit code: $exitCode"
+                    $installResult.Message = "Error installing the Outsystems service studio"
 
                     return $installResult
                 }
