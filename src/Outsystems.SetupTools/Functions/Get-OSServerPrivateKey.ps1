@@ -13,7 +13,7 @@ function Get-OSServerPrivateKey
     #>
 
     [CmdletBinding()]
-    [OutputType('String')]
+    [OutputType('System.String')]
     param()
 
     begin
