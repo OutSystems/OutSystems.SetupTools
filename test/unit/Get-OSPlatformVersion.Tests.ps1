@@ -4,26 +4,30 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSPlatformVersion Tests' {
 
-        Context 'When cannot connect to service center or the webservice returns error' {
-
-            It 'Should throw an error' {
-                { Get-OSPlatformVersion -Host 255.255.255.255 } | Should Throw "Error contacting service center"
-            }
-
+        Mock GetOutSystemsPlatformWS {
+            $obj = [pscustomobject]@{}
+            $obj | Add-Member -MemberType ScriptMethod -Name 'GetPlatformInfo' -Force -Value { '10.0.0.1' }
+            return $obj
         }
 
-        Context 'Can connect and get results' {
+        Context 'When cannot connect to service center or the webservice returns error' {
 
             Mock GetOutSystemsPlatformWS {
                 $obj = [pscustomobject]@{}
-                $obj | Add-Member -MemberType ScriptMethod -Name 'GetPlatformInfo' -Force -Value { '10.0.0.1' }
+                $obj | Add-Member -MemberType ScriptMethod -Name 'GetPlatformInfo' -Force -Value { throw 'Big error' }
                 return $obj
             }
 
-            It 'Test the result if Service Center is reachable' {
-                Get-OSPlatformVersion -Host csdevops-dev.outsystems.net | Should Be '10.0.0.1'
-            }
+            Get-OSPlatformVersion -Host 255.255.255.255 -ErrorAction SilentlyContinue -ErrorVariable err
+
+            It 'Should output an error' { $err[-1] | Should Be 'Error contacting service center or getting the platform version' }
+            It 'Should not throw' { { Get-OSPlatformVersion -Host 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When can connect' {
+            It 'Should get the platform version' { Get-OSPlatformVersion -Host csdevops-dev.outsystems.net | Should Be '10.0.0.1' }
 
         }
+
     }
 }
