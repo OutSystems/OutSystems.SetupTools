@@ -57,7 +57,7 @@ function Install-OSServerPreReqs
         if (-not $(IsAdmin))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            Write-Error "The current user is not Administrator or not running this script in an elevated session"
+            WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
@@ -151,7 +151,7 @@ function Install-OSServerPreReqs
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET installation"
-                Write-Error "Error downloading or starting the .NET installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET installation"
 
                 $installResult.Success = $false
                 $installResult.ExitCode = -1
@@ -176,7 +176,7 @@ function Install-OSServerPreReqs
                 default
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
-                    Write-Error "Error installing .NET 4.7.1. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
@@ -198,7 +198,7 @@ function Install-OSServerPreReqs
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the Build Tools installation"
-                Write-Error "Error downloading or starting the Build Tools installation"
+                WriteNonTerminalError -Message "Error downloading or starting the Build Tools installation"
 
                 $installResult.Success = $false
                 $installResult.ExitCode = -1
@@ -223,7 +223,7 @@ function Install-OSServerPreReqs
                 default
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Build Tools 2015. Exit code: $exitCode"
-                    Write-Error "Error installing Build Tools 2015. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing Build Tools 2015. Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
@@ -243,14 +243,39 @@ function Install-OSServerPreReqs
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error installing windows features. Exit code: $($exitCode.ExitCode.value__)"
-            Write-Error "Error installing windows features. Exit code: $($exitCode.ExitCode.value__)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the windows features installation"
+            WriteNonTerminalError -Message "Error starting the windows features installation"
 
             $installResult.Success = $false
-            $installResult.ExitCode = $exitCode.ExitCode.value__
-            $installResult.Message = "Error installing windows features"
+            $installResult.ExitCode = -1
+            $installResult.Message = "Error starting the windows features installation"
 
             return $installResult
+        }
+
+        switch ($exitCode.ExitCode.value__)
+        {
+            0
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed"
+            }
+
+            {$_ -in 3010, 3011}
+            {
+                # Do nothing here. We are catching the reboot with another property.
+            }
+
+            default
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing windows features. Exit code: $($exitCode.ExitCode.value__)"
+                WriteNonTerminalError -Message "Error installing windows features. Exit code: $($exitCode.ExitCode.value__)"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = $exitCode.ExitCode.value__
+                $installResult.Message = 'Error installing windows features'
+
+                return $installResult
+            }
         }
 
         if ($exitCode.RestartNeeded.value__ -ne 1)
@@ -258,7 +283,6 @@ function Install-OSServerPreReqs
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed but a reboot is needed!!!!!"
             $installResult.RebootNeeded = $true
         }
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed"
 
         # Install .NET Core Windows Server Hosting bundle
         if ($installDotNetCore)
@@ -271,7 +295,7 @@ function Install-OSServerPreReqs
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core installation"
-                Write-Error "Error downloading or starting the .NET Core installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET Core installation"
 
                 $installResult.Success = $false
                 $installResult.ExitCode = -1
@@ -296,7 +320,7 @@ function Install-OSServerPreReqs
                 default
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET Core Windows Server Hosting bundle. Exit code: $exitCode"
-                    Write-Error "Error installing .NET Core Windows Server Hosting bundle. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET Core Windows Server Hosting bundle. Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
@@ -319,7 +343,7 @@ function Install-OSServerPreReqs
         catch
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the WMI service"
-            Write-Error "Error configuring the WMI service"
+            WriteNonTerminalError -Message "Error configuring the WMI service"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
@@ -337,7 +361,7 @@ function Install-OSServerPreReqs
         catch
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the Windows search service"
-            Write-Error "Error configuring the Windows search service"
+            WriteNonTerminalError -Message "Error configuring the Windows search service"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
@@ -355,7 +379,7 @@ function Install-OSServerPreReqs
         catch
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling FIPS compliant algorithms checks"
-            Write-Error "Error disabling FIPS compliant algorithms checks"
+            WriteNonTerminalError -Message "Error disabling FIPS compliant algorithms checks"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
@@ -375,7 +399,7 @@ function Install-OSServerPreReqs
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring $eventLog Event Log"
-                Write-Error "Error configuring $eventLog Event Log"
+                WriteNonTerminalError -Message "Error configuring $eventLog Event Log"
 
                 $installResult.Success = $false
                 $installResult.ExitCode = -1
@@ -398,7 +422,7 @@ function Install-OSServerPreReqs
                 catch
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the Message Queuing service"
-                    Write-Error "Error configuring the Message Queuing service"
+                    WriteNonTerminalError -Message "Error configuring the Message Queuing service"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = -1
@@ -416,7 +440,7 @@ function Install-OSServerPreReqs
         if ($installResult.RebootNeeded)
         {
             $installResult.ExitCode = 3010
-            $installResult.Message = 'Outsystems platform server pre-requisites successfully installed but a reboot is needed'
+            $installResult.Message = 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
         }
         return $installResult
     }

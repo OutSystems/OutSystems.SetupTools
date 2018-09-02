@@ -11,10 +11,9 @@
 
 function InstallWindowsFeatures([string[]]$Features)
 {
-    $currentProgressPreference = $ProgressPreference
     $ProgressPreference = "SilentlyContinue"
-    $installResult =  Install-WindowsFeature -Name $Features -ErrorAction Stop -Verbose:$false -WarningAction SilentlyContinue
-    $ProgressPreference = $currentProgressPreference
+    $installResult =  Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
+
     return $installResult
 }
 
