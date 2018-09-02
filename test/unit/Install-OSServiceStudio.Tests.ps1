@@ -11,19 +11,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock DownloadOSSources {}
         Mock Start-Process { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
 
-        $assRunParams = @{
-            'CommandName' = 'Start-Process'
-            'Times'       = 1
-            'Exactly'     = $true
-            'Scope'       = 'Context'
-        }
-
-        $assNotRunParams = @{
-            'CommandName' = 'Start-Process'
-            'Times'       = 0
-            'Exactly'     = $true
-            'Scope'       = 'Context'
-        }
+        $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
 
         Context 'When user is not admin' {
 
@@ -140,7 +129,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 10
-                $result.Message | Should Be 'Error installing the Outsystems service studio. Exit code: 10'
+                $result.Message | Should Be 'Error installing the Outsystems service studio'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing the Outsystems service studio. Exit code: 10' }
             It 'Should not throw' { { Install-OSServiceStudio -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
