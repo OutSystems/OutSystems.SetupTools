@@ -1,83 +1,124 @@
+<#
+    SetupFunctions
 
-Function InstallWindowsFeatures([string[]]$Features)
+    Coding guidelines:
+    "Get" functions should not throw errors. Should send the result or an empty result
+    "Set" functions should ALWAYS throw terminating errors. The caller should try/catch.
+    "Install/Invoke" functions should throw terminating errors if they cannot start.
+    "Install/Invoke" functions return the exit code to the caller if they can start. The caller should decide what to do with the exit code.
+    LogMessage should always send to the debug stream (-Phase 1 -Stream 2)
+#>
+
+function InstallWindowsFeatures([string[]]$Features)
 {
-    Install-WindowsFeature -Name $Features -ErrorAction Stop -Verbose:$false | Out-Null
+    $currentProgressPreference = $ProgressPreference
+    $ProgressPreference = "SilentlyContinue"
+    $installResult =  Install-WindowsFeature -Name $Features -ErrorAction Stop -Verbose:$false -WarningAction SilentlyContinue
+    $ProgressPreference = $currentProgressPreference
+    return $installResult
 }
 
-Function GetWindowsFeatureState([string]$Feature)
+Function GetWindowsFeatureState([string]$Features)
 {
-    Return $($(Get-WindowsFeature -Name $Feature -Verbose:$false).Installed)
+    Return $($(Get-WindowsFeature -Name $Features -Verbose:$false).Installed)
 }
 
-Function ConfigureServiceWindowsSearch()
+function ConfigureServiceWindowsSearch()
 {
 
-    If ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue)){
+    if ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue))
+    {
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Disabling the Windows search service."
-        Set-Service -Name "WSearch" -StartupType "Disabled"
+        Set-Service -Name "WSearch" -StartupType "Disabled" -ErrorAction Stop
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Stopping the Windows search service."
-        Get-Service -Name "WSearch" | Stop-Service
+        Get-Service -Name "WSearch" | Stop-Service -ErrorAction Stop
 
-    } Else {
+    }
+    else
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Service not found. Skipping."
     }
 
 }
 
-Function DisableFIPS {
+function ConfigureServiceWMI()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the WMI windows service and changing the startup type to automatic."
+    Set-Service -Name "Winmgmt" -StartupType "Automatic" -ErrorAction Stop | Start-Service -ErrorAction Stop
+}
+
+function DisableFIPS
+{
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy\Enabled = 0"
     New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -Value 0
+    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -Value 0 -ErrorAction Stop
 }
 
-Function ConfigureMSMQDomainServer {
+function ConfigureMSMQDomainServer
+{
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup\AlwaysWithoutDS = 1"
     New-Item -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Name "AlwaysWithoutDS" -Value 1
+    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Name "AlwaysWithoutDS" -Value 1 -ErrorAction Stop
 }
 
-Function CheckRunAsAdmin()
+function ConfigureWindowsEventLog([string]$LogName, [string]$LogSize, [string]$LogOverflowAction)
 {
-
-    $CurrentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-
-    If((New-Object Security.Principal.WindowsPrincipal $CurrentUser).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator)){
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Current user is admin."
-    } Else {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Current user is NOT admin!!."
-        Throw "The current user is not Administrator or not running this script in an elevated session"
-    }
-
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting event log $LogName with maxsize of $LogSize and $LogOverflowAction"
+    Limit-EventLog -MaximumSize $LogSize -OverflowAction $LogOverflowAction -LogName $LogName -ErrorAction Stop
 }
 
-Function GetDotNet4Version()
+function GetDotNet4Version()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\<langid>\Release."
-    $DotNetVersion = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction SilentlyContinue | Get-ItemProperty).Release
 
-    return $DotNetVersion
+    try
+    {
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop).Release
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+    return $output
+}
+
+function GetDotNetCoreVersion()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost\Version"
+
+    try
+    {
+        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost" -Name "Version" -ErrorAction Stop).Version
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
+    }
+
+    if (-not $output)
+    {
+        $output = '0.0.0.0'
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+    return $output
 }
 
 function InstallDotNet()
 {
     #Download sources from repo
     $Installer = "$ENV:TEMP\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
-    try
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
-        DownloadOSSources -URL $OSRepoURLDotNET -SavePath $Installer
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error downloading the installer from repository. Check if version is correct"
-        throw "Error downloading the installer from repository. Check if file name is correct"
-    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
+    DownloadOSSources -URL $OSRepoURLDotNET -SavePath $Installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($intReturnCode.ExitCode)"
 
     return $($intReturnCode.ExitCode)
 }
@@ -86,19 +127,42 @@ function InstallBuildTools()
 {
     #Download sources from repo
     $Installer = "$ENV:TEMP\BuildTools_Full.exe"
-    try
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLBuildTools"
-        DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $Installer
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error downloading the installer from repository. Check if version is correct"
-        throw "Error downloading the installer from repository. Check if file name is correct"
-    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLBuildTools"
+    DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $Installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "-quiet" -Wait -PassThru
+    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+
+    return $($intReturnCode.ExitCode)
+}
+
+function InstallDotNetCore()
+{
+    #Download sources from repo
+    $Installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
+    DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $Installer
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+
+    return $($intReturnCode.ExitCode)
+}
+
+function InstallErlang([string]$InstallDir)
+{
+    #Download sources from repo
+    $Installer = "$ENV:TEMP\otp_win64.exe"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLErlang"
+    DownloadOSSources -URL $OSRepoURLErlang -SavePath $Installer
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
 
     return $($intReturnCode.ExitCode)
@@ -114,8 +178,7 @@ function IsMSIInstalled([string]$ProductCode)
     }
     catch
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error querying the windows installer database"
-        throw "Error querying the windows installer database"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
     if ($Products -match $ProductCode){
         return $true
@@ -147,12 +210,6 @@ Function GetInstalledRAM()
     Return $InstalledRAM
 }
 
-Function ConfigureServiceWMI()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the WMI windows service and changing the startup type to automatic."
-    Set-Service -Name "Winmgmt" -StartupType "Automatic" | Start-Service
-}
-
 Function GetOperatingSystemVersion()
 {
     $WMIOperatingSystem = Get-WmiObject -Class Win32_OperatingSystem
@@ -171,12 +228,6 @@ Function GetOperatingSystemProductType()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $OSProductType"
 
     Return $OSProductType
-}
-
-Function ConfigureWindowsEventLog([string]$LogName, [string]$LogSize, [string]$LogOverflowAction)
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting event log $LogName with maxsize of $LogSize and $LogOverflowAction"
-    Limit-EventLog -MaximumSize $LogSize -OverflowAction $LogOverflowAction -LogName $LogName
 }
 
 Function RunConfigTool([string]$Arguments)
@@ -240,68 +291,75 @@ Function RunOSPTool([string]$Arguments)
     Return $Result
 }
 
-Function GetServerInstallDir()
+function GetServerInstallDir()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\(Default)"
 
-    try {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)" -ErrorAction SilentlyContinue)."(default)"
-    } catch {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the Outsystems server install directory"
-        throw "Error getting the Outsystems server install directory"
+    try
+    {
+        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)" -ErrorAction Stop)."(default)"
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
     return $output
 }
 
-Function GetServiceStudioInstallDir([string]$MajorVersion)
+function GetServiceStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
 
-    try {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction SilentlyContinue)."(default)"
-    } catch {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the service studio install directory"
-        throw "Error getting the service studio install directory"
+    try
+    {
+        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction Stop)."(default)"
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
     return $output -Replace "\Service Studio", ""
 }
 
-Function GetServerVersion()
+function GetServerVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Server"
 
-    try {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server" -ErrorAction SilentlyContinue).Server
+    try
+    {
+        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server" -ErrorAction Stop).Server
     }
-    catch {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the Outsystems server version"
-        throw "Error getting the Outsystems server version"
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
 
-Function GetServiceStudioVersion([string]$MajorVersion)
+function GetServiceStudioVersion([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
 
-    try {
+    try
+    {
         $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion" -ErrorAction Stop)."Service Studio $MajorVersion"
-    } catch {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error getting the service studio version"
-        throw "Error getting the service studio version"
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
 
-Function DownloadOSSources([string]$URL, [string]$SavePath)
+function DownloadOSSources([string]$URL, [string]$SavePath)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Download sources from $URL"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Save sources to $SavePath"
