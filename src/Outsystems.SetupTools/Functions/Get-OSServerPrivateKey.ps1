@@ -19,7 +19,6 @@ function Get-OSServerPrivateKey
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-
         $osInstallDir = GetServerInstallDir
     }
 
@@ -51,6 +50,7 @@ function Get-OSServerPrivateKey
             Get-Content $Path -ErrorAction SilentlyContinue | ForEach-Object {
                 if (-not ($_ -match $Regex))
                 {
+                    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
                     $privateKey = $_
                 }
             }
