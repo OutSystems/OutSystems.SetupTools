@@ -1,4 +1,5 @@
-Function Get-OSServiceStudioVersion {
+function Get-OSServiceStudioVersion
+{
     <#
     .SYNOPSIS
     Returns the Outsystems development environment installed version.
@@ -15,29 +16,35 @@ Function Get-OSServiceStudioVersion {
 
     #>
     [CmdletBinding()]
-    [OutputType([System.Version])]
+    [OutputType('System.Version')]
     param (
         [Parameter(Mandatory = $true, HelpMessage = "10.0")]
         [string]$MajorVersion
     )
 
-    Begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    Process {
-        Try {
-            $output = GetServiceStudioVersion -MajorVersion $MajorVersion
+    process
+    {
+        $output = GetServiceStudioVersion -MajorVersion $MajorVersion
+
+        if (-not $output)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"
+            WriteNonTerminalError -Message "Outsystems development environment $MajorVersion is not installed"
+
+            return $null
         }
-        Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"
-            Throw "Outsystems development environment $MajorVersion is not installed"
-        }
+
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"
-        Return [System.Version]$output
+        return [System.Version]$output
     }
 
-    End {
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

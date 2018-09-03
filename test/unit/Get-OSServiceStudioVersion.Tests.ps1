@@ -4,26 +4,22 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServiceStudioVersion Tests' {
 
+        # Global mocks
+        Mock GetServiceStudioVersion { return '10.0.822.0' }
+
         Context 'When service studio is not installed' {
 
-            Mock GetServiceStudioVersion {
-                Throw 'Cant find registry item'
-            }
+            Mock GetServiceStudioVersion { return $null }
 
-            It 'Should return an exception' {
-               { Get-OSServiceStudioVersion -MajorVersion '1.0' } | Should Throw "Outsystems development environment 1.0 is not installed"
-            }
+            Get-OSServiceStudioVersion -MajorVersion '10.0' -ErrorAction SilentlyContinue -ErrorVariable err
 
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems development environment 10.0 is not installed' }
+            It 'Should not throw' { { Get-OSServiceStudioVersion -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service studio is installed' {
 
-            Mock GetServiceStudioVersion { return '10.0.822.0' }
-
-            It 'Should return the version' {
-                Get-OSServiceStudioVersion -MajorVersion '10.0' | Should Be '10.0.822.0'
-            }
-
+            It 'Should return the version' { Get-OSServiceStudioVersion -MajorVersion '10.0' | Should Be '10.0.822.0' }
             It 'Should call the GetServiceStudioInstallDir only once' {
 
                 $assMParams = @{
@@ -33,7 +29,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                     'Scope' = 'Context'
                     'ParameterFilter' = { $MajorVersion -eq '10.0' }
                  }
-
                  Assert-MockCalled @assMParams
             }
         }
