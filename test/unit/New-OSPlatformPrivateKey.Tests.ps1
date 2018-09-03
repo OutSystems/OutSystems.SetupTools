@@ -4,22 +4,26 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'New-OSPlatformPrivateKey Tests' {
 
+        # Global mocks
         Mock GenerateEncryptKey { return '#key123' }
 
         Context 'When there is an error generating the key' {
 
             Mock GenerateEncryptKey { throw "Whatever" }
 
-            It 'Should return an exception' {
-                { New-OSPlatformPrivateKey } | Should throw "Error generating a new private key"
-            }
+            New-OSPlatformPrivateKey -ErrorAction SilentlyContinue -ErrorVariable err
+
+            It 'Should output an error' { $err[-1] | Should Be 'Error generating a new private key' }
+            It 'Should not throw' { { New-OSPlatformPrivateKey -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the key is generated successfully' {
 
-            It 'Should return the key' {
-                New-OSPlatformPrivateKey | Should Be '#key123'
-            }
+            $result = New-OSPlatformPrivateKey -ErrorAction SilentlyContinue -ErrorVariable err
+
+            It 'Should report the right result' { $result | Should Be '#key123' }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { New-OSPlatformPrivateKey -ErrorAction SilentlyContinue } | Should Not throw }
         }
     }
 }

@@ -1,4 +1,5 @@
-function New-OSPlatformPrivateKey {
+function New-OSPlatformPrivateKey
+{
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
 
     <#
@@ -15,29 +16,36 @@ function New-OSPlatformPrivateKey {
     #>
 
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType('System.String')]
     param ()
 
-    begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    process {
+    process
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Generating private key"
 
-        try {
-            #$NewKey = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
+        try
+        {
             $NewKey = GenerateEncryptKey
-        } catch {
+        }
+        catch
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error generating a new private key"
-            throw "Error generating a new private key"
+            WriteNonTerminalError -Message "Error generating a new private key"
+
+            return $null
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning: $NewKey"
         return $NewKey
     }
 
-    end {
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
