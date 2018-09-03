@@ -16,6 +16,7 @@ function Install-OSPlatformServiceCenter
     #>
 
     [CmdletBinding()]
+    [OutputType('Outsystems.SetupTools.InstallResult')]
     param (
         [Parameter()]
         [switch]$Force
@@ -25,44 +26,62 @@ function Install-OSPlatformServiceCenter
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
 
-        try
-        {
-            CheckRunAsAdmin | Out-Null
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            throw "The current user is not Administrator or not running this script in an elevated session"
-        }
-
-        $OSVersion = GetServerVersion
-        if ($(-not $OSVersion) -or $(-not $(GetServerInstallDir)))
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Outsystems platform is not installed"
-            throw "Outsystems platform is not installed"
+        # Initialize the results object
+        $installResult = [pscustomobject]@{
+            PSTypeName   = 'Outsystems.SetupTools.InstallResult'
+            Success      = $true
+            RebootNeeded = $false
+            ExitCode     = 0
+            Message      = 'Outsystems service center successfully installed'
         }
 
-        if ( $(GetSCCompiledVersion) -ne $OSVersion )
-        {
-            $DoInstall = $true
-        }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Service Center was already compiled with this server version"
-        }
+        $osVersion = GetServerVersion
     }
 
     process
     {
-        if ($DoInstall -or $Force.IsPresent)
+        if (-not $(IsAdmin))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
+
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'The current user is not Administrator or not running this script in an elevated session'
+
+            return $installResult
+        }
+
+        if ($(-not $osVersion) -or $(-not $(GetServerInstallDir)))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
+            WriteNonTerminalError -Message "Outsystems platform is not installed"
+
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Outsystems platform is not installed'
+
+            return $installResult
+        }
+
+        if ($(GetSCCompiledVersion) -ne $osVersion)
+        {
+            $doInstall = $true
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service Center was already compiled with this server version"
+        }
+
+        if ($doInstall -or $Force.IsPresent)
         {
 
-            if ( $Force.IsPresent )
+            if ($Force.IsPresent)
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
             }
 
-            switch ("$(([version]$OSVersion).Major).$(([version]$OSVersion).Minor)")
+            switch ("$(([version]$osVersion).Major).$(([version]$osVersion).Minor)")
             {
                 '10.0'
                 {
@@ -74,37 +93,72 @@ function Install-OSPlatformServiceCenter
                 }
                 default
                 {
-                    $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif'
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Unsupported Outsystems platform version"
+                    WriteNonTerminalError -Message "Unsupported Outsystems platform version"
+
+                    $installResult.Success = $false
+                    $installResult.ExitCode = -1
+                    $installResult.Message = 'Unsupported Outsystems platform version'
+
+                    return $installResult
                 }
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems Service Center. This can take a while..."
             try
             {
-                $Result = RunSCInstaller -Arguments $scInstallerArguments
+                $result = RunSCInstaller -Arguments $scInstallerArguments
             }
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the service center installer"
-                throw "Error lauching the service center installer"
+                WriteNonTerminalError -Message "Error lauching the service center installer"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error lauching the service center installer'
+
+                return $installResult
             }
 
-            $OutputLog = $($Result.Output) -Split ("`r`n")
-            foreach ($Logline in $OutputLog)
+            $outputLog = $($result.Output) -Split ("`r`n")
+            foreach ($logLine in $outputLog)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCINSTALLER: $Logline"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCINSTALLER: $logLine"
             }
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCInstaller exit code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCInstaller exit code: $($result.ExitCode)"
 
-            if ( $Result.ExitCode -ne 0 )
+            if ( $result.ExitCode -ne 0 )
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing service center. Return code: $($Result.ExitCode)"
-                throw "Error installing service center. Return code: $($Result.ExitCode)"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing service center. Return code: $($result.ExitCode)"
+                WriteNonTerminalError -Message "Error installing service center. Return code: $($result.ExitCode)"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = $($result.ExitCode)
+                $installResult.Message = 'Error installing service center'
+
+                return $installResult
             }
 
-            SetSCCompiledVersion -SCVersion $OSVersion | Out-Null
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service Center successfully installed!!"
+            try
+            {
+                SetSCCompiledVersion -SCVersion $osVersion
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the service center version"
+                WriteNonTerminalError -Message "Error setting the service center version"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error setting the service center version'
+
+                return $installResult
+            }
         }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service Center successfully installed!!"
+        return $installResult
     }
 
     end

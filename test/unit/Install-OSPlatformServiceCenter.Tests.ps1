@@ -5,21 +5,31 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Install-OSPlatformServiceCenter Tests' {
 
         # Global mocks
-        Mock CheckRunAsAdmin {}
+        Mock IsAdmin { return $true }
         Mock GetServerVersion { return '10.0.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
         Mock GetSCCompiledVersion { return '10.0.0.1' }
         Mock RunSCInstaller { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
         Mock SetSCCompiledVersion {}
 
+        $assRunSCInstaller = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunSCInstaller = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+
         Context 'When user is not admin' {
 
-            Mock CheckRunAsAdmin { throw "The current user is not Administrator or not running this script in an elevated session" }
+            Mock IsAdmin { return $false }
 
-            It 'Should not run' {
-                { Install-OSPlatformServiceCenter } | Should throw "The current user is not Administrator or not running this script in an elevated session"
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'The current user is not Administrator or not running this script in an elevated session'
             }
-
+            It 'Should output an error' { $err[-1] | Should Be 'The current user is not Administrator or not running this script in an elevated session' }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform server is not installed' {
@@ -27,96 +37,81 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            It 'Should return an exception' {
-                { Install-OSPlatformServiceCenter } | Should throw "Outsystems platform is not installed"
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Outsystems platform is not installed'
             }
-
-        }
-
-        Context 'When the platform server is not installed' {
-
-            Mock GetServerVersion { return $null }
-
-            It 'Should return an exception' {
-                { Install-OSPlatformServiceCenter } | Should throw "Outsystems platform is not installed"
-            }
-
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems platform is not installed' }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service center and the platform dont have the same version' {
 
             Mock GetSCCompiledVersion { return '10.0.0.0' }
 
-            It 'Should run the installation' {
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Install-OSPlatformServiceCenter
-
-                $assMParams = @{
-                                'CommandName' = 'RunSCInstaller'
-                                'Times'       = 1
-                                'Exactly'     = $true
-                                'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should run the installation' { Assert-MockCalled @assRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems service center successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service center is not installed' {
 
             Mock GetSCCompiledVersion { return $null }
 
-            It 'Should run the installation' {
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Install-OSPlatformServiceCenter
-
-                $assMParams = @{
-                                'CommandName' = 'RunSCInstaller'
-                                'Times'       = 1
-                                'Exactly'     = $true
-                                'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should run the installation' { Assert-MockCalled @assRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems service center successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service center and platform have the same version' {
 
-            It 'Should not run the installation' {
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Install-OSPlatformServiceCenter
-
-                $assMParams = @{
-                                'CommandName' = 'RunSCInstaller'
-                                'Times'       = 0
-                                'Exactly'     = $true
-                                'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems service center successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service center and platform have the same version but the force switch is specified' {
 
-            It 'Should run the installation' {
+            $result = Install-OSPlatformServiceCenter -Force -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Install-OSPlatformServiceCenter -Force
-
-                $assMParams = @{
-                                'CommandName' = 'RunSCInstaller'
-                                'Times'       = 1
-                                'Exactly'     = $true
-                                'Scope'       = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should run the installation' { Assert-MockCalled @assRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems service center successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When theres an error launching the scinstaller' {
@@ -124,10 +119,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetSCCompiledVersion { return $null }
             Mock RunSCInstaller { throw "Error lauching the scinstaller" }
 
-            It 'Should return an exception' {
-                { Install-OSPlatformServiceCenter } | Should throw "Error lauching the service center installer"
-            }
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
 
+            It 'Should run the installation' { Assert-MockCalled @assRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error lauching the service center installer'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error lauching the service center installer' }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When theres an error installing service center' {
@@ -135,10 +137,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetSCCompiledVersion { return $null }
             Mock RunSCInstaller { return @{ 'Output' = 'NOT good'; 'ExitCode' = 1} }
 
-            It 'Should return an exception' {
-                { Install-OSPlatformServiceCenter } | Should throw "Error installing service center. Return code: 1"
-            }
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
 
+            It 'Should run the installation' { Assert-MockCalled @assRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 1
+                $result.Message | Should Be 'Error installing service center'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error installing service center. Return code: 1' }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform is the version 10' {
@@ -146,21 +155,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return '10.0.0.1' }
             Mock GetSCCompiledVersion { return $null }
 
+            Install-OSPlatformServiceCenter | Out-Null
+
             It 'Should run the RunSCInstaller with specific parameters' {
-
-                Install-OSPlatformServiceCenter
-
-                $assMParams = @{
-                                'CommandName' = 'RunSCInstaller'
-                                'Times'       = 1
-                                'Exactly'     = $true
-                                'Scope'       = 'Context'
-                                'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" }
-                }
-
+                $assMParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" }}
                 Assert-MockCalled @assMParams
             }
-
         }
 
         Context 'When the platform is the version 11' {
@@ -168,22 +168,30 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return '11.0.0.1' }
             Mock GetSCCompiledVersion { return $null }
 
+            Install-OSPlatformServiceCenter | Out-Null
+
             It 'Should run the RunSCInstaller with specific parameters' {
-
-                Install-OSPlatformServiceCenter
-
-                $assMParams = @{
-                                'CommandName' = 'RunSCInstaller'
-                                'Times'       = 1
-                                'Exactly'     = $true
-                                'Scope'       = 'Context'
-                                'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogData.xif" }
-                }
-
-                Assert-MockCalled @assMParams
+                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogData.xif" }}
+                Assert-MockCalled @assParams
             }
-
         }
 
+        Context 'When the platform is an unsupported version' {
+
+            Mock GetServerVersion { return '9.0.0.1' }
+            Mock GetSCCompiledVersion { return $null }
+
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Unsupported Outsystems platform version'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Unsupported Outsystems platform version' }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
+        }
     }
 }
