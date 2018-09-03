@@ -17,7 +17,7 @@ function Get-OSServiceStudioInstallDir
     #>
 
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType('System.String')]
     param (
         [Parameter(Mandatory = $true, HelpMessage = "10.0")]
         [string]$MajorVersion
