@@ -4,28 +4,22 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServerVersion Tests' {
 
-        Context 'When the platform server is not installed' {
+        # Global mocks
+        Mock GetServerVersion { return '10.0.0.0' }
 
-            Mock GetServerVersion {
-                return $null
-            }
+        Context 'When platform is not installed' {
 
-            It 'Should return an exception' {
-                { Get-OSServerVersion } | Should throw "Outsystems platform is not installed"
-            }
+            Mock GetServerVersion { return $null }
 
+            Get-OSServerVersion -ErrorAction SilentlyContinue -ErrorVariable err
+
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems platform is not installed' }
+            It 'Should not throw' { { Get-OSServerVersion -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform server is installed' {
 
-            Mock GetServerVersion {
-                return '10.0.0.0'
-            }
-
-            It 'Should return the version' {
-                Get-OSServerVersion | Should Be '10.0.0.0'
-            }
-
+            It 'Should return the version' { Get-OSServerVersion | Should Be '10.0.0.0' }
             It 'Should call the GetServerVersion only once' {
 
                 $assMParams = @{
@@ -34,7 +28,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                     'Exactly'     = $true
                     'Scope'       = 'Context'
                 }
-
                 Assert-MockCalled @assMParams
             }
         }
