@@ -1,4 +1,5 @@
-function Get-OSServerInstallDir {
+function Get-OSServerInstallDir
+{
     <#
     .SYNOPSIS
     Returns where the Outsystems platform server is installed.
@@ -6,30 +7,38 @@ function Get-OSServerInstallDir {
     .DESCRIPTION
     This will returns where the Outsystems platform server is installed. Will throw an exception if the platform is not installed.
 
+    .EXAMPLE
+    Get-OSServerInstallDir
+
     #>
 
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType('System.String')]
     param()
 
-    begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    process {
-
+    process
+    {
         $output = GetServerInstallDir
 
-        if (-not $output) {
+        if (-not $output)
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
-            throw "Outsystems platform is not installed"
+            WriteNonTerminalError -Message "Outsystems platform is not installed"
+
+            return $null
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"
         return $output
     }
 
-    end {
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

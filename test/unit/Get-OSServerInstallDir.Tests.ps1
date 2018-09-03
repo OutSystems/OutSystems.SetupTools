@@ -7,22 +7,19 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         # Global mocks
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
 
-        Context 'When the platform server is not installed' {
+        Context 'When platform is not installed' {
 
             Mock GetServerInstallDir { return $null }
 
-            It 'Should return an exception' {
-               { Get-OSServerInstallDir } | Should throw "Outsystems platform is not installed"
-            }
+            Get-OSServerInstallDir -ErrorAction SilentlyContinue -ErrorVariable err
 
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems platform is not installed' }
+            It 'Should not throw' { { Get-OSServerInstallDir -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the platform server is installed' {
 
-            It 'Should return the install directory' {
-                Get-OSServerInstallDir | Should Be 'C:\Program Files\OutSystems\Platform Server'
-            }
-
+            It 'Should return the install directory' { Get-OSServerInstallDir | Should Be 'C:\Program Files\OutSystems\Platform Server' }
             It 'Should call the GetServerInstallDir only once' {
 
                 $assMParams = @{
@@ -31,7 +28,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                     'Exactly' = $true
                     'Scope' = 'Context'
                  }
-
                  Assert-MockCalled @assMParams
             }
         }
