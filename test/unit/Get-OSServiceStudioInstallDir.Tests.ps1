@@ -4,28 +4,22 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServiceStudioInstallDir Tests' {
 
+        # Global mocks
+        Mock GetServiceStudioInstallDir { return 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio' }
+
         Context 'When service studio is not installed' {
 
-            Mock GetServiceStudioInstallDir {
-                Throw 'Cant find registry item'
-            }
+            Mock GetServiceStudioInstallDir { return $null }
 
-            It 'Should return an exception' {
-               { Get-OSServiceStudioInstallDir -MajorVersion '1.0' } | Should Throw "Outsystems development environment 1.0 is not installed"
-            }
+            Get-OSServiceStudioInstallDir -MajorVersion '10.0' -ErrorAction SilentlyContinue -ErrorVariable err
 
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems development environment 10.0 is not installed' }
+            It 'Should not throw' { { Get-OSServiceStudioInstallDir -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service studio is installed' {
 
-            Mock GetServiceStudioInstallDir {
-                return 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio'
-            }
-
-            It 'Should return the install directory' {
-                Get-OSServiceStudioInstallDir -MajorVersion '10.0' | Should Be 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio'
-            }
-
+            It 'Should return the install directory' { Get-OSServiceStudioInstallDir -MajorVersion '10.0' | Should Be 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio' }
             It 'Should call the GetServiceStudioInstallDir only once' {
 
                 $assMParams = @{
@@ -35,7 +29,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                     'Scope' = 'Context'
                     'ParameterFilter' = { $MajorVersion -eq '10.0' }
                  }
-
                  Assert-MockCalled @assMParams
             }
         }

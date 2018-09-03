@@ -1,4 +1,4 @@
-Function Get-OSServiceStudioInstallDir
+function Get-OSServiceStudioInstallDir
 {
     <#
     .SYNOPSIS
@@ -19,27 +19,33 @@ Function Get-OSServiceStudioInstallDir
     [CmdletBinding()]
     [OutputType([System.String])]
     param (
-        [Parameter(Mandatory=$true, HelpMessage="10.0")]
+        [Parameter(Mandatory = $true, HelpMessage = "10.0")]
         [string]$MajorVersion
     )
 
-    Begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
     }
 
-    Process {
-        Try{
-            $output = GetServiceStudioInstallDir -MajorVersion $MajorVersion
+    process
+    {
+        $output = GetServiceStudioInstallDir -MajorVersion $MajorVersion
 
-        } Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed" -Exception $_.Exception
-            Throw "Outsystems development environment $MajorVersion is not installed"
+        if (-not $output)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"
+            WriteNonTerminalError -Message "Outsystems development environment $MajorVersion is not installed"
+
+            return $null
         }
+
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"
-        Return $output
+        return $output
     }
 
-    End {
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
