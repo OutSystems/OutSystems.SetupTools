@@ -445,11 +445,11 @@ Function GetSCCompiledVersion()
     return $output
 }
 
-Function SetSCCompiledVersion([string]$SCVersion)
+function SetSCCompiledVersion([string]$SCVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter = $SCVersion"
     New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -Value "$SCVersion"
+    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -Value "$SCVersion" -ErrorAction Stop
 }
 
 Function GetSysComponentsCompiledVersion()
