@@ -30,7 +30,7 @@ function New-OSPlatformPrivateKey
 
         try
         {
-            $NewKey = GenerateEncryptKey
+            $newKey = GenerateEncryptKey
         }
         catch
         {
@@ -40,8 +40,8 @@ function New-OSPlatformPrivateKey
             return $null
         }
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning: $NewKey"
-        return $NewKey
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning: $newKey"
+        return $newKey
     }
 
     end
