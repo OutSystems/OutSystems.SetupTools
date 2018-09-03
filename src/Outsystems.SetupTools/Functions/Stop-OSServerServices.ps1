@@ -1,4 +1,7 @@
-Function Stop-OSServerServices {
+function Stop-OSServerServices
+{
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
+
     <#
     .SYNOPSIS
     Stops Outsystems services.
@@ -14,19 +17,18 @@ Function Stop-OSServerServices {
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        try
-        {
-            CheckRunAsAdmin | Out-Null
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            throw "The current user is not Administrator or not running this script in an elevated session"
-        }
     }
 
     process
     {
+        if (-not $(IsAdmin))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
+
+            return
+        }
+
         foreach ($OSService in $OSServices)
         {
             if ($(Get-Service -Name $OSService -ErrorAction SilentlyContinue | Where-Object {$_.StartType -ne "Disabled"}))
@@ -39,7 +41,9 @@ Function Stop-OSServerServices {
                 catch
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error stopping the service $OSService"
-                    throw "Error stopping the service $OSService"
+                    WriteNonTerminalError -Message "Error stopping the service $OSService"
+
+                    return
                 }
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service stopped"
             }

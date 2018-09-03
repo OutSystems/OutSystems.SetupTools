@@ -5,7 +5,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Restart-OSServerServices Tests' {
 
         # Global mocks
-        Mock CheckRunAsAdmin {}
+        Mock IsAdmin { return $true }
         Mock Get-Service { [PSCustomObject]@{ Name = 'OutSystems Log Service'; Status = 'Running'; StopType = 'Automatic' } }
         Mock Restart-Service {}
 
@@ -13,105 +13,76 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $OSServices = @( "OutSystems Log Service" )
 
         Context 'When user is not admin' {
-            Mock CheckRunAsAdmin { throw "The current user is not Administrator or not running this script in an elevated session" }
 
-            It 'Should throw exception' {
-                { Restart-OSServerServices } | Should throw "The current user is not Administrator or not running this script in an elevated session"
-            }
+            Mock IsAdmin { return $false }
+
+            $assRunGetService = @{ 'CommandName' = 'Get-Service'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+            $assRunRestartService = @{ 'CommandName' = 'Restart-Service'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+
+            Restart-OSServerServices -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not call Get-Services' { Assert-MockCalled @assRunGetService }
+            It 'Should not call Restart-Services' { Assert-MockCalled @assRunRestartService }
+            It 'Should output an error' { $err[-1] | Should Be 'The current user is not Administrator or not running this script in an elevated session' }
+            It 'Should not throw' { { Restart-OSServerServices -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the service is successfully restarted' {
 
-            It 'Should not throw' {
-                { Restart-OSServerServices } | Should Not throw
-            }
+            $assRunGetService = @{ 'CommandName' = 'Get-Service'; 'Times' = 2; 'Exactly' = $true; 'Scope' = 'Context' }
+            $assRunRestartService = @{ 'CommandName' = 'Restart-Service'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
 
-            It 'Should call Get-Service twice' {
-                $assMParams = @{
-                    'CommandName' = 'Get-Service'
-                    'Times' = 2
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-                Assert-MockCalled @assMParams
-            }
+            Restart-OSServerServices -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should call Restart-Service once' {
-                $assMParams = @{
-                    'CommandName' = 'Restart-Service'
-                    'Times' = 1
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-                Assert-MockCalled @assMParams
-            }
+            It 'Should call Get-Services' { Assert-MockCalled @assRunGetService }
+            It 'Should call Restart-Services' { Assert-MockCalled @assRunRestartService }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Restart-OSServerServices -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the service is disabled' {
 
             Mock Get-Service { [PSCustomObject]@{ Name = 'OutSystems Log Service'; Status = 'Stopped'; StartType = 'Disabled' } }
 
-            It 'Should not throw' {
-                { Restart-OSServerServices } | Should Not throw
-            }
+            $assRunGetService = @{ 'CommandName' = 'Get-Service'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+            $assRunRestartService = @{ 'CommandName' = 'Restart-Service'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
 
-            It 'Should call Get-Service once' {
-                $assMParams = @{
-                    'CommandName' = 'Get-Service'
-                    'Times' = 1
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-                Assert-MockCalled @assMParams
-            }
+            Restart-OSServerServices -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not call Restart-Service' {
-                $assMParams = @{
-                    'CommandName' = 'Restart-Service'
-                    'Times' = 0
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-                Assert-MockCalled @assMParams
-            }
+            It 'Should call Get-Services' { Assert-MockCalled @assRunGetService }
+            It 'Should call Restart-Services' { Assert-MockCalled @assRunRestartService }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Restart-OSServerServices -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When the service doesnt exist' {
 
             Mock Get-Service { }
 
-            It 'Should not throw' {
-                { Restart-OSServerServices } | Should Not throw
-            }
+            $assRunGetService = @{ 'CommandName' = 'Get-Service'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+            $assRunRestartService = @{ 'CommandName' = 'Restart-Service'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
 
-            It 'Should call Get-Service once' {
-                $assMParams = @{
-                    'CommandName' = 'Get-Service'
-                    'Times' = 1
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-                Assert-MockCalled @assMParams
-            }
+            Restart-OSServerServices -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not call Stop-Service' {
-                $assMParams = @{
-                    'CommandName' = 'Restart-Service'
-                    'Times' = 0
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-                Assert-MockCalled @assMParams
-            }
+            It 'Should call Get-Services' { Assert-MockCalled @assRunGetService }
+            It 'Should call Restart-Services' { Assert-MockCalled @assRunRestartService }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Restart-OSServerServices -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When theres an error restarting the service' {
+
             Mock Restart-Service { throw "Error" }
 
-            It 'Should throw exception' {
-                { Restart-OSServerServices } | Should throw "Error restarting the service OutSystems Log Service"
-            }
-        }
+            $assRunGetService = @{ 'CommandName' = 'Get-Service'; 'Times' = 2; 'Exactly' = $true; 'Scope' = 'Context' }
+            $assRunRestartService = @{ 'CommandName' = 'Restart-Service'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
 
+            Restart-OSServerServices -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should call Get-Services' { Assert-MockCalled @assRunGetService }
+            It 'Should call Restart-Services' { Assert-MockCalled @assRunRestartService }
+            It 'Should output an error' { $err[-1] | Should Be 'Error restarting the service OutSystems Log Service' }
+            It 'Should not throw' { { Restart-OSServerServices -ErrorAction SilentlyContinue } | Should Not throw }
+        }
     }
 }
