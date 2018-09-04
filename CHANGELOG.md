@@ -98,6 +98,11 @@
 - Set-OSInstallLog:
   - Change: Removed the write-output. Function by default will not output anything.
 
+- Set-OSServerWindowsFirewall:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Added: Parameter -IncludeRabbitMQ to open the needed ports for RabbitMQ
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
 - Test-OSServerHardwareReqs:
   - Change: Removed the old output messages. Function will now return an object with the result of the tests.
   - BREAKING CHANGE: Added a mandatory parameter -MajorVersion to test version 10 and 11
