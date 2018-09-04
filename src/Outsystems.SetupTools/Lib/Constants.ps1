@@ -28,7 +28,9 @@ $OSReqsMinRAMGB = 4
 
 # Software and operating system requirements
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSReqsMinOSVersion = "6.2.0.0"
+$OS10ReqsMinOSVersion = "6.2.0.0"
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OS11ReqsMinOSVersion = "10.0.14393"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
