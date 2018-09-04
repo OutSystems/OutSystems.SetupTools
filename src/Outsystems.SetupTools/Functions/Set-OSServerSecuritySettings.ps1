@@ -1,4 +1,5 @@
 Function Set-OSServerSecuritySettings {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
     <#
     .SYNOPSIS
     Short description

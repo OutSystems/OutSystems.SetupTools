@@ -1,4 +1,6 @@
 Function Set-OSServerPerformanceTunning {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
+
     <#
     .SYNOPSIS
     Short description

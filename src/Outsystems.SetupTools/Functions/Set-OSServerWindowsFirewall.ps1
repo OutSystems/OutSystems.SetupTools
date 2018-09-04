@@ -1,5 +1,7 @@
 function Set-OSServerWindowsFirewall
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
+
     <#
     .SYNOPSIS
     Creates windows firewall rule for Outsystems services.

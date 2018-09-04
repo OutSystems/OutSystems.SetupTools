@@ -1,5 +1,6 @@
 function Set-OSInstallLog
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
     <#
     .SYNOPSIS
     Sets the log file location.
