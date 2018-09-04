@@ -1,4 +1,5 @@
-Function Set-OSInstallLog {
+function Set-OSInstallLog
+{
     <#
     .SYNOPSIS
     Sets the log file location.
@@ -32,15 +33,23 @@ Function Set-OSInstallLog {
         [Parameter()]
         [switch]$LogDebug
     )
-    Begin {}
+    begin
+    {
+    }
 
-    Process {
-        If ( -not (Test-Path -Path $Path)) {
-            Try {
-                New-Item -Path $Path -ItemType directory -Force | Out-Null
+    process
+    {
+        If ( -not (Test-Path -Path $Path))
+        {
+            try
+            {
+                New-Item -Path $Path -ItemType directory -Force -ErrorAction Stop | Out-Null
             }
-            Catch {
-                Throw "Error creating the log file location"
+            catch
+            {
+                WriteNonTerminalError -Message "Error creating the log file location"
+
+                return
             }
         }
 
@@ -48,8 +57,8 @@ Function Set-OSInstallLog {
         $Script:OSLogDebug = $LogDebug
     }
 
-    End {
-        Write-Output "Outsystems install log set to $OSLogFile"
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "************* Starting Log **************"
     }
 }
