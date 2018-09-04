@@ -5,7 +5,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformLifetime Tests' {
 
         # Global mocks
-        Mock CheckRunAsAdmin {}
         Mock GetServerVersion { return '10.0.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
         Mock GetSCCompiledVersion { return '10.0.0.1' }
@@ -14,128 +13,201 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
         Mock SetLifetimeCompiledVersion {}
 
-        Context 'When user is not admin' {
+        $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "admin" -and $SCPass -eq "admin" } }
+        $assNotRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
 
-            Mock CheckRunAsAdmin { throw "The current user is not Administrator or not running this script in an elevated session" }
-
-            It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should throw "The current user is not Administrator or not running this script in an elevated session"
-            }
-
-        }
-
-        Context 'When platform is not installed' {
+        Context 'When the platform server is not installed' {
 
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should Throw "Outsystems platform is not installed"
-            }
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Outsystems platform is not installed'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems platform is not installed' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When service center has a wrong version' {
-
-            Mock GetSCCompiledVersion { return '10.0.0.0' }
-
-            It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-            }
-
-        }
-
-        Context 'When service center is not installed' {
+        Context 'When service center is not installed or has a wrong version' {
 
             Mock GetSCCompiledVersion { return $null }
 
-            It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should Throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-            }
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When systems components has a wrong version' {
-
-            Mock GetSysComponentsCompiledVersion { return '10.0.0.0' }
-
-            It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should Throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
-            }
-
-        }
-
-        Context 'When systems components is not installed' {
+        Context 'When system components are not installed or have a wrong version' {
 
             Mock GetSysComponentsCompiledVersion { return $null }
 
-            It 'Should not run' {
-                { Publish-OSPlatformLifetime } | Should Throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
-            }
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When lifetime and the platform dont have the same version' {
+
+            Mock GetLifetimeCompiledVersion { return '10.0.0.0' }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems lifetime successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When lifetime is not installed' {
 
             Mock GetLifetimeCompiledVersion { return $null }
 
-            It 'Should not throw any errors' {
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
-                { Publish-OSPlatformLifetime -Force } | Should Not throw
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems lifetime successfully installed'
             }
-
-            It 'Should run the installation' {
-
-                $assMParams = @{
-                    'CommandName' = 'PublishSolution'
-                    'Times' = 1
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
-            }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When lifetime is already installed' {
+        Context 'When lifetime and platform have the same version' {
 
-            It 'Should skip the installation' {
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
-                Publish-OSPlatformLifetime
-
-                $assMParams = @{
-                    'CommandName' = 'PublishSolution'
-                    'Times' = 0
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems lifetime successfully installed'
             }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When lifetime is already installed and the force switch is specified' {
+        Context 'When lifetime and platform have the same version but the force switch is specified' {
 
-            It 'Should not throw any errors' {
+            $result = Publish-OSPlatformLifetime -Force -ErrorVariable err -ErrorAction SilentlyContinue
 
-                { Publish-OSPlatformLifetime -Force } | Should Not throw
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems lifetime successfully installed'
             }
-
-            It 'Should run the installation' {
-
-                $assMParams = @{
-                    'CommandName' = 'PublishSolution'
-                    'Times' = 1
-                    'Exactly' = $true
-                    'Scope' = 'Context'
-                }
-
-                Assert-MockCalled @assMParams
-            }
-
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When theres an error launching the publish solution' {
+
+            Mock GetLifetimeCompiledVersion { return $null }
+            Mock PublishSolution { throw "Error" }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error lauching the lifetime installer'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error lauching the lifetime installer' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When theres an error installing lifetime' {
+
+            Mock GetLifetimeCompiledVersion { return $null }
+            Mock PublishSolution { return @{ 'Output' = 'NOT good'; 'ExitCode' = 1} }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 1
+                $result.Message | Should Be 'Error installing lifetime'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error installing lifetime. Return code: 1' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When theres an error setting the lifetime version' {
+
+            Mock GetLifetimeCompiledVersion { return $null }
+            Mock SetLifetimeCompiledVersion { throw 'Error' }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error setting the lifetime version'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error setting the lifetime version' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When ServiceCenterUser is specified' {
+
+            Mock GetLifetimeCompiledVersion { return $null }
+
+            $result = Publish-OSPlatformLifetime -ServiceCenterUser 'Whatever' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "Whatever" -and $SCPass -eq "admin" } }
+
+            It 'Should run the installation with other parameters' { Assert-MockCalled @assRunPublishSolution }
+        }
+
+        Context 'When credentials are specified' {
+
+            Mock GetLifetimeCompiledVersion { return $null }
+
+            $cred = New-Object System.Management.Automation.PSCredential ("Whatever", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
+
+            $result = Publish-OSPlatformLifetime -Credential $cred -ErrorVariable err -ErrorAction SilentlyContinue
+
+            $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "Whatever" -and $SCPass -eq "admin" } }
+
+            It 'Should run the installation with other parameters' { Assert-MockCalled @assRunPublishSolution }
+        }
     }
 }
