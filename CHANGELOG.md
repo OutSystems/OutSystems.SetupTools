@@ -57,7 +57,7 @@
 - Publish-OSPlatformSystemComponents:
   - Change: Removed the write-output. Function will now return an object with the publish results.
   - Fix: Removed admin rights check. User doesnt need to be admin of the machine. It needs to have permissions on the platform only.
-    - Change: Added the -Credential parameter. This will be the default way to pass credentials. The -ServiceCenterUser and the -ServiceCenterPass will be removed in the future (unsecure).
+  - Change: Added the -Credential parameter. This will be the default way to pass credentials. The -ServiceCenterUser and the -ServiceCenterPass will be removed in the future (unsecure).
   - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Install-OSPlatformServiceCenter:
@@ -94,6 +94,9 @@
   - Change: Removed the write-output. Function by default will not output anything.
   - Change: Improved function.
   - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
+- Set-OSInstallLog:
+  - Change: Removed the write-output. Function by default will not output anything.
 
 - Get-OSPlatformApplications!!!!:
   - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
