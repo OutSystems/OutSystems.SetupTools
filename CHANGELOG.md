@@ -98,6 +98,16 @@
 - Set-OSInstallLog:
   - Change: Removed the write-output. Function by default will not output anything.
 
+- Test-OSServerHardwareReqs:
+  - Change: Removed the old output messages. Function will now return an object with the result of the tests.
+  - BREAKING CHANGE: Added a mandatory parameter -MajorVersion to test version 10 and 11
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
+- Test-OSServerSoftwareReqs:
+  - Change: Removed the old output messages. Function will now return an object with the result of the tests.
+  - BREAKING CHANGE: Added a mandatory parameter -MajorVersion to test version 10 and 11
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
 - Get-OSPlatformApplications!!!!:
   - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
   - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
