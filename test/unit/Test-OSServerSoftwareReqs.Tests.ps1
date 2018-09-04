@@ -68,7 +68,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should call GetOperatingSystemVersion' { Assert-MockCalled @assRunGetOperatingSystemVersion }
             It 'Should return the right result' {
                 $result.Result | Should Be $true
-                $result.Message | Should Be 'Operating system was validated for Outsystems'
+                $result.Message | Should Be 'Operating system was validated for Outsystems 10.0'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Test-OSServerSoftwareReqs -MajorVersion 10.0 -ErrorAction SilentlyContinue } | Should Not throw }
@@ -76,13 +76,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When trying to install OS11 on win2k16' {
 
-            $result = Test-OSServerSoftwareReqs -MajorVersion 10.0 -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Test-OSServerSoftwareReqs -MajorVersion 11.0 -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should call GetOperatingSystemProductType' { Assert-MockCalled @assRunGetOperatingSystemProductType }
             It 'Should call GetOperatingSystemVersion' { Assert-MockCalled @assRunGetOperatingSystemVersion }
             It 'Should return the right result' {
                 $result.Result | Should Be $true
-                $result.Message | Should Be 'Operating system was validated for Outsystems'
+                $result.Message | Should Be 'Operating system was validated for Outsystems 11.0'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Test-OSServerSoftwareReqs -MajorVersion 11.0 -ErrorAction SilentlyContinue } | Should Not throw }

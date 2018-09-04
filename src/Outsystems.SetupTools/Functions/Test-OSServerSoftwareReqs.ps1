@@ -32,7 +32,7 @@ function Test-OSServerSoftwareReqs
         $testResult = [pscustomobject]@{
             PSTypeName = 'Outsystems.SetupTools.TestResult'
             Result     = $true
-            Message    = 'Operating system was validated for Outsystems'
+            Message    = "Operating system was validated for Outsystems $MajorVersion"
         }
     }
 
@@ -60,6 +60,8 @@ function Test-OSServerSoftwareReqs
 
                     $testResult.Result = $false
                     $testResult.Message = "This operating system version is not supported for Outsystems $MajorVersion"
+
+                    return $testResult
                 }
             }
             '11.0'
@@ -71,11 +73,13 @@ function Test-OSServerSoftwareReqs
 
                     $testResult.Result = $false
                     $testResult.Message = "This operating system version is not supported for Outsystems $MajorVersion"
+
+                    return $testResult
                 }
             }
         }
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Operating system validated for Outsystems"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Operating system validated for Outsystems $MajorVersion"
         $testResult
     }
 
