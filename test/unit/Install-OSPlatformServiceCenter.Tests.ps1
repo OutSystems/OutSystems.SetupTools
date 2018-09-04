@@ -193,5 +193,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should output an error' { $err[-1] | Should Be 'Unsupported Outsystems platform version' }
             It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
+
+        Context 'When theres an error setting the service center version' {
+
+            Mock GetSCCompiledVersion { return $null }
+            Mock SetSCCompiledVersion { throw 'Error' }
+
+            $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunSCInstaller }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error setting the service center version'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error setting the service center version' }
+            It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
+        }
     }
 }
