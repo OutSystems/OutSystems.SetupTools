@@ -22,9 +22,13 @@ $OSWindowsFeaturesBase = @(
 
 # Hardware requirements
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSReqsMinCores = 2
+$OS10ReqsMinCores = 2
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSReqsMinRAMGB = 4
+$OS10ReqsMinRAMGB = 4
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OS11ReqsMinCores = 2
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OS11ReqsMinRAMGB = 4
 
 # Software and operating system requirements
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
