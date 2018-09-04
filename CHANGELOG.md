@@ -49,10 +49,16 @@
   - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Publish-OSPlatformLifetime:
-  - Change: Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function will now return an object with the publish results.
+  - Fix: Removed admin rights check. User doesnt need to be admin of the machine. It needs to have permissions on the platform only.
+  - Change: Added the -Credential parameter. This will be the default way to pass credentials. The -ServiceCenterUser and the -ServiceCenterPass will be removed in the future (unsecure).
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Publish-OSPlatformSystemComponents:
-  - Change: Removed the write-output. Function by default will not output anything.
+  - Change: Removed the write-output. Function will now return an object with the publish results.
+  - Fix: Removed admin rights check. User doesnt need to be admin of the machine. It needs to have permissions on the platform only.
+    - Change: Added the -Credential parameter. This will be the default way to pass credentials. The -ServiceCenterUser and the -ServiceCenterPass will be removed in the future (unsecure).
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Install-OSPlatformServiceCenter:
   - Change: Removed the old output messages. Function will now return an object with the result of the installation.
