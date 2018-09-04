@@ -122,3 +122,30 @@ function WriteNonTerminalError([string]$Message)
     #(to work around the issue that Write-Error doesn't set$? to $False in the caller's context)
     $PSCmdlet.WriteError((New-Object System.Management.Automation.ErrorRecord $Message, $null, ([System.Management.Automation.ErrorCategory]::InvalidData), $null))
 }
+
+function RegWrite([string]$Path, [string]$Name, [string]$Type, [string]$Value)
+{
+    #RegType: https://docs.microsoft.com/en-us/dotnet/api/microsoft.win32.registryvaluekind?redirectedfrom=MSDN&view=netframework-4.7.2
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting at $Path\$Name value $Value, type $Type"
+
+    if(-not $(Test-Path $Path))
+    {
+        New-Item -Path $Path -ErrorAction Ignore -Force | Out-Null
+    }
+    New-ItemProperty -Path $Path -Name $Name -Value $Value -PropertyType $Type -Force -ErrorAction Stop | Out-Null
+}
+
+function RegRead([string]$Path, [string]$Name)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Reading $Path\$Name"
+
+    try
+    {
+        $output = $(Get-ItemProperty -Path $Path -Name $Name -ErrorAction Stop).($Name)
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
+    }
+    return $output
+}
