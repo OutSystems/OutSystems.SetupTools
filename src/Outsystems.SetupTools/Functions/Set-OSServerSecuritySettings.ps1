@@ -1,79 +1,85 @@
-Function Set-OSServerSecuritySettings {
+function Set-OSServerSecuritySettings
+{
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
     <#
     .SYNOPSIS
-    Short description
+    Configures Windows and IIS with the recommended security settings for OutSystems.
 
     .DESCRIPTION
-    Long description
+    This will configure Windows and IIS with the recommended security settings for the OutSystems platform.
+    Will disable unsafe SSL protocols on Windows and add custom headers to protect IIS from click jacking.
 
     .EXAMPLE
-    An example
+    Set-OSServerSecuritySettings
 
-    .NOTES
-    General notes
     #>
 
     [CmdletBinding()]
     param()
 
-    begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        try {
-            CheckRunAsAdmin | Out-Null
-        }
-        catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            throw "The current user is not Administrator or not running this script in an elevated session"
-        }
-
-        if ($(-not $(GetServerVersion)) -or $(-not $(GetServerInstallDir))) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 3 -Message "Outsystems platform is not installed"
-            throw "Outsystems platform is not installed"
-        }
     }
 
-    process {
+    process
+    {
+        if (-not $(IsAdmin))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
+
+            return
+        }
+
+        if ($(-not $(GetServerVersion)) -or $(-not $(GetServerInstallDir)))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
+            WriteNonTerminalError -Message "Outsystems platform is not installed"
+
+            return
+        }
+
         # Disable unsafe SSL protocols
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling unsafe SSL protocols"
-        $Protocols = @("SSL 2.0", "SSL 3.0")
-        try {
-            foreach ($Protocol in $Protocols) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling $Protocol"
-                New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Server" -Force | Set-ItemProperty -Name "Enable" -Value 0
-                New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$Protocol\Client" -Force | Set-ItemProperty -Name "DisabledByDefault" -Value 1
+        $protocols = @("SSL 2.0", "SSL 3.0")
+        try
+        {
+            foreach ($protocol in $protocols)
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling $protocol"
+                RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$protocol\Server" -Name "Enabled" -Type "DWord" -Value 0
+                RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$protocol\Client" -Name "Enabled" -Type "DWord" -Value 0
+                RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$protocol\Server" -Name "DisabledByDefault" -Type "DWord" -Value 1
+                RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Control\SecurityProviders\SCHANNEL\Protocols\$protocol\Client" -Name "DisabledByDefault" -Type "DWord" -Value 1
             }
         }
-        catch {
+        catch
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling unsafe SSL protocols"
-            throw "Error disabling unsafe SSL protocols"
+            WriteNonTerminalError -Message "Error disabling unsafe SSL protocols"
+
+            return
         }
 
         # Disable clickjacking (Server Level)
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling click jacking"
-        try {
-            if (Get-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='X-Frame-Options']" -Name . ) {
-                Set-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='X-Frame-Options']" -Name . -Value @{name = "X-Frame-Options"; value = "SAMEORIGIN"}
-            }
-            else {
-                Add-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders" -Name collection -Value @{name = "X-Frame-Options"; value = "SAMEORIGIN"}
-            }
-
-            if (Get-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='Content-Security-Policy']" -Name . ) {
-                Set-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders/add[@name='Content-Security-Policy']" -Name . -Value @{name = "Content-Security-Policy"; value = "frame-ancestors 'self'"}
-            }
-            else {
-                Add-WebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders" -Name collection -Value @{name = "Content-Security-Policy"; value = "frame-ancestors 'self'"}
-            }
+        try
+        {
+            SetWebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders" -Value @{name = "X-Frame-Options"; value = "SAMEORIGIN"}
+            SetWebConfigurationProperty -PSPath "IIS:\Sites\Default Web Site" -Filter "system.webServer/httpProtocol/customHeaders" -Value @{name = "Content-Security-Policy"; value = "frame-ancestors 'self'"}
         }
-        catch {
+        catch
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling click jacking"
-            throw "Error disabling click jacking"
+            WriteNonTerminalError -Message "Error disabling click jacking"
+
+            return
         }
     }
 
-    end {
-        Write-Output "Security settings successfully applied"
+    end
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
