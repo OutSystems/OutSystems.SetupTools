@@ -35,7 +35,7 @@ function Disable-OSServerIPv6
         {
             # https://support.microsoft.com/en-us/help/929852/guidance-for-configuring-ipv6-in-windows-for-advanced-users
             Get-NetAdapterBinding -ComponentID 'ms_tcpip6' -ErrorAction SilentlyContinue | Disable-NetAdapterBinding -ComponentID ms_tcpip6 -ErrorAction Stop
-            New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters\" -Name "DisabledComponents" -Value 0xff -PropertyType "DWORD" -Force -ErrorAction Stop | Out-Null
+            RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters" -Name "DisabledComponents" -Value 0xff -Type "DWORD"
         }
         catch
         {
