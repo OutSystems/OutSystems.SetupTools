@@ -128,7 +128,7 @@ function RegWrite([string]$Path, [string]$Name, [string]$Type, [string]$Value)
     #RegType: https://docs.microsoft.com/en-us/dotnet/api/microsoft.win32.registryvaluekind?redirectedfrom=MSDN&view=netframework-4.7.2
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting at $Path\$Name value $Value, type $Type"
 
-    if(-not $(Test-Path $Path))
+    if (-not $(Test-Path $Path))
     {
         New-Item -Path $Path -ErrorAction Ignore -Force | Out-Null
     }
@@ -148,4 +148,31 @@ function RegRead([string]$Path, [string]$Name)
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
     return $output
+}
+
+function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name, [string]$Value)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $PSPath"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Filter: $Filter"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Name: $Name"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Value: $Value"
+
+    # Web adminstration cmdLets throws statement terminating errors. Try/catch should be used.
+    if ($Name)
+    {
+        Set-WebConfigurationProperty -PSPath $PSPath -Filter $Filter -Name $Name -Value $Value
+    }
+    else
+    {
+        # If name is empty is because its a collection.
+        $webProperty = Get-WebConfigurationProperty -PSPath $PSPath -Filter "$Filter/add[@name='$($Value.name)']" -Name .
+        if($webProperty)
+        {
+            Set-WebConfigurationProperty -PSPath $PSPath -Filter "$Filter/add[@name='$($Value.name)']" -Name . -Value $value
+        }
+        else
+        {
+            Add-WebConfigurationProperty -PSPath $PSPath -Filter $Filter -Name collection -Value $Value
+        }
+    }
 }
