@@ -8,7 +8,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock IsAdmin { return $true }
         Mock Get-NetAdapterBinding {}
         Mock Disable-NetAdapterBinding {}
-        Mock New-ItemProperty {}
+        Mock RegWrite {}
 
         Context 'When user is not admin' {
 
