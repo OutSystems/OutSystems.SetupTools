@@ -51,15 +51,13 @@ function ConfigureServiceWMI()
 function DisableFIPS
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy\Enabled = 0"
-    New-Item -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -Value 0 -ErrorAction Stop
+    RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -Value 0 -Type "DWORD"
 }
 
 function ConfigureMSMQDomainServer
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup\AlwaysWithoutDS = 1"
-    New-Item -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Name "AlwaysWithoutDS" -Value 1 -ErrorAction Stop
+    RegWrite -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Name "AlwaysWithoutDS" -Value 1 -Type "DWORD"
 }
 
 function ConfigureWindowsEventLog([string]$LogName, [string]$LogSize, [string]$LogOverflowAction)
@@ -190,43 +188,39 @@ function IsMSIInstalled([string]$ProductCode)
 
 Function GetNumberOfCores()
 {
-    $WMIComputerSystem = Get-WmiObject -Class Win32_ComputerSystem
-    $NumOfCores = $WMIComputerSystem.NumberOfLogicalProcessors
+    $computerSystemClass = Get-CimClass -Class Win32_ComputerSystem
+    $numOfCores = $computerSystemClass.NumberOfLogicalProcessors
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $NumOfCores"
-
-    Return $NumOfCores
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $numOfCores"
+    return $NumOfCores
 }
 
-Function GetInstalledRAM()
+function GetInstalledRAM()
 {
-    $WMIComputerSystem = Get-WmiObject -Class Win32_ComputerSystem
-    $InstalledRAM = $WMIComputerSystem.TotalPhysicalMemory
-    $InstalledRAM = $InstalledRAM / 1GB
+    $computerSystemClass = Get-CimClass -Class Win32_ComputerSystem
+    $installedRAM = $computerSystemClass.TotalPhysicalMemory
+    $installedRAM = $installedRAM / 1GB
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $InstalledRAM GB"
-
-    Return $InstalledRAM
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $installedRAM GB"
+    return $installedRAM
 }
 
-Function GetOperatingSystemVersion()
+function GetOperatingSystemVersion()
 {
-    $WMIOperatingSystem = Get-WmiObject -Class Win32_OperatingSystem
-    $OSVersion = $WMIOperatingSystem.Version
+    $operatingSystemClass = Get-CimClass -Class Win32_OperatingSystem
+    $osVersion = $operatingSystemClass.Version
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $OSVersion"
-
-    Return $OSVersion
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osVersion"
+    return $osVersion
 }
 
-Function GetOperatingSystemProductType()
+function GetOperatingSystemProductType()
 {
-    $WMIOperatingSystem = Get-WmiObject -Class Win32_OperatingSystem
-    $OSProductType = $WMIOperatingSystem.ProductType
+    $operatingSystemClass = Get-CimClass -Class Win32_OperatingSystem
+    $osProductType = $operatingSystemClass.ProductType
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $OSProductType"
-
-    Return $OSProductType
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osProductType"
+    return $osProductType
 }
 
 Function RunConfigTool([string]$Arguments)
@@ -293,16 +287,7 @@ Function RunOSPTool([string]$Arguments)
 function GetServerInstallDir()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\(Default)"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)" -ErrorAction Stop)."(default)"
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
     return $output
 }
@@ -310,16 +295,7 @@ function GetServerInstallDir()
 function GetServiceStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" -ErrorAction Stop)."(default)"
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
     return $output -Replace "\Service Studio", ""
 }
@@ -327,16 +303,7 @@ function GetServiceStudioInstallDir([string]$MajorVersion)
 function GetServerVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Server"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server" -ErrorAction Stop).Server
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
@@ -344,16 +311,7 @@ function GetServerVersion()
 function GetServiceStudioVersion([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion" -ErrorAction Stop)."Service Studio $MajorVersion"
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
@@ -433,16 +391,7 @@ function TestFileLock([string]$Path)
 function GetSCCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -ErrorAction Stop).ServiceCenter
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
@@ -450,23 +399,13 @@ function GetSCCompiledVersion()
 function SetSCCompiledVersion([string]$SCVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter = $SCVersion"
-    New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -Value "$SCVersion" -ErrorAction Stop
+    RegWrite -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter" -Value $SCVersion -Type "String"
 }
 
 function GetSysComponentsCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\SystemComponents"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -ErrorAction Stop).SystemComponents
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
@@ -474,23 +413,13 @@ function GetSysComponentsCompiledVersion()
 function SetSysComponentsCompiledVersion([string]$SysComponentsVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\SystemComponents = $SysComponentsVersion"
-    New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -Value "$SysComponentsVersion" -ErrorAction Stop
+    RegWrite -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents" -Value $SysComponentsVersion -Type "String"
 }
 
 function GetLifetimeCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -ErrorAction Stop).Lifetime
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
     return $output
 }
@@ -498,8 +427,7 @@ function GetLifetimeCompiledVersion()
 function SetLifetimeCompiledVersion([string]$LifetimeVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime = $LifetimeVersion"
-    New-Item -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -ErrorAction Ignore
-    Set-ItemProperty -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -Value "$LifetimeVersion" -ErrorAction Stop
+    RegWrite -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -Value $LifetimeVersion -Type "String"
 }
 
 function GenerateEncryptKey()
