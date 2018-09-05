@@ -166,7 +166,7 @@ function Set-OSServerPerformanceTunning
 
                 #TODO: Set maximum failures to 0
 
-                $AppPoolItem.recycling.periodicRestart.privateMemory = [int]((($(Get-CmiObject -Class Win32_ComputerSystem).TotalPhysicalMemory) / 1024) * ($($Config.MemoryPercentage) / 100))
+                $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * ($($Config.MemoryPercentage) / 100))
 
                 $AppPoolItem | Set-Item
 
