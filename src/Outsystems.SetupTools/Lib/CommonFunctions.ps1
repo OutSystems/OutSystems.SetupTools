@@ -157,7 +157,7 @@ function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Name: $Name"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Value: $Value"
 
-    # Web adminstration cmdLets throws statement terminating errors. Try/catch should be used.
+    # Web adminstration cmdLets errors are statement-terminating errors. Try/catch should be used.
     if ($Name)
     {
         Set-WebConfigurationProperty -PSPath $PSPath -Filter $Filter -Name $Name -Value $Value
