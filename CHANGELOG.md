@@ -48,6 +48,15 @@
 - New-OSPlatformPrivateKey:
   - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
+- Set-OSServerSecuritySettings:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Fixed: Wrong registry value while disabling SSL unsafe protocols.
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
+- Set-OSServerPerformanceTunning:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
 - Publish-OSPlatformLifetime:
   - Change: Removed the write-output. Function will now return an object with the publish results.
   - Fix: Removed admin rights check. User doesnt need to be admin of the machine. It needs to have permissions on the platform only.
@@ -63,9 +72,6 @@
 - Install-OSPlatformServiceCenter:
   - Change: Removed the old output messages. Function will now return an object with the result of the installation.
   - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
-
-- Set-OSServerPerformanceTunning:
-  - Change: Removed the write-output. Function by default will not output anything.
 
 - Get-OSPlatformVersion:
   - Change: Change parameter -Host to -ServiceCenterHost to standarize with the other functions. -Host is still accepted, so this is not a breaking change.
