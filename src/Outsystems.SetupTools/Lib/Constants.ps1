@@ -80,7 +80,7 @@ $OSRepoURLDotNETCore = 'https://aka.ms/dotnetcore-2-windowshosting'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLErlang = 'http://erlang.org/download/otp_win64_20.3.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURLRabbitMQ = ''
+$OSRepoURLRabbitMQ = 'https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.4/rabbitmq-server-3.7.4.exe'
 
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
