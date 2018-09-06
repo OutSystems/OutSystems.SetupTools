@@ -220,7 +220,7 @@ function IsMSIInstalled([string]$ProductCode)
 
 Function GetNumberOfCores()
 {
-    $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem
+    $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem -Verbose:$false
     $numOfCores = $computerSystemClass.NumberOfLogicalProcessors
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $numOfCores"
@@ -229,7 +229,7 @@ Function GetNumberOfCores()
 
 function GetInstalledRAM()
 {
-    $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem
+    $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem -Verbose:$false
     $installedRAM = $computerSystemClass.TotalPhysicalMemory
     $installedRAM = $installedRAM / 1GB
 
@@ -239,7 +239,7 @@ function GetInstalledRAM()
 
 function GetOperatingSystemVersion()
 {
-    $operatingSystemClass = Get-CimInstance -Class Win32_OperatingSystem
+    $operatingSystemClass = Get-CimInstance -Class Win32_OperatingSystem -Verbose:$false
     $osVersion = $operatingSystemClass.Version
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osVersion"
@@ -248,7 +248,7 @@ function GetOperatingSystemVersion()
 
 function GetOperatingSystemProductType()
 {
-    $operatingSystemClass = Get-CimInstance -Class Win32_OperatingSystem
+    $operatingSystemClass = Get-CimInstance -Class Win32_OperatingSystem -Verbose:$false
     $osProductType = $operatingSystemClass.ProductType
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osProductType"
