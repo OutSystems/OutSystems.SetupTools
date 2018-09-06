@@ -12,7 +12,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Mock InstallDotNet { return 0 }
         Mock InstallBuildTools { return 0 }
-        Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 1 }} }
+        Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $true } }
         Mock InstallDotNetCore { return 0 }
         Mock ConfigureServiceWMI {}
         Mock ConfigureServiceWindowsSearch {}
@@ -350,7 +350,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When windows features reports a reboot' {
 
-            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 2 }} }
+            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 2 }; 'Success' = $true} }
             $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
@@ -376,7 +376,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When windows features reports an error' {
 
-            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 10 }; 'RestartNeeded' = @{ 'value__' = 1 }} }
+            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 10 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $false} }
             $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {

@@ -239,7 +239,7 @@ function Install-OSServerPreReqs
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
         try
         {
-            $exitCode = InstallWindowsFeatures -Features $winFeatures
+            $result = InstallWindowsFeatures -Features $winFeatures
         }
         catch
         {
@@ -253,35 +253,28 @@ function Install-OSServerPreReqs
             return $installResult
         }
 
-        switch ($exitCode.ExitCode.value__)
+        if ($result.Success)
         {
-            0
+            if ($result.RestartNeeded.value__ -ne 1)
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed but a reboot is needed!!!!!"
+                $installResult.RebootNeeded = $true
+            }
+            else
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed"
             }
-
-            {$_ -in 3010, 3011}
-            {
-                # Do nothing here. We are catching the reboot with another property.
-            }
-
-            default
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing windows features. Exit code: $($exitCode.ExitCode.value__)"
-                WriteNonTerminalError -Message "Error installing windows features. Exit code: $($exitCode.ExitCode.value__)"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = $exitCode.ExitCode.value__
-                $installResult.Message = 'Error installing windows features'
-
-                return $installResult
-            }
         }
-
-        if ($exitCode.RestartNeeded.value__ -ne 1)
+        else
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed but a reboot is needed!!!!!"
-            $installResult.RebootNeeded = $true
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
+            WriteNonTerminalError -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
+
+            $installResult.Success = $false
+            $installResult.ExitCode = $result.ExitCode.value__
+            $installResult.Message = 'Error installing windows features'
+
+            return $installResult
         }
 
         # Install .NET Core Windows Server Hosting bundle
