@@ -153,16 +153,48 @@ function InstallDotNetCore()
 function InstallErlang([string]$InstallDir)
 {
     #Download sources from repo
-    $Installer = "$ENV:TEMP\otp_win64.exe"
+    $installer = "$ENV:TEMP\otp_win64.exe"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLErlang"
-    DownloadOSSources -URL $OSRepoURLErlang -SavePath $Installer
+    DownloadOSSources -URL $OSRepoURLErlang -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
+    $intReturnCode = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
 
     return $($intReturnCode.ExitCode)
+}
+
+function InstallRabbitMQ([string]$InstallDir)
+{
+    #Download sources from repo
+    $installer = "$ENV:TEMP\rabbitmq-server-3.7.4.exe"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLRabbitMQ"
+    DownloadOSSources -URL $OSRepoURLRabbitMQ -SavePath $installer
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $intReturnCode = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+
+    return $($intReturnCode.ExitCode)
+}
+
+function GetErlangInstallDir()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\WOW6432Node\Ericsson\Erlang\<version>\default"
+
+    try
+    {
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\WOW6432Node\Ericsson\Erlang\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop)."(default)"
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+    return $output
 }
 
 function IsMSIInstalled([string]$ProductCode)
@@ -188,7 +220,7 @@ function IsMSIInstalled([string]$ProductCode)
 
 Function GetNumberOfCores()
 {
-    $computerSystemClass = Get-CimClass -Class Win32_ComputerSystem
+    $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem
     $numOfCores = $computerSystemClass.NumberOfLogicalProcessors
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $numOfCores"
@@ -197,7 +229,7 @@ Function GetNumberOfCores()
 
 function GetInstalledRAM()
 {
-    $computerSystemClass = Get-CimClass -Class Win32_ComputerSystem
+    $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem
     $installedRAM = $computerSystemClass.TotalPhysicalMemory
     $installedRAM = $installedRAM / 1GB
 
@@ -207,7 +239,7 @@ function GetInstalledRAM()
 
 function GetOperatingSystemVersion()
 {
-    $operatingSystemClass = Get-CimClass -Class Win32_OperatingSystem
+    $operatingSystemClass = Get-CimInstance -Class Win32_OperatingSystem
     $osVersion = $operatingSystemClass.Version
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osVersion"
@@ -216,7 +248,7 @@ function GetOperatingSystemVersion()
 
 function GetOperatingSystemProductType()
 {
-    $operatingSystemClass = Get-CimClass -Class Win32_OperatingSystem
+    $operatingSystemClass = Get-CimInstance -Class Win32_OperatingSystem
     $osProductType = $operatingSystemClass.ProductType
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osProductType"
@@ -321,6 +353,7 @@ function DownloadOSSources([string]$URL, [string]$SavePath)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Download sources from $URL"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Save sources to $SavePath"
 
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
     (New-Object System.Net.WebClient).DownloadFile($URL, $SavePath)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File successfully downloaded!"
