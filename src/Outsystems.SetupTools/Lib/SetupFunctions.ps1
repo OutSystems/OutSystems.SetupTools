@@ -167,17 +167,21 @@ function InstallErlang([string]$InstallDir)
 
 function InstallRabbitMQ([string]$InstallDir)
 {
-    #Download sources from repo
     $installer = "$ENV:TEMP\rabbitmq-server-3.7.4.exe"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLRabbitMQ"
     DownloadOSSources -URL $OSRepoURLRabbitMQ -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
+
+    # This needed to be like this because the rabbit installer is buggy and hangs the Start-Process!!
+    $proc = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait:$false -PassThru -ErrorAction Stop
+    Wait-Process $proc.Id
+    $intReturnCode = $proc.ExitCode
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
 
-    return $($intReturnCode.ExitCode)
+    return $intReturnCode
 }
 
 function GetErlangInstallDir()
