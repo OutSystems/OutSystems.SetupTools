@@ -2,27 +2,34 @@ function Install-OSRabbitMQ
 {
     <#
     .SYNOPSIS
-    Installs or updates the Outsystems Platform server.
+    Install and configure RabbitMQ for Outsystems.
 
     .DESCRIPTION
-    This will installs or updates the platform server.
-    If the platform is already installed, the function will check if version to be installed is higher than the current one and update it.
+    This will install and configure RabbitMQ for Outsystems.
+    It will use the default guest user to perform the configuration.
+    If Rabbit is already installed it will skip the configuration.
 
-    .PARAMETER InstallDir
-    Where the platform will be installed. if the platform is already installed, this parameter has no effect.
-    if not specified will default to %ProgramFiles%\Outsystems
+    .PARAMETER VirtualHosts
+    List of virtual hosts to add to RabbitMQ.
 
-    .PARAMETER SourcePath
-    If specified, the function will use the sources in that path.
-    If not specified it will download the sources from the Outsystems repository (default behavior).
+    .PARAMETER AdminUser
+    Add the specified user as admin of RabbitMQ.
 
-    .PARAMETER Version
-    The version to be installed.
+    .PARAMETER RemoveGuestUser
+    Removes the default guest user.
 
     .EXAMPLE
-    Install-OSServer -Version "10.0.823.0"
-    Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
-    Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+    Install-OSRabbitMQ
+    Install-OSRabbitMQ -VirtualHosts '/OutSystems'
+    Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost')
+
+    .EXAMPLE
+    $user = Get-Credential
+    Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
+
+    .EXAMPLE
+    $user = New-Object System.Management.Automation.PSCredential ('superuser', $(ConvertTo-SecureString 'superpass' -AsPlainText -Force))
+    Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
 
     .NOTES
     All error are non-terminating. The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
