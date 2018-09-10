@@ -92,6 +92,22 @@ $OSLogFile = ""
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSLogDebug = $false
 
+# RabbitMQ related. installDir is set on the Install-RabbitMQ cmdLet cause it depends on where the plaform is installed
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQBaseDir = "$ENV:ALLUSERSPROFILE\RabbitMQ"
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQServiceWaitTimeout = 300
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQDefaultURI = 'http://localhost:15672'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQDefaultVirtualhost = '/'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQDefaultUser = 'guest'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQDefaultPassword = 'guest'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRabbitMQDefaultCredentials = New-Object System.Management.Automation.PSCredential ($OSRabbitMQDefaultUser, $(ConvertTo-SecureString $OSRabbitMQDefaultPassword -AsPlainText -Force))
+
 # IIS configuration
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSIISConfig = @(
