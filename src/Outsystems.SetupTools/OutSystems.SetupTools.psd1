@@ -54,7 +54,13 @@ ProcessorArchitecture = 'Amd64'
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @('OutSystems.RuntimeCommon.dll','OutSystems.HubEdition.RuntimePlatform.dll','ICSharpCode.SharpZipLib.dll','OutSystems.Common.dll')
+RequiredAssemblies = @(
+    '.\OutSystems.RuntimeCommon.dll'
+    '.\OutSystems.HubEdition.RuntimePlatform.dll'
+    '.\ICSharpCode.SharpZipLib.dll'
+    '.\OutSystems.Common.dll'
+    '.\Microsoft.ApplicationInsights.dll'
+)
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
