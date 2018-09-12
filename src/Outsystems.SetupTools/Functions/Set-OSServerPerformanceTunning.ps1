@@ -81,13 +81,14 @@ function Set-OSServerPerformanceTunning
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "** Configure upload size limits and .NET execution timeout **"
         try
         {
-            Add-Type -AssemblyName System.Configuration #Needed for server 2012
-            $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting .NET maximum request size (maxRequestLength = 131072)"
-            $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength = 131072
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting .NET execution timeout (executionTimeout = 110 seconds)"
-            $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout = [TimeSpan]::FromSeconds(110)
-            $NETMachineConfig.Save()
+            #$NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
+            #LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting .NET maximum request size (maxRequestLength = 131072)"
+            #$NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength = 131072
+            #LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting .NET execution timeout (executionTimeout = 110 seconds)"
+            #$NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout = [TimeSpan]::FromSeconds(110)
+            #$NETMachineConfig.Save()
+
+            SetDotNetLimits -UploadLimit 131072 -ExecutionTimeout [TimeSpan]::FromSeconds(110)
         }
         catch
         {
