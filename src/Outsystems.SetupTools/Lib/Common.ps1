@@ -84,23 +84,6 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
     }
 }
 
-Function CheckRunAsAdmin()
-{
-
-    $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
-
-    if ((New-Object Security.Principal.WindowsPrincipal $currentUser).IsInRole([Security.Principal.WindowsBuiltinRole]::Administrator))
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Current user is admin."
-    }
-    Else
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Current user is NOT admin!!."
-        Throw "The current user is not Administrator or not running this script in an elevated session"
-    }
-
-}
-
 function IsAdmin()
 {
     $currentUser = [Security.Principal.WindowsIdentity]::GetCurrent()
