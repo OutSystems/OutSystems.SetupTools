@@ -76,7 +76,7 @@ function Install-OSServerPreReqs
             $winFeatures += "Web-Mgmt-Console"
         }
 
-        ### Check phase ###
+        #region check
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Checking pre-requisites for Outsystems major version $MajorVersion"
 
         # Check build tools 2015. Its required for all OS versions
@@ -136,55 +136,52 @@ function Install-OSServerPreReqs
 
             }
         }
+        #endregion
 
-        ### Install phase ###
+        #region install
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing pre-requisites for Outsystems major version $MajorVersion"
 
-        # Install .NET
-        if ($installDotNet)
+        # Windows features
+        # Exit codes available at: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc733119(v=ws.11)
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
+        try
         {
-            try
+            $result = InstallWindowsFeatures -Features $winFeatures
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the windows features installation"
+            WriteNonTerminalError -Message "Error starting the windows features installation"
+
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = "Error starting the windows features installation"
+
+            return $installResult
+        }
+
+        if ($result.Success)
+        {
+            if ($result.RestartNeeded.value__ -ne 1)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 4.7.1"
-                $exitCode = InstallDotNet
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed but a reboot is needed!!!!!"
+                $installResult.RebootNeeded = $true
             }
-            catch
+            else
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET installation"
-                WriteNonTerminalError -Message "Error downloading or starting the .NET installation"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error downloading or starting the .NET installation'
-
-                return $installResult
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed"
             }
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
+            WriteNonTerminalError -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
 
-            switch ($exitCode)
-            {
-                0
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed"
-                }
+            $installResult.Success = $false
+            $installResult.ExitCode = $result.ExitCode.value__
+            $installResult.Message = 'Error installing windows features'
 
-                {$_ -in 3010, 3011}
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed but a reboot is needed!!!!! Exit code: $exitCode"
-                    $installResult.RebootNeeded = $true
-                }
-
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing .NET 4.7.1'
-
-                    return $installResult
-                }
-            }
+            return $installResult
         }
 
         # Install build tools 2015
@@ -234,49 +231,6 @@ function Install-OSServerPreReqs
             }
         }
 
-        # Windows features
-        # Exit codes available at: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc733119(v=ws.11)
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
-        try
-        {
-            $result = InstallWindowsFeatures -Features $winFeatures
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the windows features installation"
-            WriteNonTerminalError -Message "Error starting the windows features installation"
-
-            $installResult.Success = $false
-            $installResult.ExitCode = -1
-            $installResult.Message = "Error starting the windows features installation"
-
-            return $installResult
-        }
-
-        if ($result.Success)
-        {
-            if ($result.RestartNeeded.value__ -ne 1)
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed but a reboot is needed!!!!!"
-                $installResult.RebootNeeded = $true
-            }
-            else
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed"
-            }
-        }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
-            WriteNonTerminalError -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
-
-            $installResult.Success = $false
-            $installResult.ExitCode = $result.ExitCode.value__
-            $installResult.Message = 'Error installing windows features'
-
-            return $installResult
-        }
-
         # Install .NET Core Windows Server Hosting bundle
         if ($installDotNetCore)
         {
@@ -324,7 +278,55 @@ function Install-OSServerPreReqs
             }
         }
 
-        ### Configuration phase ###
+        # Install .NET
+        if ($installDotNet)
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 4.7.1"
+                $exitCode = InstallDotNet
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET installation"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error downloading or starting the .NET installation'
+
+                return $installResult
+            }
+
+            switch ($exitCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed"
+                }
+
+                {$_ -in 3010, 3011}
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed but a reboot is needed!!!!! Exit code: $exitCode"
+                    $installResult.RebootNeeded = $true
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
+
+                    $installResult.Success = $false
+                    $installResult.ExitCode = $exitCode
+                    $installResult.Message = 'Error installing .NET 4.7.1'
+
+                    return $installResult
+                }
+            }
+        }
+        #endregion
+
+        #region configuration
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring pre-requisites for Outsystems major version $MajorVersion"
 
         #Configure the WMI windows service
@@ -429,6 +431,7 @@ function Install-OSServerPreReqs
                 # Nothing to be done here
             }
         }
+        #endregion
 
         if ($installResult.RebootNeeded)
         {
