@@ -39,7 +39,6 @@ function ConfigureServiceWindowsSearch()
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Service not found. Skipping."
     }
-
 }
 
 function ConfigureServiceWMI()
@@ -80,6 +79,7 @@ function GetDotNet4Version()
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
     return $output
 }
 
@@ -102,6 +102,7 @@ function GetDotNetCoreVersion()
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
     return $output
 }
 
@@ -114,10 +115,26 @@ function InstallDotNet()
     DownloadOSSources -URL $OSRepoURLDotNET -SavePath $Installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($intReturnCode.ExitCode)"
+    $result = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru -ErrorAction Stop
 
-    return $($intReturnCode.ExitCode)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
+
+    return $($result.ExitCode)
+}
+
+function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Openning the config file"
+    $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET maximum request size (maxRequestLength = 131072)"
+    $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength = $UploadLimit
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET execution timeout (executionTimeout = 110 seconds)"
+    $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout = $ExecutionTimeout
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Saving config"
+    $NETMachineConfig.Save()
 }
 
 function InstallBuildTools()
@@ -129,10 +146,11 @@ function InstallBuildTools()
     DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $Installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+    $result = Start-Process -FilePath $Installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
 
-    return $($intReturnCode.ExitCode)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+
+    return $($result.ExitCode)
 }
 
 function InstallDotNetCore()
@@ -144,25 +162,26 @@ function InstallDotNetCore()
     DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $Installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $Installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+    $result = Start-Process -FilePath $Installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
 
-    return $($intReturnCode.ExitCode)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+
+    return $($result.ExitCode)
 }
 
 function InstallErlang([string]$InstallDir)
 {
-    #Download sources from repo
     $installer = "$ENV:TEMP\otp_win64.exe"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLErlang"
     DownloadOSSources -URL $OSRepoURLErlang -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $intReturnCode = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
+    $result = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
 
-    return $($intReturnCode.ExitCode)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+
+    return $($result.ExitCode)
 }
 
 function InstallRabbitMQ([string]$InstallDir)
@@ -194,7 +213,7 @@ function InstallRabbitMQPreReqs([string]$RabbitBaseDir)
         New-Item -Path $RabbitBaseDir -ItemType directory -Force -ErrorAction Stop | Out-Null
     }
 
-    # Set rabbitMQ base system hide and for this session
+    # Set rabbitMQ base system wide and for this session
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting rabbitMQ base dir to $RabbitBaseDir"
     [System.Environment]::SetEnvironmentVariable('RABBITMQ_BASE', $RabbitBaseDir, "Machine")
     $ENV:RABBITMQ_BASE = $RabbitBaseDir
@@ -285,9 +304,10 @@ function isRabbitMQAvailable()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if RabbitMQ server in $OSRabbitMQDefaultURI is available"
 
     $uri = "$OSRabbitMQDefaultURI/api/overview"
-    # This throws a statement terminating error. Try/catch it
+
     try
     {
+         # This throws a statement terminating error. Try/catch it
         Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -AllowEscapedDotsAndSlashes -Verbose:$false | Out-Null
     }
     catch
@@ -296,6 +316,7 @@ function isRabbitMQAvailable()
         return $false
     }
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server is now available"
+
     return $true
 }
 
@@ -312,11 +333,13 @@ function GetErlangInstallDir()
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
     return $output
 }
 
 function IsMSIInstalled([string]$ProductCode)
 {
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking product code $ProductCode"
     try
     {
         $objInstaller = New-Object -ComObject WindowsInstaller.Installer
@@ -327,21 +350,28 @@ function IsMSIInstalled([string]$ProductCode)
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
-    if ($Products -match $ProductCode){
+
+    if ($Products -match $ProductCode)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning true"
+
         return $true
     }
     else
     {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning false"
+
         return $false
     }
 }
 
-Function GetNumberOfCores()
+function GetNumberOfCores()
 {
     $computerSystemClass = Get-CimInstance -Class Win32_ComputerSystem -Verbose:$false
     $numOfCores = $computerSystemClass.NumberOfLogicalProcessors
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $numOfCores"
+
     return $NumOfCores
 }
 
@@ -352,6 +382,7 @@ function GetInstalledRAM()
     $installedRAM = $installedRAM / 1GB
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $installedRAM GB"
+
     return $installedRAM
 }
 
@@ -361,6 +392,7 @@ function GetOperatingSystemVersion()
     $osVersion = $operatingSystemClass.Version
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osVersion"
+
     return $osVersion
 }
 
@@ -370,6 +402,7 @@ function GetOperatingSystemProductType()
     $osProductType = $operatingSystemClass.ProductType
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $osProductType"
+
     return $osProductType
 }
 
@@ -388,57 +421,62 @@ Function RunConfigTool([string]$Arguments)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the config tool..."
     $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($Result.ExitCode)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($Result.ExitCode)"
 
     Return $Result
 }
 
-Function RunSCInstaller([string]$Arguments)
+function RunSCInstaller([string]$Arguments)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server install directory"
-    $InstallDir = GetServerInstallDir
+    $installDir = GetServerInstallDir
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running SCInstaller..."
     #SCInstaller needs to run inside a CMD or will not return an exit code
-    $Result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $InstallDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($Result.ExitCode)"
+    $result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $installDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%" -ErrorAction Stop
 
-    Return $Result
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($result.ExitCode)"
+
+    return $result
 }
 
-Function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
+function PublishSolution([string]$Solution, [string]$SCUser, [string]$SCPass)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Solution path: $Solution"
-    $Result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$Solution") + [char]34 + " $ENV:ComputerName $SCUser $SCPass")
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($Result.ExitCode)"
+    $result = RunOSPTool -Arguments $("/publish " + [char]34 + $("$Solution") + [char]34 + " $ENV:ComputerName $SCUser $SCPass")
 
-    Return $Result
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($result.ExitCode)"
+
+    return $result
 }
 
-Function RunOSPTool([string]$Arguments)
+function RunOSPTool([string]$Arguments)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server install directory"
-    $InstallDir = GetServerInstallDir
+    $installDir = GetServerInstallDir
 
-    $Version = [System.Version]$(GetServerVersion)
-    $MajorVersion = "$($Version.Major).$($Version.Minor)"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server major version is $MajorVersion"
+    $version = [System.Version]$(GetServerVersion)
+    $majorVersion = "$($version.Major).$($version.Minor)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server major version is $majorVersion"
 
-    $OSPToolPath = "$ENV:CommonProgramFiles\OutSystems\$MajorVersion"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "OSPTool path is $OSPToolPath"
+    $ospToolPath = "$ENV:CommonProgramFiles\OutSystems\$majorVersion"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "OSPTool path is $ospToolPath"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the OSPTool..."
-    $Result = ExecuteCommand -CommandPath "$OSPToolPath\OSPTool.com" -WorkingDirectory $InstallDir -CommandArgument $Arguments
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($Result.ExitCode)"
+    $result = ExecuteCommand -CommandPath "$ospToolPath\OSPTool.com" -WorkingDirectory $installDir -CommandArgument $Arguments
 
-    Return $Result
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($result.ExitCode)"
+
+    return $result
 }
 
 function GetServerInstallDir()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\(Default)"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "(default)"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
     return $output
 }
 
@@ -446,7 +484,9 @@ function GetServiceStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
     return $output -Replace "\Service Studio", ""
 }
 
@@ -454,7 +494,9 @@ function GetServerVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Server"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Server"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
     return $output
 }
 
@@ -462,7 +504,9 @@ function GetServiceStudioVersion([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
     return $output
 }
 
@@ -508,7 +552,7 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 
 }
 
-function TestFileLock([string]$Path)
+Function TestFileLock([string]$Path)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if file $Path is locked"
 
@@ -543,7 +587,9 @@ function GetSCCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "ServiceCenter"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
     return $output
 }
 
@@ -557,7 +603,9 @@ function GetSysComponentsCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\SystemComponents"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "SystemComponents"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
     return $output
 }
 
@@ -571,7 +619,9 @@ function GetLifetimeCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime"
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
     return $output
 }
 
@@ -584,8 +634,9 @@ function SetLifetimeCompiledVersion([string]$LifetimeVersion)
 function GenerateEncryptKey()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Generating a new encrypted key"
-    $Key = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $Key"
+    $key = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
 
-    return $Key
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $key"
+
+    return $key
 }
