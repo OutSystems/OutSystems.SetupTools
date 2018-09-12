@@ -36,7 +36,7 @@ function Install-OSRabbitMQ
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='__AllParameterSets')]
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter()]
