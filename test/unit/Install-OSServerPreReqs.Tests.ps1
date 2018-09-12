@@ -173,8 +173,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
-                Assert-MockCalled @assNotRunInstallBuildTools
-                Assert-MockCalled @assNotRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -225,8 +225,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
-                Assert-MockCalled @assNotRunInstallBuildTools
-                Assert-MockCalled @assNotRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -250,9 +250,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
-                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
-                Assert-MockCalled @assNotRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -302,9 +302,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
-                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
-                Assert-MockCalled @assNotRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -328,8 +328,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
-                Assert-MockCalled @assRunInstallDotNet
-                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
@@ -380,8 +380,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
-                Assert-MockCalled @assRunInstallDotNet
-                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
@@ -406,7 +406,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
-                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore
@@ -458,7 +458,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
-                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallWindowsFeatures
