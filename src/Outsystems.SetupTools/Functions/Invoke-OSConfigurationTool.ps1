@@ -10,7 +10,7 @@ function Invoke-OSConfigurationTool
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName='__AllParameterSets')]
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter()]
@@ -195,22 +195,25 @@ function Invoke-OSConfigurationTool
 
                         # DBLogServer
                         $DBLogServerAttrib = New-Object System.Management.Automation.ParameterAttribute
+                        $DBLogServerAttrib.ParameterSetName = 'LogDBConfig'
+                        $DBLogServerAttrib.Mandatory = $true
                         $DBLogServerAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                         $DBLogServerAttribCollection.Add($DBLogServerAttrib)
                         $DBLogServerAttribCollection.Add((New-Object -TypeName System.Management.Automation.ValidateNotNullOrEmptyAttribute))
                         $DBLogServerParam = New-Object System.Management.Automation.RuntimeDefinedParameter('DBLogServer', [String], $DBLogServerAttribCollection)
-                        $PSBoundParameters.DBLogServer = '127.0.0.1'
 
                         # DBLogCatalog
                         $DBLogCatalogAttrib = New-Object System.Management.Automation.ParameterAttribute
+                        $DBLogCatalogAttrib.ParameterSetName = 'LogDBConfig'
+                        $DBLogCatalogAttrib.Mandatory = $true
                         $DBLogCatalogAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                         $DBLogCatalogAttribCollection.Add($DBLogCatalogAttrib)
                         $DBLogCatalogAttribCollection.Add((New-Object -TypeName System.Management.Automation.ValidateNotNullOrEmptyAttribute))
                         $DBLogCatalogParam = New-Object System.Management.Automation.RuntimeDefinedParameter('DBLogCatalog', [String], $DBLogCatalogAttribCollection)
-                        $PSBoundParameters.DBLogCatalog = 'outsystems'
 
                         # DBLogAdminUser
                         $DBLogAdminUserAttrib = New-Object System.Management.Automation.ParameterAttribute
+                        $DBLogAdminUserAttrib.ParameterSetName = 'LogDBConfig'
                         $DBLogAdminUserAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                         $DBLogAdminUserAttribCollection.Add($DBLogAdminUserAttrib)
                         $DBLogAdminUserAttribCollection.Add((New-Object -TypeName System.Management.Automation.ValidateNotNullOrEmptyAttribute))
@@ -219,6 +222,7 @@ function Invoke-OSConfigurationTool
 
                         # DBLogAdminPass
                         $DBLogAdminPassAttrib = New-Object System.Management.Automation.ParameterAttribute
+                        $DBLogAdminPassAttrib.ParameterSetName = 'LogDBConfig'
                         $DBLogAdminPassAttrib.Mandatory = $true
                         $DBLogAdminPassAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                         $DBLogAdminPassAttribCollection.Add($DBLogAdminPassAttrib)
@@ -227,6 +231,7 @@ function Invoke-OSConfigurationTool
 
                         # DBLogRuntimeUser
                         $DBLogRuntimeUserAttrib = New-Object System.Management.Automation.ParameterAttribute
+                        $DBLogRuntimeUserAttrib.ParameterSetName = 'LogDBConfig'
                         $DBLogRuntimeUserAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                         $DBLogRuntimeUserAttribCollection.Add($DBLogRuntimeUserAttrib)
                         $DBLogRuntimeUserAttribCollection.Add((New-Object -TypeName System.Management.Automation.ValidateNotNullOrEmptyAttribute))
@@ -235,6 +240,7 @@ function Invoke-OSConfigurationTool
 
                         # DBLogRuntimePass
                         $DBLogRuntimePassAttrib = New-Object System.Management.Automation.ParameterAttribute
+                        $DBLogRuntimePassAttrib.ParameterSetName = 'LogDBConfig'
                         $DBLogRuntimePassAttrib.Mandatory = $true
                         $DBLogRuntimePassAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                         $DBLogRuntimePassAttribCollection.Add($DBLogRuntimePassAttrib)
@@ -269,7 +275,6 @@ function Invoke-OSConfigurationTool
         }
 
         $osInstallDir = GetServerInstallDir
-
     }
 
     process
@@ -402,9 +407,19 @@ function Invoke-OSConfigurationTool
                     }
                     '11.0'
                     {
-                        # Log database
-                        $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.Server.InnerText = $PSBoundParameters.DBLogServer
-                        $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.Catalog.InnerText = $PSBoundParameters.DBLogCatalog
+                        ### Log database
+                        # If not specified, we default to the platform server database, admin user and runtime user
+                        if ($PsCmdlet.ParameterSetName -eq 'LogDBConfig')
+                        {
+                            $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.Server.InnerText = $PSBoundParameters.DBLogServer
+                            $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.Catalog.InnerText = $PSBoundParameters.DBLogCatalog
+                        }
+                        else
+                        {
+                            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Log Database not specified. Using the platform database for logs"
+                            $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.Server.InnerText = $PSBoundParameters.DBServer
+                            $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.Catalog.InnerText = $PSBoundParameters.DBCatalog
+                        }
                     }
                 }
 
@@ -586,11 +601,21 @@ function Invoke-OSConfigurationTool
                 $hsConf.EnvironmentConfiguration.CacheInvalidationConfiguration.ServiceUsername = "$($PSBoundParameters.RabbitMQUser)"
                 $hsConf.EnvironmentConfiguration.CacheInvalidationConfiguration.VirtualHost = "$($PSBoundParameters.RabbitMQVirtualHost)"
 
-                # Log database settings
-                $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.AdminUser.InnerText = "$($PSBoundParameters.DBLogAdminUser)"
-                $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.AdminPassword.InnerText = "$($PSBoundParameters.DBLogAdminPass)"
-                $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.RuntimeUser.InnerText = "$($PSBoundParameters.DBLogRuntimeUser)"
-                $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.RuntimePassword.InnerText = "$($PSBoundParameters.DBLogRuntimePass)"
+                # Log database settings. If not specified, we default to the platform database
+                if ($PsCmdlet.ParameterSetName -eq 'LogDBConfig')
+                {
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.AdminUser.InnerText = "$($PSBoundParameters.DBLogAdminUser)"
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.AdminPassword.InnerText = "$($PSBoundParameters.DBLogAdminPass)"
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.RuntimeUser.InnerText = "$($PSBoundParameters.DBLogRuntimeUser)"
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.RuntimePassword.InnerText = "$($PSBoundParameters.DBLogRuntimePass)"
+                }
+                else
+                {
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.AdminUser.InnerText = "$($PSBoundParameters.DBAdminUser)"
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.AdminPassword.InnerText = "$($PSBoundParameters.DBAdminPass)"
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.RuntimeUser.InnerText = "$($PSBoundParameters.DBRuntimeUser)"
+                    $hsConf.EnvironmentConfiguration.LoggingDatabaseConfiguration.RuntimePassword.InnerText = "$($PSBoundParameters.DBRuntimePass)"
+                }
             }
         }
 
