@@ -102,7 +102,7 @@ function IsAdmin()
 
 function WriteNonTerminalError([string]$Message)
 {
-    #(to work around the issue that Write-Error doesn't set$? to $False in the caller's context)
+    #(to work around the issue that Write-Error doesn't set $? to $False in the caller's context)
     $PSCmdlet.WriteError((New-Object System.Management.Automation.ErrorRecord $Message, $null, ([System.Management.Automation.ErrorCategory]::InvalidData), $null))
 }
 
@@ -133,7 +133,7 @@ function RegRead([string]$Path, [string]$Name)
     return $output
 }
 
-function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name, [string]$Value)
+function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name, [PSObject]$Value)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $PSPath"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Filter: $Filter"
