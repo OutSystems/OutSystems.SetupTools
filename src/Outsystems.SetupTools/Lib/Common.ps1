@@ -163,20 +163,96 @@ function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$
 }
 function AppInsightsSendEvent([string]$EventName, [psobject]$EventProperties)
 {
-    $appInsightsClient = New-Object Microsoft.ApplicationInsights.TelemetryClient
-
-    foreach ($instrumentationKey in $script:OSTelAppInsightsKeys)
+    try
     {
-        $appInsightsClient.InstrumentationKey = $InstrumentationKeys
+        $appInsightsClient = New-Object Microsoft.ApplicationInsights.TelemetryClient
 
-        $eventProperties = New-Object System.Collections.Generic.Dictionary[string, string]
-        foreach ($eventProperty in $EventProperties.Keys)
+        foreach ($instrumentationKey in $script:OSTelAppInsightsKeys)
         {
-            $eventProperties.Add($eventProperty, $($EventProperties.Item($eventProperty)))
-        }
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Send appinsights event: $EventName"
+            $appInsightsClient.InstrumentationKey = $instrumentationKey
 
-        $appInsightsClient.TrackEvent($EventName, $eventProperties)
-        $appInsightsClient.Flush()
+            $eventProperties_ = New-Object 'System.Collections.Generic.Dictionary[string, string]'
+            foreach ($eventProperty in $EventProperties.Keys)
+            {
+                $eventProperties_.Add($eventProperty, $($EventProperties.Item($eventProperty)))
+            }
+
+            $appInsightsClient.TrackEvent($EventName, $eventProperties_)
+            $appInsightsClient.Flush()
+        }
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Error sending event: $EventName"
     }
 }
 
+function SendModuleLoadEvent
+{
+    if ($script:OSTelEnabled)
+    {
+        $script:OSTelSessionId = New-Guid
+        $script:OSTelOperationId = New-Guid
+
+        $eventProperties = @{
+            'sessionId'   = $script:OSTelSessionId
+            'operationId' = $script:OSTelOperationId
+            'tier'        = $script:OSTelTier
+        }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sending ModuleLoad event"
+        AppInsightsSendEvent -EventName 'ModuleLoad' -EventProperties $eventProperties
+    }
+    else
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "ModuleLoad event not send. Telemetry is disabled"
+    }
+}
+
+function SendFunctionStartEvent([psobject]$InvocationInfo)
+{
+    if ($script:OSTelEnabled)
+    {
+        $script:OSTelOperationId = New-Guid
+        $script:OSTelOperationIdStartTime = Get-Date
+
+        $eventProperties = @{
+            'sessionId'   = $script:OSTelSessionId
+            'operationId' = $script:OSTelOperationId
+            'tier'        = $script:OSTelTier
+            'name'        = $($InvocationInfo.Mycommand)
+            'parameters'  = $($InvocationInfo.BoundParameters.Keys | ConvertTo-Json)
+            'osVersion'   = $(GetServerVersion)
+        }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sending FunctionStart event"
+        AppInsightsSendEvent -EventName 'FunctionStart' -EventProperties $eventProperties
+    }
+    else
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "FunctionStart event not send. Telemetry is disabled"
+    }
+}
+
+function SendFunctionEndEvent([psobject]$InvocationInfo)
+{
+    if ($script:OSTelEnabled)
+    {
+        $eventProperties = @{
+            'sessionId'   = $script:OSTelSessionId
+            'operationId' = $script:OSTelOperationId
+            'tier'        = $script:OSTelTier
+            'name'        = $($InvocationInfo.Mycommand)
+            'parameters'  = $($InvocationInfo.BoundParameters.Keys | ConvertTo-Json)
+            'osVersion'   = $(GetServerVersion)
+        }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sending FunctionEnd event"
+        AppInsightsSendEvent -EventName 'FunctionEnd' -EventProperties $eventProperties
+    }
+    else
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "FunctionEnd event not send. Telemetry is disabled"
+    }
+}
