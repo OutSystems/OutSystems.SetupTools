@@ -110,7 +110,7 @@ PrivateData = @{
         ProjectUri = 'https://github.com/OutSystems/Outsystems.SetupTools'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://avatars2.githubusercontent.com/u/2916417?s=200&v=4'
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''
