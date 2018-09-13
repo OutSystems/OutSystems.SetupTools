@@ -45,6 +45,7 @@ function Get-OSServiceStudioVersion
 
     end
     {
+        SendFunctionEndEvent -InvocationInfo $MyInvocation
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }
