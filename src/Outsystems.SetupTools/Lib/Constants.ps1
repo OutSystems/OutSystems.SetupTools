@@ -110,7 +110,7 @@ $OSRabbitMQDefaultCredentials = New-Object System.Management.Automation.PSCreden
 
 # Telemetry
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSTelAppInsightsKeys = @('3deb8b89-7be9-477f-844d-17ad653a96b2')
+$OSTelAppInsightsKeys = @('91943ce0-af45-4b7c-a40d-0018e4072e8a')
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSTelTier = 'Standard'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
