@@ -1,6 +1,6 @@
 # Module global preference variables
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$ErrorActionPreference = "Continue"
+#$ErrorActionPreference = "Continue"
 
 # Outsystems services
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
