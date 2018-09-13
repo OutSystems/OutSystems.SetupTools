@@ -126,7 +126,7 @@ function RegRead([string]$Path, [string]$Name)
 
     try
     {
-        $output = $(Get-ItemProperty -Path $Path -Name $Name -ErrorAction Stop).($Name)
+        $output = $(Get-ItemProperty -Path $Path -Name $Name -ErrorAction Ignore).($Name)
     }
     catch
     {
