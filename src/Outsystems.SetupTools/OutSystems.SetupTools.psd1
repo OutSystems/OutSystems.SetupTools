@@ -107,7 +107,7 @@ PrivateData = @{
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/pintonunes/Outsystems-Outsystems.SetupTools'
+        ProjectUri = 'https://github.com/OutSystems/Outsystems.SetupTools'
 
         # A URL to an icon representing this module.
         # IconUri = ''
