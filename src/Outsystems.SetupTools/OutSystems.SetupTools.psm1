@@ -1,23 +1,26 @@
 param(
-    [parameter(Position=0,Mandatory=$false)][boolean]$Telemetry=$true,
-    [parameter(Position=1,Mandatory=$false)][string]$Tier,
-    [parameter(Position=2,Mandatory=$false)][string]$InstKey
+    [parameter(Position=0,Mandatory=$false)][boolean]$ParamTelemetry=$true,
+    [parameter(Position=1,Mandatory=$false)][string]$ParamTier,
+    [parameter(Position=2,Mandatory=$false)][string]$ParamInstKey
 
 )
-# Get definition files.
-$Lib  = @( Get-ChildItem -Path $PSScriptRoot\Lib\*.ps1 -ErrorAction SilentlyContinue )
-$Functions = @( Get-ChildItem -Path $PSScriptRoot\Functions\*.ps1 -ErrorAction SilentlyContinue )
+# Module global preference variables
+$script:ErrorActionPreference = "Continue"
+
+# Get definition files
+$moduleLibs  = @( Get-ChildItem -Path $PSScriptRoot\Lib\*.ps1 -ErrorAction SilentlyContinue )
+$moduleFunctions = @( Get-ChildItem -Path $PSScriptRoot\Functions\*.ps1 -ErrorAction SilentlyContinue )
 
 # Dot source the files
-Foreach($Import in @($Lib + $Functions))
+foreach($moduleToImport in @($moduleLibs + $moduleFunctions))
 {
-    Try
+    try
     {
-        . $Import.Fullname
+        . $moduleToImport.Fullname
     }
-    Catch
+    catch
     {
-        Write-Error -Message "Failed to import function $($Import.Fullname): $_"
+        Write-Error -Message "Failed to import function $($moduleToImport.Fullname): $_"
     }
 }
 
@@ -25,18 +28,18 @@ Foreach($Import in @($Lib + $Functions))
 Export-ModuleMember -Function *-*
 
 # Telemetry switch
-$script:OSTelEnabled = $Telemetry
+$script:OSTelEnabled = $ParamTelemetry
 
 # Add instrumentation key if provided
-if ($Tier)
+if ($ParamTier)
 {
-    $script:OSTelTier = $Tier
+    $script:OSTelTier = $ParamTier
 }
 
 # Add instrumentation key if provided
-if ($InstKey)
+if ($ParamInstKey)
 {
-    $script:OSTelAppInsightsKeys += $InstKey
+    $script:OSTelAppInsightsKeys += $ParamInstKey
 }
 
 # Send module load event
