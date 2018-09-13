@@ -1,4 +1,6 @@
-function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Message, [object]$Exception)
+
+# Requires Constants.ps1
+Function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Message, [object]$Exception)
 {
 
     # Log types
@@ -149,7 +151,7 @@ function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$
     {
         # If name is empty is because its a collection.
         $webProperty = Get-WebConfigurationProperty -PSPath $PSPath -Filter "$Filter/add[@name='$($Value.name)']" -Name .
-        if($webProperty)
+        if ($webProperty)
         {
             Set-WebConfigurationProperty -PSPath $PSPath -Filter "$Filter/add[@name='$($Value.name)']" -Name . -Value $value
         }
@@ -159,3 +161,22 @@ function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$
         }
     }
 }
+function AppInsightsSendEvent([string]$EventName, [psobject]$EventProperties)
+{
+    $appInsightsClient = New-Object Microsoft.ApplicationInsights.TelemetryClient
+
+    foreach ($instrumentationKey in $script:OSTelAppInsightsKeys)
+    {
+        $appInsightsClient.InstrumentationKey = $InstrumentationKeys
+
+        $eventProperties = New-Object System.Collections.Generic.Dictionary[string, string]
+        foreach ($eventProperty in $EventProperties.Keys)
+        {
+            $eventProperties.Add($eventProperty, $($EventProperties.Item($eventProperty)))
+        }
+
+        $appInsightsClient.TrackEvent($EventName, $eventProperties)
+        $appInsightsClient.Flush()
+    }
+}
+
