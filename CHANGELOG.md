@@ -5,13 +5,17 @@
 ### What's new
 
 - Support for Outsystems 11 (beta). You can now install and setup Outsystems 11 using this module.
-- Lots of code refactoring and improvements. Added unit testing to almost all Cmdlets.
-- Redesigned error handling. As best pratices for modules, all errors are now non-terminating.
+- Lots of code refactoring and improvements. Added unit testing to almost all CmdLets.
+- Redesigned error handling. As best pratices for modules, all errors are now non-terminating. (BREAKING CHANGE)
+- Removed output sentences from all CmdLets. Or the CmdLets will not output anything to the console or will output a results object.
 
 ### Changes
 
+- Install-OSRabbitMQ
+  - New: New function to install and configure RabbitMQ
+
 - Install-OSServerPreReqs:
-  - Change: Removed the old output messages. Function will now return an object with the result of the installation.
+  - Change: Function will now return an object with the result of the installation.
   - Change: We will not throw an exception anymore if a reboot is needed. User should now check the object returned and take care of the reboot.
   - Change: .NET version Change to 4.7.1 to support Outsystems 11.
   - Change: Microsoft repo is now used to download all Microsoft pre-requisites.
@@ -117,6 +121,12 @@
 - Test-OSServerSoftwareReqs:
   - Change: Removed the old output messages. Function will now return an object with the result of the tests.
   - BREAKING CHANGE: Added a mandatory parameter -MajorVersion to test version 10 and 11
+  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+
+- Invoke-OSConfigurationTool:
+  - Change: Removed the write-output. Function by default will not output anything.
+  - Added: Support for Outsystems 11.
+  - Changed: The only mandatory parameters are now the DB SA account and the DB accounts passwords. Everything else will use the configuration tool defaults if not specified.
   - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Get-OSPlatformApplications!!!!:
