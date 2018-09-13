@@ -17,3 +17,6 @@ Foreach($Import in @($Lib + $Functions))
 
 # Export only the functions using PowerShell standard verb-noun naming.
 Export-ModuleMember -Function *-*
+
+# Send module load event
+SendModuleLoadEvent
