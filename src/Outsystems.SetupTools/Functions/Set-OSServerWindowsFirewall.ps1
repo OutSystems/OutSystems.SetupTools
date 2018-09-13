@@ -26,6 +26,7 @@ function Set-OSServerWindowsFirewall
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
 
         $tcpPorts = @('12000', '12001', '12002', '12003', '12004')
         if ($IncludeRabbitMQ)

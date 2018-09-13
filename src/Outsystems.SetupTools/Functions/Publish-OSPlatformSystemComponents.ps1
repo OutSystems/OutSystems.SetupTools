@@ -60,6 +60,7 @@ function Publish-OSPlatformSystemComponents
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
 
         # Initialize the results object
         $installResult = [pscustomobject]@{

@@ -61,6 +61,7 @@ Function Get-OSPlatformModules
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
     }
 
     process

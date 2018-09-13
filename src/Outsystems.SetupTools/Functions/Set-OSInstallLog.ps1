@@ -36,6 +36,7 @@ function Set-OSInstallLog
     )
     begin
     {
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
     }
 
     process

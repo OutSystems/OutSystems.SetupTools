@@ -27,6 +27,7 @@ function Test-OSServerSoftwareReqs
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
 
         # Initialize the results object
         $testResult = [pscustomobject]@{
