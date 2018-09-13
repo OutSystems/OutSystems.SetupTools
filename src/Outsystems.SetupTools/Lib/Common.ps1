@@ -218,12 +218,13 @@ function SendFunctionStartEvent([psobject]$InvocationInfo)
         $script:OSTelOperationIdStartTime = Get-Date
 
         $eventProperties = @{
-            'sessionId'   = $script:OSTelSessionId
-            'operationId' = $script:OSTelOperationId
-            'tier'        = $script:OSTelTier
-            'name'        = $($InvocationInfo.Mycommand)
-            'parameters'  = $($InvocationInfo.BoundParameters.Keys | ConvertTo-Json)
-            'osVersion'   = $(GetServerVersion)
+            'sessionId'     = $script:OSTelSessionId
+            'operationId'   = $script:OSTelOperationId
+            'tier'          = $script:OSTelTier
+            'name'          = $($InvocationInfo.Mycommand)
+            'parameters'    = $($InvocationInfo.BoundParameters.Keys | ConvertTo-Json)
+            'osVersion'     = $(GetServerVersion)
+            'moduleVersion' = $($InvocationInfo.MyCommand.Module.Version)
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sending FunctionStart event"
@@ -240,12 +241,13 @@ function SendFunctionEndEvent([psobject]$InvocationInfo)
     if ($script:OSTelEnabled)
     {
         $eventProperties = @{
-            'sessionId'   = $script:OSTelSessionId
-            'operationId' = $script:OSTelOperationId
-            'tier'        = $script:OSTelTier
-            'name'        = $($InvocationInfo.Mycommand)
-            'parameters'  = $($InvocationInfo.BoundParameters.Keys | ConvertTo-Json)
-            'osVersion'   = $(GetServerVersion)
+            'sessionId'     = $script:OSTelSessionId
+            'operationId'   = $script:OSTelOperationId
+            'tier'          = $script:OSTelTier
+            'name'          = $($InvocationInfo.Mycommand)
+            'parameters'    = $($InvocationInfo.BoundParameters.Keys | ConvertTo-Json)
+            'osVersion'     = $(GetServerVersion)
+            'moduleVersion' = $($InvocationInfo.MyCommand.Module.Version)
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sending FunctionEnd event"
