@@ -112,6 +112,18 @@ $OSRabbitMQDefaultPassword = 'guest'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRabbitMQDefaultCredentials = New-Object System.Management.Automation.PSCredential ($OSRabbitMQDefaultUser, $(ConvertTo-SecureString $OSRabbitMQDefaultPassword -AsPlainText -Force))
 
+# Telemetry
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSTelAppInsightsKeys = @('3deb8b89-7be9-477f-844d-17ad653a96b2')
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSTelTier = 'Standard'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSTelEnabled = $true
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSTelSessionId = ''
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSTelOperationId = ''
+
 # IIS configuration
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSIISConfig = @(
