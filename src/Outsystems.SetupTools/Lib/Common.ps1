@@ -1,74 +1,66 @@
-
 # Requires Constants.ps1
-Function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Message, [object]$Exception)
+function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Message, [object]$Exception)
 {
-
     # Log types
     switch ($Phase)
     {
         0
         {
-            $PhaseMessage += ' [BEGIN  ]'
+            $phaseMessage = ' [BEGIN  ]'
         }
-
         1
         {
-            $PhaseMessage += ' [PROCESS]'
+            $phaseMessage = ' [PROCESS]'
         }
-
         2
         {
-            $PhaseMessage += ' [END    ]'
+            $phaseMessage = ' [END    ]'
         }
     }
 
-    $LogLineTemplate = $((get-date).TimeOfDay.ToString()) + " [" + $Function.PadRight(40) + "] $PhaseMessage "
+    $logLineTemplate = $((get-date).TimeOfDay.ToString()) + " [" + $Function.PadRight(40) + "] $phaseMessage "
 
     switch ($Stream)
     {
         0
         {
-            Write-Verbose  "$LogLineTemplate $Message"
-            if ($script:OSLogFile -and ($script:OSLogFile -ne ""))
+            Write-Verbose  "$logLineTemplate $Message"
+            if ($script:OSLogFile)
             {
-                Add-Content -Path $script:OSLogFile -Value "VERBOSE : $LogLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "VERBOSE : $logLineTemplate $Message"
             }
         }
-
         1
         {
-            Write-Warning  "$LogLineTemplate $Message"
-            if ($script:OSLogFile -and ($script:OSLogFile -ne ""))
+            Write-Warning  "$logLineTemplate $Message"
+            if ($script:OSLogFile)
             {
-                Add-Content -Path $script:OSLogFile -Value "WARNING : $LogLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "WARNING : $logLineTemplate $Message"
             }
         }
-
         2
         {
-            Write-Debug  "$LogLineTemplate $Message"
-            if ($script:OSLogFile -and ($script:OSLogFile -ne "") -and $script:OSLogDebug)
+            Write-Debug  "$logLineTemplate $Message"
+            if ($script:OSLogFile -and $script:OSLogDebug)
             {
-                Add-Content -Path $script:OSLogFile -Value "DEBUG   : $LogLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "DEBUG   : $logLineTemplate $Message"
             }
         }
-
         3
         {
-            Write-Verbose "$LogLineTemplate $Message"
-            if ($script:OSLogFile -and ($script:OSLogFile -ne ""))
+            Write-Verbose "$logLineTemplate $Message"
+            if ($script:OSLogFile)
             {
-                Add-Content -Path $script:OSLogFile -Value "ERROR   : $LogLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "ERROR   : $logLineTemplate $Message"
             }
 
             # Exception info
             if ($Exception)
             {
                 $E = $Exception
-                Write-Verbose "$LogLineTemplate $($E.Message)"
-                if ($script:OSLogFile -and ($script:OSLogFile -ne ""))
+                Write-Verbose "$logLineTemplate $($E.Message)"
+                if ($script:OSLogFile)
                 {
-                    Add-Content -Path $script:OSLogFile -Value "ERROR   : $LogLineTemplate $Message"
                     Add-Content -Path $script:OSLogFile -Value "InnerException:"
                     Add-Content -Path $script:OSLogFile -Value $($E.Message)
                     Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
@@ -78,8 +70,8 @@ Function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
                 while ($E.InnerException)
                 {
                     $E = $E.InnerException
-                    Write-Verbose "$LogLineTemplate $($E.Message)"
-                    if ($script:OSLogFile -and ($script:OSLogFile -ne ""))
+                    Write-Verbose "$logLineTemplate $($E.Message)"
+                    if ($script:OSLogFile)
                     {
                         Add-Content -Path $script:OSLogFile -Value $($E.Message)
                         Add-Content -Path $script:OSLogFile -Value $($E.StackTrace)
