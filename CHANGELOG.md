@@ -5,7 +5,7 @@
 ### What's new
 
 - Support for Outsystems 11. You can now install and setup Outsystems 11 using this module.
-- Major redesign of the module code. Lots of refactoring, improvements and bug fixes.
+- Major redesign of the module code. Lots of refactoring, improvements on all CmdLets and lots of bug fixes.
 - Added unit testing to almost all CmdLets.
 - (BREAKING CHANGE) Redesigned error handling. As best pratices for modules, all errors are now non-terminating. You should use the -ErrorAction parameter or the $global:ErrorPreference variable. To stop on any error (previous behavior) add $global:ErrorActionPreference = 'Stop' on the top of the script.
 - Removed output sentences from all CmdLets. CmdLets will not output anything or will output an object result.
