@@ -56,6 +56,10 @@ Function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         3
         {
             Write-Verbose "$LogLineTemplate $Message"
+            if ($script:OSLogFile -and ($script:OSLogFile -ne ""))
+            {
+                Add-Content -Path $script:OSLogFile -Value "ERROR   : $LogLineTemplate $Message"
+            }
 
             # Exception info
             if ($Exception)
