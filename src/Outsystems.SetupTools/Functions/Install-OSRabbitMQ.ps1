@@ -32,7 +32,8 @@ function Install-OSRabbitMQ
     Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
 
     .NOTES
-    All error are non-terminating. The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
+    After uninstalling RabbitMQ you need to reboot. Some registry keys are only deleted after rebooting
+    So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this CmdLet
 
     #>
 
@@ -72,7 +73,7 @@ function Install-OSRabbitMQ
 
     process
     {
-         ### Check phase ###
+        #region check
         if (-not $(IsAdmin))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
@@ -105,23 +106,21 @@ function Install-OSRabbitMQ
         }
         else
         {
-            if ($(GetErlangInstallDir) -ne $rabbitMQErlangInstallDir)
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Another Erlang version was found on the machine. Installation aborted"
-                WriteNonTerminalError -Message "Another Erlang version was found on the machine. Installation aborted"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Another Erlang version was found on the machine. Installation aborted'
-
-                return $installResult
-            }
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The right Erlang version was found on the machine. Skipping install"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang already installed at $(GetErlangInstallDir)"
         }
 
-        $installRabbitMQ = $true
+        if (-not $(GetRabbitInstallDir))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ not found. We will try to download and install"
+            $installRabbitMQ = $true
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ already installed at $(GetRabbitInstallDir)"
+        }
+        #endregion
 
-        # Install phase
+        #region install
         if ($installErlang)
         {
             try
@@ -258,6 +257,7 @@ function Install-OSRabbitMQ
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ is now available!!"
 
+            #region RabbitConfig
             foreach ($virtualHost in $VirtualHosts)
             {
                 try {
@@ -312,7 +312,9 @@ function Install-OSRabbitMQ
                     }
                 }
             }
+            #endregion
         }
+        #endregion
 
         if ($installResult.RebootNeeded)
         {
