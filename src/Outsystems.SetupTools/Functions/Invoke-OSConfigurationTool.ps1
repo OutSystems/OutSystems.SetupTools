@@ -357,13 +357,16 @@ function Invoke-OSConfigurationTool
 
         if ( $result.ExitCode -ne 0 )
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error generating the templates. Return code: $($result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error generating the templates. Exit code: $($result.ExitCode)"
+            WriteNonTerminalError -Message "Error generating the templates. Exit code: $($result.ExitCode)"
+
             $installResult.Success = $false
             $installResult.ExitCode = $($result.ExitCode)
             $installResult.Message = 'Error generating the templates'
 
             return $installResult
         }
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($result.ExitCode)"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "hsconf templates generated"
 
         #Select the template
@@ -645,11 +648,11 @@ function Invoke-OSConfigurationTool
         catch
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
-            WriteNonTerminalError -Message "Error lauching the configuration tool. Return code: $($result.ExitCode)"
+            WriteNonTerminalError -Message "Error launching the configuration tool. Exit code: $($result.ExitCode)"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
-            $installResult.Message = 'Error lauching the configuration tool'
+            $installResult.Message = 'Error launching the configuration tool'
 
             return $installResult
         }
@@ -659,12 +662,12 @@ function Invoke-OSConfigurationTool
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "CONFTOOL: $logline"
         }
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "ConfTool exit code: $($result.ExitCode)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($result.ExitCode)"
 
         if ($result.ExitCode -ne 0)
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error configuring the platform. Return code: $($result.ExitCode)"
-            WriteNonTerminalError -Message "Error configuring the platform. Return code: $($result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error configuring the platform. Exit code: $($result.ExitCode)"
+            WriteNonTerminalError -Message "Error configuring the platform. Exit code: $($result.ExitCode)"
 
             $installResult.Success = $false
             $installResult.ExitCode = $($result.ExitCode)
