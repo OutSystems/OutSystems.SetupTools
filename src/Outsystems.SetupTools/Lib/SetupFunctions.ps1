@@ -17,14 +17,13 @@ function InstallWindowsFeatures([string[]]$Features)
     return $installResult
 }
 
-Function GetWindowsFeatureState([string]$Features)
+function GetWindowsFeatureState([string]$Features)
 {
-    Return $($(Get-WindowsFeature -Name $Features -Verbose:$false).Installed)
+    return $($(Get-WindowsFeature -Name $Features -Verbose:$false).Installed)
 }
 
 function ConfigureServiceWindowsSearch()
 {
-
     if ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue))
     {
 
@@ -108,14 +107,13 @@ function GetDotNetCoreVersion()
 
 function InstallDotNet()
 {
-    #Download sources from repo
-    $Installer = "$ENV:TEMP\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
+    $installer = "$ENV:TEMP\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
-    DownloadOSSources -URL $OSRepoURLDotNET -SavePath $Installer
+    DownloadOSSources -URL $OSRepoURLDotNET -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $result = Start-Process -FilePath $Installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru -ErrorAction Stop
+    $result = Start-Process -FilePath $installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru -ErrorAction Stop
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
 
@@ -139,14 +137,13 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
 
 function InstallBuildTools()
 {
-    #Download sources from repo
-    $Installer = "$ENV:TEMP\BuildTools_Full.exe"
+    $installer = "$ENV:TEMP\BuildTools_Full.exe"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLBuildTools"
-    DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $Installer
+    DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $result = Start-Process -FilePath $Installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
+    $result = Start-Process -FilePath $installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
 
@@ -155,14 +152,13 @@ function InstallBuildTools()
 
 function InstallDotNetCore()
 {
-    #Download sources from repo
-    $Installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
+    $installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
-    DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $Installer
+    DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $result = Start-Process -FilePath $Installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
+    $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
 
@@ -331,6 +327,16 @@ function GetErlangInstallDir()
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
+    return $output
+}
+
+function GetRabbitInstallDir()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\WOW6432Node\VMware, Inc.\RabbitMQ Server\Install_Dir"
+    $output = RegRead -Path "HKLM:SOFTWARE\WOW6432Node\VMware, Inc.\RabbitMQ Server" -Name "Install_Dir"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
 
