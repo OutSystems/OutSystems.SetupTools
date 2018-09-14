@@ -30,8 +30,8 @@ Import-Module OutSystems.SetupTools
 ```powershell
 # you should have module imported in the session
 Import-Module OutSystems.SetupTools
-Test-OSServerHardwareReqs
-Test-OSServerSoftwareReqs
+Test-OSServerHardwareReqs -MajorVersion 10.0
+Test-OSServerSoftwareReqs -MajorVersion 10.0
 ```
 
 * Install the platform pre-requisites:
