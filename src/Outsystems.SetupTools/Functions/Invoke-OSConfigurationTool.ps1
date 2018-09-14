@@ -645,7 +645,7 @@ function Invoke-OSConfigurationTool
         catch
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
-            WriteNonTerminalError -Message "Error lauching the configuration tool"
+            WriteNonTerminalError -Message "Error lauching the configuration tool. Return code: $($result.ExitCode)"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
@@ -659,10 +659,13 @@ function Invoke-OSConfigurationTool
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "CONFTOOL: $logline"
         }
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "ConfTool exit code: $($result.ExitCode)"
 
         if ($result.ExitCode -ne 0)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error configuring the platform. Return code: $($result.ExitCode)"
+            WriteNonTerminalError -Message "Error configuring the platform. Return code: $($result.ExitCode)"
+
             $installResult.Success = $false
             $installResult.ExitCode = $($result.ExitCode)
             $installResult.Message = 'Error configuring the platform'
