@@ -34,6 +34,7 @@ function Install-OSRabbitMQ
     .NOTES
     After uninstalling RabbitMQ you need to reboot. Some registry keys are only deleted after rebooting
     So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this CmdLet
+    RabbitMQ configuration is only done when installed. Rerunning this CmdLet will not reconfigure RabbitMQ
 
     #>
 
