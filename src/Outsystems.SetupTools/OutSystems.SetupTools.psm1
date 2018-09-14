@@ -4,8 +4,6 @@ param(
     [parameter(Position=2,Mandatory=$false)][string]$ParamInstKey
 
 )
-# Module global preference variables
-$script:ErrorActionPreference = "Continue"
 
 # Get definition files
 $moduleLibs  = @( Get-ChildItem -Path $PSScriptRoot\Lib\*.ps1 -ErrorAction SilentlyContinue )
