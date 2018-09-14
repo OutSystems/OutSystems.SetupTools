@@ -24,13 +24,13 @@ GUID = 'dcc020ea-a9c7-4bd3-91fc-e97432301020'
 Author = 'Pedro Nunes'
 
 # Company or vendor of this module
-CompanyName = 'Outsystems'
+CompanyName = 'OutSystems'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 Outsystems. All rights reserved.'
+Copyright = '(c) 2018 OutSystems. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Tools for installing and manage the Outsystems platform installation'
+Description = 'Tools for installing and manage the OutSystems platform installation'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -101,13 +101,13 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Outsystems')
+        Tags = @('OutSystems')
 
         # A URL to the license for this module.
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/OutSystems/Outsystems.SetupTools'
+        ProjectUri = 'https://github.com/OutSystems/OutSystems.SetupTools'
 
         # A URL to an icon representing this module.
         IconUri = 'https://avatars2.githubusercontent.com/u/2916417?s=200&v=4'
