@@ -590,8 +590,8 @@ function Invoke-OSConfigurationTool
             '10.0'
             {
                 # Log user on the platform database
-                $hsConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogUser.InnerText = $DBLogUser
-                $hsConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogPassword.InnerText = $DBLogPass
+                $hsConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogUser.InnerText = "$($PSBoundParameters.DBLogUser)"
+                $hsConf.EnvironmentConfiguration.PlatformDatabaseConfiguration.LogPassword.InnerText = "$($PSBoundParameters.DBLogPass)"
 
             }
             '11.0'
