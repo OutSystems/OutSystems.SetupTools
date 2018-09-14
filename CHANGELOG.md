@@ -1,13 +1,14 @@
 # Outsystems.SetupTools Release History
 
-## 1.8.0.0 - Unreleased
+## 2.0.0.0
 
 ### What's new
 
-- Support for Outsystems 11 (beta). You can now install and setup Outsystems 11 using this module.
-- Lots of code refactoring and improvements. Added unit testing to almost all CmdLets.
-- Redesigned error handling. As best pratices for modules, all errors are now non-terminating. (BREAKING CHANGE)
-- Removed output sentences from all CmdLets. Or the CmdLets will not output anything to the console or will output a results object.
+- Support for Outsystems 11. You can now install and setup Outsystems 11 using this module.
+- Major redesign of the module code. Lots of refactoring, improvements and bug fixes.
+- Added unit testing to almost all CmdLets.
+- (BREAKING CHANGE) Redesigned error handling. As best pratices for modules, all errors are now non-terminating. You should use the -ErrorAction parameter or the $global:ErrorPreference variable. To stop on any error (previous behavior) add $global:ErrorActionPreference = 'Stop' on the top of the script.
+- Removed output sentences from all CmdLets. CmdLets will not output anything or will output an object result.
 
 ### Changes
 
@@ -20,71 +21,45 @@
   - Change: .NET version Change to 4.7.1 to support Outsystems 11.
   - Change: Microsoft repo is now used to download all Microsoft pre-requisites.
   - Fix: Build tools 2015 are now included in the pre-requisites.
-  - Added: DotNetCore for Outsystems 11.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
+  - Add: DotNetCore for Outsystems 11.
 
 - Install-OSServer:
   - Change: Removed the old output messages. Function will now return an object with the result of the installation.
   - Fix: Added DefaultParameterSetName to remote install. Function will default to download sources from repo if no parameter is specified.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Install-OSServiceStudio:
   - Change: Removed the write-output. Function by default will not output anything.
   - Fix: Added DefaultParameterSetName to remote install. Function will default to download sources from repo if no parameter is specified.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Renamed Get-OSPlatformServerPrivateKey to Get-OSServerPrivateKey (BREAKING CHANGE):
   - Change: Renamed the function to standarize with the other functions.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
-
-- Get-OSServerInstallDir:
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
-
-- Get-OSServerVersion:
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
-
-- Get-OSServiceStudioInstallDir:
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
-
-- Get-OSServiceStudioVersion:
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
-
-- New-OSPlatformPrivateKey:
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Set-OSServerSecuritySettings:
   - Change: Removed the write-output. Function by default will not output anything.
   - Fixed: Wrong registry value while disabling SSL unsafe protocols.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Set-OSServerPerformanceTunning:
   - Change: Removed the write-output. Function by default will not output anything.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Publish-OSPlatformLifetime:
   - Change: Removed the write-output. Function will now return an object with the publish results.
   - Fix: Removed admin rights check. User doesnt need to be admin of the machine. It needs to have permissions on the platform only.
   - Change: Added the -Credential parameter. This will be the default way to pass credentials. The -ServiceCenterUser and the -ServiceCenterPass will be removed in the future (unsecure).
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Publish-OSPlatformSystemComponents:
   - Change: Removed the write-output. Function will now return an object with the publish results.
   - Fix: Removed admin rights check. User doesnt need to be admin of the machine. It needs to have permissions on the platform only.
   - Change: Added the -Credential parameter. This will be the default way to pass credentials. The -ServiceCenterUser and the -ServiceCenterPass will be removed in the future (unsecure).
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Install-OSPlatformServiceCenter:
   - Change: Removed the old output messages. Function will now return an object with the result of the installation.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Get-OSPlatformVersion:
   - Change: Change parameter -Host to -ServiceCenterHost to standarize with the other functions. -Host is still accepted, so this is not a breaking change.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
   - Change: Added pipeline support so you can: "10.0.0.1", "10.0.0.1", "10.0.0.3" | Get-OSPlatformVersion
 
 - Install-OSPlatformLicense:
   - Change: Removed the write-output. Function by default will not output anything.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Disable-OSServerIPv6:
   - Change: Removed the write-output. Function by default will not output anything.
@@ -92,18 +67,12 @@
 
 - Start-OSServerServices:
   - Change: Removed the write-output. Function by default will not output anything.
-  - Change: Improved function.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Stop-OSServerServices:
   - Change: Removed the write-output. Function by default will not output anything.
-  - Change: Improved function.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Restart-OSServerServices:
   - Change: Removed the write-output. Function by default will not output anything.
-  - Change: Improved function.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Set-OSInstallLog:
   - Change: Removed the write-output. Function by default will not output anything.
@@ -111,23 +80,19 @@
 - Set-OSServerWindowsFirewall:
   - Change: Removed the write-output. Function by default will not output anything.
   - Added: Parameter -IncludeRabbitMQ to open the needed ports for RabbitMQ
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Test-OSServerHardwareReqs:
   - Change: Removed the old output messages. Function will now return an object with the result of the tests.
   - BREAKING CHANGE: Added a mandatory parameter -MajorVersion to test version 10 and 11
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Test-OSServerSoftwareReqs:
   - Change: Removed the old output messages. Function will now return an object with the result of the tests.
   - BREAKING CHANGE: Added a mandatory parameter -MajorVersion to test version 10 and 11
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Invoke-OSConfigurationTool:
   - Change: Removed the write-output. Function by default will not output anything.
   - Added: Support for Outsystems 11.
   - Changed: The only mandatory parameters are now the DB SA account and the DB accounts passwords. Everything else will use the configuration tool defaults if not specified.
-  - BREAKING CHANGE: All errors changed to non-terminating errors. Use the "-ErrorAction" Stop parameter or set the variable "$ErrorPreference = Stop" to revert to the old behavior.
 
 - Get-OSPlatformApplications!!!!:
   - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
