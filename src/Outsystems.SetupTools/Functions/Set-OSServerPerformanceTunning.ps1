@@ -184,7 +184,7 @@ function Set-OSServerPerformanceTunning
                     Set-ItemProperty -Path "IIS:\Sites\Default Web Site$InterestingApp" -Name applicationPool -Value $($Config.PoolName)
                 }
 
-                # Commit everything on one shot
+                # Commit everything in one shot
                 try
                 {
                     Stop-WebCommitDelay
