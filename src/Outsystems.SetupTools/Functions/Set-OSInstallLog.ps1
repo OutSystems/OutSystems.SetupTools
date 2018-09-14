@@ -26,9 +26,11 @@ function Set-OSInstallLog
     [CmdletBinding()]
     Param (
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$Path,
 
         [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$File,
 
         [Parameter()]
