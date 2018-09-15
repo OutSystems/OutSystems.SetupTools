@@ -13,7 +13,7 @@ function Set-OSServerWindowsFirewall
     If set to true it will open the TCP Port 5672 needed for rabbitMQ. Defaults to false.
 
     .EXAMPLE
-    Set-OSServerWindowsFirewall -IncludeRabbitMQ:$true
+    Set-OSServerWindowsFirewall -IncludeRabbitMQ
 
     #>
 
