@@ -20,7 +20,7 @@ function Set-OSServerWindowsFirewall
     [CmdletBinding()]
     param(
         [Parameter()]
-        [bool]$IncludeRabbitMQ = $false
+        [switch]$IncludeRabbitMQ
     )
 
     begin
@@ -29,7 +29,7 @@ function Set-OSServerWindowsFirewall
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
         $tcpPorts = @('12000', '12001', '12002', '12003', '12004')
-        if ($IncludeRabbitMQ)
+        if ($IncludeRabbitMQ.IsPresent)
         {
             $tcpPorts += '5672'
         }
