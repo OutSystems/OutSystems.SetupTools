@@ -1,5 +1,16 @@
 # Outsystems.SetupTools Release History
 
+## 2.0.1.0
+
+### Changes
+
+- Set-OSServerWindowsFirewall:
+  - Changed: IncludeRabbitMQ parameter is now a switch and not a boolean
+
+- Set-OSServerPerformanceTunning:
+  - Added: IIS rapid fail protection. Sets the value to False
+  - Fixed: IIS Application Pool private memory allocation was set in Gigabytes and not in Kilobytes
+
 ## 2.0.0.0
 
 ### What's new
