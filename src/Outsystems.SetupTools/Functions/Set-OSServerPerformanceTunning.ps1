@@ -173,7 +173,7 @@ function Set-OSServerPerformanceTunning
 
                 #TODO: Set maximum failures to 0
 
-                $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * ($($Config.MemoryPercentage) / 100))
+                $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * 1MB * ($($Config.MemoryPercentage) / 100))
 
                 $AppPoolItem | Set-Item
 
