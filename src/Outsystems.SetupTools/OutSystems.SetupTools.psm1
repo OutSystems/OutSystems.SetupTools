@@ -1,8 +1,8 @@
 param(
     [parameter(Position=0,Mandatory=$false)][boolean]$ParamTelemetry=$true,
     [parameter(Position=1,Mandatory=$false)][string]$ParamTier,
-    [parameter(Position=2,Mandatory=$false)][string]$ParamInstKey
-
+    [parameter(Position=2,Mandatory=$false)][string]$ParamInstKey,
+    [parameter(Position=2,Mandatory=$false)][boolean]$ParamEnableLogging=$true
 )
 
 # Get definition files
@@ -38,6 +38,12 @@ if ($ParamTier)
 if ($ParamInstKey)
 {
     $script:OSTelAppInsightsKeys += $ParamInstKey
+}
+
+# Set default logging to %temp%\OutSystems.SetupTools\InstallLog-<date>.log
+if ($ParamEnableLogging)
+{
+    Set-OSInstallLog -Path "$ENV:Temp\OutSystems.SetupTools" -File "InstallLog-$(get-date -Format 'yyyyMMddHHmmss').log"
 }
 
 # Send module load event
