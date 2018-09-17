@@ -69,4 +69,5 @@ Set-OSServerSecuritySettings
 
 ## Documentation
 
-Function reference is available at the [docs](docs) folder as well as some script examples.
+Function reference is available at the [docs](docs) folder.
+Usage and script examples at the [examples](examples) folder.
