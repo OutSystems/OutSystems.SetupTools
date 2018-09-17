@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSServerSecuritySettings
 
 ## SYNOPSIS
-Short description
+{{Fill in the Synopsis}}
 
 ## SYNTAX
 
@@ -17,14 +17,16 @@ Set-OSServerSecuritySettings [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Long description
+{{Fill in the Description}}
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1
+```powershell
+PS C:\> {{ Add example code here }}
 ```
-An example
-```
+
+{{ Add example description here }}
 
 ## PARAMETERS
 
@@ -34,9 +36,13 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
+### None
+
+
 ## OUTPUTS
 
+### System.Object
+
 ## NOTES
-General notes
 
 ## RELATED LINKS

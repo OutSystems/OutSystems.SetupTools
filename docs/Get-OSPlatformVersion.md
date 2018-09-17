@@ -13,35 +13,36 @@ Gets the platform version from Service Center.
 ## SYNTAX
 
 ```
-Get-OSPlatformVersion [[-Host] <String>] [<CommonParameters>]
+Get-OSPlatformVersion [[-ServiceCenterHost] <String[]>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 This will return the Outsystems platform version from Service Center API.
-Will throw an exception if cannot get the version.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSPlatformVersion -Host "10.0.0.1"
+Get-OSPlatformVersion -ServiceCenterHost "10.0.0.1"
 ```
+
+Using the pipeline
+"10.0.0.1", "10.0.0.1", "10.0.0.3" | Get-OSPlatformVersion
 
 ## PARAMETERS
 
-### -Host
-Service Center address.
-If not specofied will default to localhost (127.0.0.1).
+### -ServiceCenterHost
+{{Fill ServiceCenterHost Description}}
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
-Aliases:
+Aliases: Host
 
 Required: False
 Position: 1
 Default value: 127.0.0.1
-Accept pipeline input: False
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 

@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSInstallLog
 
 ## SYNOPSIS
-Sets the log file location.
+{{Fill in the Synopsis}}
 
 ## SYNTAX
 
@@ -17,22 +17,21 @@ Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameter
 ```
 
 ## DESCRIPTION
-This will set the name and location where the log file will be stored.
-By default, the log will have the verbose stream.
-If you set the -LogDebug switch it will also contain the debug stream.
+{{Fill in the Description}}
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1
+```powershell
+PS C:\> {{ Add example code here }}
 ```
-Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
-```
+
+{{ Add example description here }}
 
 ## PARAMETERS
 
-### -Path
-The log file path.
-The function will try to create the path if not exists.
+### -File
+{{Fill File Description}}
 
 ```yaml
 Type: String
@@ -46,23 +45,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -File
-The log filename.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 2
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -LogDebug
-If should log also the debug stream
+{{Fill LogDebug Description}}
 
 ```yaml
 Type: SwitchParameter
@@ -71,7 +55,22 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: False
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Path
+{{Fill Path Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 0
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -82,7 +81,12 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
+### None
+
+
 ## OUTPUTS
+
+### System.Object
 
 ## NOTES
 

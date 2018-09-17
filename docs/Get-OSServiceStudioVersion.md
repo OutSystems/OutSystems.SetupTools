@@ -19,7 +19,6 @@ Get-OSServiceStudioVersion [-MajorVersion] <String> [<CommonParameters>]
 ## DESCRIPTION
 This will returns the Outsystems platform installed version.
 Cause you can have multiple development environments installed, you need to specify the major version.
-Will throw an exception if the platform is not installed.
 
 ## EXAMPLES
 

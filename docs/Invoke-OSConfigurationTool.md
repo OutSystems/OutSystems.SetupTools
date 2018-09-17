@@ -14,9 +14,9 @@ Documentation to be done!
 
 ```
 Invoke-OSConfigurationTool [[-Controller] <String>] [[-PrivateKey] <String>] [-OverwritePrivateKey]
- [-DBProvider] <String> [-DBSAUser] <String> [-DBSAPass] <String> [-DBAdminUser] <String>
- [-DBAdminPass] <String> [-DBRuntimeUser] <String> [-DBRuntimePass] <String> [-DBLogUser] <String>
- [-DBLogPass] <String> [-DBSessionUser] <String> [-DBSessionPass] <String> [<CommonParameters>]
+ [[-DBProvider] <String>] [-DBSAUser] <String> [-DBSAPass] <String> [[-DBAdminUser] <String>]
+ [-DBAdminPass] <String> [[-DBRuntimeUser] <String>] [-DBRuntimePass] <String> [[-DBSessionUser] <String>]
+ [-DBSessionPass] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -43,7 +43,7 @@ Aliases:
 
 Required: False
 Position: 1
-Default value: None
+Default value: 127.0.0.1
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -86,9 +86,9 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 3
-Default value: None
+Default value: SQL
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -131,9 +131,9 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 6
-Default value: None
+Default value: OSADMIN
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -161,9 +161,9 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 8
-Default value: None
+Default value: OSRUNTIME
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -183,36 +183,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -DBLogUser
-{{Fill DBLogUser Description}}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 10
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -DBLogPass
-{{Fill DBLogPass Description}}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 11
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -DBSessionUser
 {{Fill DBSessionUser Description}}
 
@@ -221,9 +191,9 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
-Position: 12
-Default value: None
+Required: False
+Position: 10
+Default value: OSSTATE
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -237,7 +207,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 13
+Position: 11
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -250,6 +220,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## INPUTS
 
 ## OUTPUTS
+
+### Outsystems.SetupTools.InstallResult
 
 ## NOTES
 

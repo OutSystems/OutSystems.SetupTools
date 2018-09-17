@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSServerPerformanceTunning
 
 ## SYNOPSIS
-Short description
+{{Fill in the Synopsis}}
 
 ## SYNTAX
 
@@ -18,19 +18,21 @@ Set-OSServerPerformanceTunning [[-IISNetCompilationPath] <String>] [[-IISHttpCom
 ```
 
 ## DESCRIPTION
-Long description
+{{Fill in the Description}}
 
 ## EXAMPLES
 
-### EXAMPLE 1
+### Example 1
+```powershell
+PS C:\> {{ Add example code here }}
 ```
-An example
-```
+
+{{ Add example description here }}
 
 ## PARAMETERS
 
-### -IISNetCompilationPath
-Parameter description
+### -IISHttpCompressionPath
+{{Fill IISHttpCompressionPath Description}}
 
 ```yaml
 Type: String
@@ -44,8 +46,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IISHttpCompressionPath
-Parameter description
+### -IISNetCompilationPath
+{{Fill IISNetCompilationPath Description}}
 
 ```yaml
 Type: String
@@ -53,7 +55,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: 0
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -65,9 +67,13 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
+### None
+
+
 ## OUTPUTS
 
+### System.Object
+
 ## NOTES
-General notes
 
 ## RELATED LINKS

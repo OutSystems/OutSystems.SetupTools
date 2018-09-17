@@ -12,7 +12,7 @@ Installs or updates the Outsystems Platform server.
 
 ## SYNTAX
 
-### Remote
+### Remote (Default)
 ```
 Install-OSServer [-InstallDir <String>] -Version <String> [<CommonParameters>]
 ```
@@ -24,8 +24,7 @@ Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <String> [
 
 ## DESCRIPTION
 This will installs or updates the platform server.
-If the platform is already installed it will check if version to be installed is higher than the current one.
-If the platform is already installed with an higher version it will throw an exception.
+If the platform is already installed, the function will check if version to be installed is higher than the current one and update it.
 
 ## EXAMPLES
 
@@ -41,8 +40,8 @@ Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\
 
 ### -InstallDir
 Where the platform will be installed.
-If the platform is already installed, this parameter has no effect.
-If not specified will default to %ProgramFiles%\Outsystems
+if the platform is already installed, this parameter has no effect.
+if not specified will default to %ProgramFiles%\Outsystems
 
 ```yaml
 Type: String
@@ -58,7 +57,7 @@ Accept wildcard characters: False
 
 ### -SourcePath
 If specified, the function will use the sources in that path.
-If not specified it will download the sources from the Outsystems repository.
+If not specified it will download the sources from the Outsystems repository (default behavior).
 
 ```yaml
 Type: String
@@ -95,6 +94,10 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
+### Outsystems.SetupTools.InstallResult
+
 ## NOTES
+All error are non-terminating.
+The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
 
 ## RELATED LINKS

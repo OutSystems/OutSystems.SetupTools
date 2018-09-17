@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Start-OSServerServices
 
 ## SYNOPSIS
-Starts Outsystems services.
+{{Fill in the Synopsis}}
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Start-OSServerServices [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will start all Outsystems platform services by the recommended order.
+{{Fill in the Description}}
 
 ## EXAMPLES
 
@@ -36,7 +36,12 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
+### None
+
+
 ## OUTPUTS
+
+### System.Object
 
 ## NOTES
 

@@ -5,7 +5,7 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSPlatformServerPrivateKey
+# Get-OSServerPrivateKey
 
 ## SYNOPSIS
 Returns the Outsystems platform server private key.
@@ -13,7 +13,7 @@ Returns the Outsystems platform server private key.
 ## SYNTAX
 
 ```
-Get-OSPlatformServerPrivateKey [<CommonParameters>]
+Get-OSServerPrivateKey [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -22,12 +22,10 @@ Will throw an exception if the platform is not installed or if the key file does
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Get-OSServerPrivateKey
+```
 
 ## PARAMETERS
 

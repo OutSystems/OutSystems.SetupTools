@@ -8,7 +8,7 @@ schema: 2.0.0
 # Install-OSPlatformLicense
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Installs the OutSystems platform license.
 
 ## SYNTAX
 
@@ -17,21 +17,20 @@ Install-OSPlatformLicense [[-Path] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will install the OutSystems platform license.
+If a license file is not specified a 30 days trial license will be installed instead.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Install-OSPlatformLicense -Path c:\temp
+```
 
 ## PARAMETERS
 
 ### -Path
-{{Fill Path Description}}
+The path of the license.lic file.
 
 ```yaml
 Type: String
@@ -39,7 +38,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -51,12 +50,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
-
-### System.Object
 
 ## NOTES
 

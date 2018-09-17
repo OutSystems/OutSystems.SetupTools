@@ -12,7 +12,7 @@ Installs or updates the Outsystems development environment.
 
 ## SYNTAX
 
-### Remote
+### Remote (Default)
 ```
 Install-OSServiceStudio [-InstallDir <String>] -Version <String> [<CommonParameters>]
 ```
@@ -24,8 +24,7 @@ Install-OSServiceStudio [-InstallDir <String>] -SourcePath <String> -Version <St
 
 ## DESCRIPTION
 This will installs or updates the development environment.
-If the development environment is already installed it will check if version to be installed is higher than the current one.
-If the development environment is already installed with an higher version it will throw an exception.
+if the development environment is already installed it will check if version to be installed is higher than the current one.
 
 ## EXAMPLES
 
@@ -41,7 +40,7 @@ Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourceP
 
 ### -InstallDir
 Where the development environment will be installed.
-If the development environment is already installed, this parameter has no effect.
+if the development environment is already installed, this parameter has no effect.
 If not specified will default to %ProgramFiles%\Outsystems
 
 ```yaml
@@ -57,8 +56,8 @@ Accept wildcard characters: False
 ```
 
 ### -SourcePath
-If specified, the function will use the sources in that path.
-If not specified it will download the sources from the Outsystems repository.
+if specified, the function will use the sources in that path.
+if not specified it will download the sources from the Outsystems repository.
 
 ```yaml
 Type: String
@@ -95,6 +94,10 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
+### Outsystems.SetupTools.InstallResult
+
 ## NOTES
+All error are non-terminating.
+The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
 
 ## RELATED LINKS
