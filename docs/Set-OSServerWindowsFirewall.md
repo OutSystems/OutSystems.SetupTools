@@ -1,19 +1,19 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSServerWindowsFirewall
 
 ## SYNOPSIS
-Creates windows firewall rule for Outsystems services.
+Creates a windows firewall allow rule for the OutSystems services.
 
 ## SYNTAX
 
 ```
-Set-OSServerWindowsFirewall [<CommonParameters>]
+Set-OSServerWindowsFirewall [-IncludeRabbitMQ] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -21,14 +21,27 @@ This will create a firewall rule named Outsystems and will opens the TCP Ports 1
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Set-OSServerWindowsFirewall -IncludeRabbitMQ
 ```
 
-{{ Add example description here }}
-
 ## PARAMETERS
+
+### -IncludeRabbitMQ
+If specified, it will open the TCP Port 5672 needed for RabbitMQ.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.

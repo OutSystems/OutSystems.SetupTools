@@ -1,39 +1,64 @@
-Function Start-OSServerServices {
+function Start-OSServerServices
+{
     <#
     .SYNOPSIS
-    Starts Outsystems services.
+    Starts the OutSystems platform services.
 
     .DESCRIPTION
-    This will start all Outsystems platform services by the recommended order.
+    This will start all OutSystems platform services by the recommended order.
+
+    .EXAMPLE
+    Start-OSServerServices
 
     #>
 
     [CmdletBinding()]
-    Param()
+    param()
 
-    Begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Try{
-            CheckRunAsAdmin | Out-Null
-        }
-        Catch{
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            Throw "The current user is not Administrator or not running this script in an elevated session"
-        }
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
     }
 
-    Process {
-        ForEach ($OSService in $OSServices) {
-            If ($(Get-Service -Name $OSService -ErrorAction SilentlyContinue)) {
+    process
+    {
+        if (-not $(IsAdmin))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
+            WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
+
+            return
+        }
+
+        foreach ($OSService in $OSServices)
+        {
+            if ($(Get-Service -Name $OSService -ErrorAction SilentlyContinue | Where-Object {$_.StartType -ne "Disabled"}))
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting OS service: $OSService"
-                Get-Service -Name $OSService | Where-Object {$_.StartType -ne "Disabled"} | Start-Service -WarningAction SilentlyContinue
+                try
+                {
+                    Get-Service -Name $OSService | Start-Service -WarningAction SilentlyContinue -ErrorAction Stop
+                }
+                catch
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the service $OSService"
+                    WriteNonTerminalError -Message "Error starting the service $OSService"
+
+                    return
+                }
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service started"
+            }
+            else
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service $OSService not found or is disabled. Skipping..."
             }
         }
     }
 
-    End {
-        Write-Output "Outsystems services successfully started"
+    end
+    {
+        SendFunctionEndEvent -InvocationInfo $MyInvocation
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

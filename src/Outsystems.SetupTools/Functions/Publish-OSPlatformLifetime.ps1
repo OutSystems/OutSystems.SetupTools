@@ -1,119 +1,212 @@
-Function Publish-OSPlatformLifetime {
+function Publish-OSPlatformLifetime
+{
     <#
     .SYNOPSIS
-    Install or update Outsystems Lifetime.
+    Installs or updates Outsystems Lifetime.
 
     .DESCRIPTION
-    This will install or update Lifetime.
+    This will install or update OutSystems Lifetime.
     You need to specify a user and a password to connect to Service Center. If you dont specify, the default admin will be used.
     It will skip the installation if already installed with the right version.
-    Service Center needs to be installed using the Install-OSPlatformServiceCenter function.
-    Outsystems system components needs to be installed using the Publish-OSPlatformSystemComponents function.
+    Service Center needs to be installed using the Install-OSPlatformServiceCenter cmdlet and the OutSystems system components needs to be installed using the Publish-OSPlatformSystemComponents cmdlet.
 
     .PARAMETER Force
     Forces the reinstallation if already installed.
 
     .PARAMETER ServiceCenterUser
-    Service Center username.
+    Service Center username (deprecated. will be removed in future module versions).
 
     .PARAMETER ServiceCenterPass
-    Service Center password.
+    Service Center password (deprecated. will be removed in future module versions).
+
+    .PARAMETER Credential
+    PSCredential object.
 
     .EXAMPLE
-    Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
+    Using PSCredentials
+    $cred = Get-Credential
+    Publish-OSPlatformLifetime -Credential $cred
+
+    .EXAMPLE
+    $cred = New-Object System.Management.Automation.PSCredential ("admin", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
+    Publish-OSPlatformLifetime -Credential $cred
+
+    .EXAMPLE
+    Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+    .NOTES
+    The parameters ServiceCenterUser and ServiceCenterPass will be removed in a future module version.
+    Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+    The recommended way to pass credentials in PowerShell is to use the PSCredential object.
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'PSCred')]
+    [OutputType('Outsystems.SetupTools.InstallResult')]
     param (
-        [Parameter()]
+        [Parameter(ParameterSetName = 'UserAndPass')]
+        [Parameter(ParameterSetName = 'PSCred')]
         [switch]$Force,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'UserAndPass')]
+        [ValidateNotNullOrEmpty()]
         [string]$ServiceCenterUser = $OSSCUser,
 
-        [Parameter()]
-        [string]$ServiceCenterPass = $OSSCPass
+        [Parameter(ParameterSetName = 'UserAndPass')]
+        [ValidateNotNullOrEmpty()]
+        [string]$ServiceCenterPass = $OSSCPass,
+
+        [Parameter(ParameterSetName = 'PSCred')]
+        [ValidateNotNull()]
+        [System.Management.Automation.Credential()]
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred
     )
 
-    Begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
-        Write-Output "Starting Lifetime installation. This can take a while... Please wait..."
-        Try {
-            CheckRunAsAdmin | Out-Null
-        }
-        Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
-            Throw "The current user is not Administrator or not running this script in an elevated session"
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
+
+        # Initialize the results object
+        $installResult = [pscustomobject]@{
+            PSTypeName   = 'Outsystems.SetupTools.InstallResult'
+            Success      = $true
+            RebootNeeded = $false
+            ExitCode     = 0
+            Message      = 'Outsystems lifetime successfully installed'
         }
 
-        Try {
-            $OSVersion = GetServerVersion
-            $OSInstallDir = GetServerInstallDir
-        }
-        Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Outsystems platform is not installed"
-            Throw "Outsystems platform is not installed"
-        }
+        $osVersion = GetServerVersion
+        $osInstallDir = GetServerInstallDir
 
-        Try {
-            $SCVersion = GetSCCompiledVersion
-            $SystemComponentsVersion = GetSysComponentsCompiledVersion
-            $LifetimeVersion = GetLifetimeCompiledVersion
-        }
-        Catch {}
-
-        If ( $SCVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-            throw "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-        }
-
-        If ( $SystemComponentsVersion -ne $OSVersion ) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
-            throw "Systems components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
-        }
-
-        If ( $LifetimeVersion -ne $OSVersion ) {
-            $DoInstall = $true
-        }
-        Else {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Lifetime was already compiled with this server version"
+        switch ($PsCmdlet.ParameterSetName)
+        {
+            "PSCred"
+            {
+                $ServiceCenterUser = $Credential.UserName
+                $ServiceCenterPass = $Credential.GetNetworkCredential().Password
+            }
         }
     }
 
-    Process {
+    process
+    {
 
-        If ($DoInstall -or $Force.IsPresent) {
+        if ($(-not $osVersion) -or $(-not $osInstallDir))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
+            WriteNonTerminalError -Message "Outsystems platform is not installed"
 
-            If( $Force.IsPresent ){ LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!" }
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Outsystems platform is not installed'
+
+            return $installResult
+        }
+
+        if ($(GetSCCompiledVersion) -ne $osVersion)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+            WriteNonTerminalError -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
+
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first'
+
+            return $installResult
+        }
+
+        if ($(GetSysComponentsCompiledVersion) -ne $osVersion)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
+            WriteNonTerminalError -Message "System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
+
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first'
+
+            return $installResult
+        }
+
+        if ($(GetLifetimeCompiledVersion) -ne $osVersion)
+        {
+            $doInstall = $true
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Lifetime was already published with this server version"
+        }
+
+        if ($doInstall -or $Force.IsPresent)
+        {
+            if ( $Force.IsPresent )
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will republish lifetime!!"
+            }
+
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Lifetime. This can take a while..."
 
-            Try {
-                $Result = PublishSolution -Solution "$OSInstallDir\Lifetime.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass
+            try
+            {
+                $result = PublishSolution -Solution "$osInstallDir\Lifetime.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass
             }
-            Catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the lifetime installer"
-                Throw "Error lauching the lifetime installer"
+                WriteNonTerminalError -Message "Error lauching the lifetime installer"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error lauching the lifetime installer'
+
+                return $installResult
             }
 
-            $OutputLog = $($Result.Output) -Split ("`r`n")
-            ForEach ($Logline in $OutputLog) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTOOL: $Logline"
+            $outputLog = $($result.Output) -Split ("`r`n")
+            foreach ($logLine in $outputLog)
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTOOL: $logLine"
             }
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($Result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($result.ExitCode)"
 
-            If ( $Result.ExitCode -ne 0 ) {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing lifetime. Return code: $($Result.ExitCode)"
-                throw "Error installing lifetime. Return code: $($Result.ExitCode)"
+            if ($result.ExitCode -ne 0)
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing lifetime. Return code: $($result.ExitCode)"
+                WriteNonTerminalError -Message "Error installing lifetime. Return code: $($result.ExitCode)"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = $result.ExitCode
+                $installResult.Message = 'Error installing lifetime'
+
+                return $installResult
             }
 
-            SetLifetimeCompiledVersion -LifetimeVersion $OSVersion | Out-Null
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Lifetime successfully installed!!"
+            try
+            {
+                SetLifetimeCompiledVersion -LifetimeVersion $osVersion
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the lifetime version"
+                WriteNonTerminalError -Message "Error setting the lifetime version"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error setting the lifetime version'
+
+                return $installResult
+            }
+
         }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Lifetime successfully installed!!"
+        return $installResult
     }
 
-    End {
-        Write-Output "Outystems Lifetime successfully installed!!"
+    end
+    {
+        SendFunctionEndEvent -InvocationInfo $MyInvocation
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

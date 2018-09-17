@@ -1,12 +1,12 @@
-Function Get-OSServiceStudioInstallDir
+function Get-OSServiceStudioInstallDir
 {
     <#
     .SYNOPSIS
-    Returns where the Outsystems development environment is installed.
+    Returns where the OutSystems development environment (Service Studio) is installed.
 
     .DESCRIPTION
-    This will returns where the Outsystems development environment is installed. Cause you can have multiple development environments installed, you need to specify the major version.
-    Will throw an exception if the platform is not installed.
+    This will returns where the OutSystems development environment is installed.
+    Since we can have multiple development environments installed, you need to specify the major version to get.
 
     .PARAMETER MajorVersion
     Major version. 9.0, 9.1, 10.0, 11.0, ...
@@ -17,29 +17,37 @@ Function Get-OSServiceStudioInstallDir
     #>
 
     [CmdletBinding()]
-    [OutputType([System.String])]
+    [OutputType('System.String')]
     param (
-        [Parameter(Mandatory=$true, HelpMessage="10.0")]
+        [Parameter(Mandatory = $true, HelpMessage = "10.0")]
         [string]$MajorVersion
     )
 
-    Begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
+        SendFunctionStartEvent -InvocationInfo $MyInvocation
     }
 
-    Process {
-        Try{
-            $output = GetServiceStudioInstallDir -MajorVersion $MajorVersion
+    process
+    {
+        $output = GetServiceStudioInstallDir -MajorVersion $MajorVersion
 
-        } Catch {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed" -Exception $_.Exception
-            Throw "Outsystems development environment $MajorVersion is not installed"
+        if (-not $output)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems development environment $MajorVersion is not installed"
+            WriteNonTerminalError -Message "Outsystems development environment $MajorVersion is not installed"
+
+            return $null
         }
+
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $output"
-        Return $output
+        return $output
     }
 
-    End {
+    end
+    {
+        SendFunctionEndEvent -InvocationInfo $MyInvocation
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
 }

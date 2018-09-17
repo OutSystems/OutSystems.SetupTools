@@ -8,11 +8,11 @@ schema: 2.0.0
 # Install-OSServer
 
 ## SYNOPSIS
-Installs or updates the Outsystems Platform server.
+Installs or updates the OutSystems Platform server.
 
 ## SYNTAX
 
-### Remote
+### Remote (Default)
 ```
 Install-OSServer [-InstallDir <String>] -Version <String> [<CommonParameters>]
 ```
@@ -23,9 +23,8 @@ Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <String> [
 ```
 
 ## DESCRIPTION
-This will installs or updates the platform server.
-If the platform is already installed it will check if version to be installed is higher than the current one.
-If the platform is already installed with an higher version it will throw an exception.
+This will install or update the OutSystems platform server.
+If the platform is already installed, the function will check if version to be installed is higher than the current one and update it.
 
 ## EXAMPLES
 
@@ -34,15 +33,22 @@ If the platform is already installed with an higher version it will throw an exc
 Install-OSServer -Version "10.0.823.0"
 ```
 
+### EXAMPLE 2
+```
 Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
+```
+
+### EXAMPLE 3
+```
 Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+```
 
 ## PARAMETERS
 
 ### -InstallDir
 Where the platform will be installed.
-If the platform is already installed, this parameter has no effect.
-If not specified will default to %ProgramFiles%\Outsystems
+if the platform is already installed, this parameter has no effect.
+If not specified, it will default to %ProgramFiles%\Outsystems
 
 ```yaml
 Type: String
@@ -57,8 +63,8 @@ Accept wildcard characters: False
 ```
 
 ### -SourcePath
-If specified, the function will use the sources in that path.
-If not specified it will download the sources from the Outsystems repository.
+If specified, the cmdlet will use the sources in that path.
+If not specified it will download the sources from the OutSystems repository.
 
 ```yaml
 Type: String
@@ -94,6 +100,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## INPUTS
 
 ## OUTPUTS
+
+### Outsystems.SetupTools.InstallResult
 
 ## NOTES
 

@@ -1,2 +1,3 @@
-PublishToGallery.ps1
 .trash/
+Release/
+_*.Tests.ps1

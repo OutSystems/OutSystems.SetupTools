@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # New-OSPlatformPrivateKey
 
 ## SYNOPSIS
-Returns a new Outsystems environment private key.
+Returns a new OutSystems environment private key.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ New-OSPlatformPrivateKey [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will return a new platform private key.
+This will return a new OutSystems platform private key.
 
 ## EXAMPLES
 
@@ -41,7 +41,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ### System.String
 
 ## NOTES
-If you are installing a farm environment, the private keys from the Outsystems controller and the frontends must match (private.key file).
-With this function you can pre-generate the key and use the output in the Invoke-OSConfigurationTool.
+If you are installing a farm environment, the private keys from the OutSystems controller and the frontends must match (private.key file).
+With this cmdlet you can pre-generate the key and use the output in the Invoke-OSConfigurationTool.
 
 ## RELATED LINKS

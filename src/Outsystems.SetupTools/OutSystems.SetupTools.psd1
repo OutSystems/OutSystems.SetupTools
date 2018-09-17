@@ -12,7 +12,7 @@
 RootModule = 'OutSystems.SetupTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.7.0.0'
+ModuleVersion = '2.0.1.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -24,13 +24,13 @@ GUID = 'dcc020ea-a9c7-4bd3-91fc-e97432301020'
 Author = 'Pedro Nunes'
 
 # Company or vendor of this module
-CompanyName = 'Outsystems'
+CompanyName = 'OutSystems'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 Outsystems. All rights reserved.'
+Copyright = '(c) 2018 OutSystems. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Tools for installing and manage the Outsystems platform installation'
+Description = 'Tools for installing and manage the OutSystems platform installation'
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -54,7 +54,13 @@ ProcessorArchitecture = 'Amd64'
 # RequiredModules = @()
 
 # Assemblies that must be loaded prior to importing this module
-RequiredAssemblies = @('OutSystems.RuntimeCommon.dll','OutSystems.HubEdition.RuntimePlatform.dll','ICSharpCode.SharpZipLib.dll','OutSystems.Common.dll')
+RequiredAssemblies = @(
+    '.\Lib\Assemblies\OutSystems.RuntimeCommon.dll'
+    '.\Lib\Assemblies\OutSystems.HubEdition.RuntimePlatform.dll'
+    '.\Lib\Assemblies\ICSharpCode.SharpZipLib.dll'
+    '.\Lib\Assemblies\OutSystems.Common.dll'
+    '.\Lib\Assemblies\Microsoft.ApplicationInsights.dll'
+)
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
 # ScriptsToProcess = @()
@@ -95,16 +101,16 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('Outsystems')
+        Tags = @('OutSystems')
 
         # A URL to the license for this module.
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/pintonunes/Outsystems-Outsystems.SetupTools'
+        ProjectUri = 'https://github.com/OutSystems/OutSystems.SetupTools'
 
         # A URL to an icon representing this module.
-        # IconUri = ''
+        IconUri = 'https://avatars2.githubusercontent.com/u/2916417?s=200&v=4'
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''

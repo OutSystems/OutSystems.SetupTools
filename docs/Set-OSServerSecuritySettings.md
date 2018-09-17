@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSServerSecuritySettings
 
 ## SYNOPSIS
-Short description
+Configures Windows and IIS with the recommended security settings for OutSystems.
 
 ## SYNTAX
 
@@ -17,13 +17,14 @@ Set-OSServerSecuritySettings [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Long description
+This will configure Windows and IIS with the recommended security settings for the OutSystems platform.
+Will disable unsafe SSL protocols on Windows and add custom headers to protect IIS from click jacking.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-An example
+Set-OSServerSecuritySettings
 ```
 
 ## PARAMETERS
@@ -37,6 +38,5 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ## NOTES
-General notes
 
 ## RELATED LINKS

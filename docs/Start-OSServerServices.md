@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Start-OSServerServices
 
 ## SYNOPSIS
-Starts Outsystems services.
+Starts the OutSystems platform services.
 
 ## SYNTAX
 
@@ -17,16 +17,14 @@ Start-OSServerServices [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will start all Outsystems platform services by the recommended order.
+This will start all OutSystems platform services by the recommended order.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Start-OSServerServices
+```
 
 ## PARAMETERS
 

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-OSServiceStudioVersion
 
 ## SYNOPSIS
-Returns the Outsystems development environment installed version.
+Returns the OutSystems development environment (Service Studio) installed version.
 
 ## SYNTAX
 
@@ -17,9 +17,8 @@ Get-OSServiceStudioVersion [-MajorVersion] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns the Outsystems platform installed version.
-Cause you can have multiple development environments installed, you need to specify the major version.
-Will throw an exception if the platform is not installed.
+This will returns the OutSystems platform installed version.
+Since we can have multiple development environments installed, you need to specify the major version to get.
 
 ## EXAMPLES
 

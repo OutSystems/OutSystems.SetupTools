@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSInstallLog
 
 ## SYNOPSIS
-Sets the log file location.
+Sets the module log file location.
 
 ## SYNTAX
 
@@ -17,8 +17,10 @@ Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameter
 ```
 
 ## DESCRIPTION
-This will set the name and location where the log file will be stored.
-By default, the log will have the verbose stream.
+This will set the module log location.
+By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-\<date\>.log
+
+The log will contain the PowerShell verbose stream.
 If you set the -LogDebug switch it will also contain the debug stream.
 
 ## EXAMPLES
@@ -32,7 +34,7 @@ Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
 
 ### -Path
 The log file path.
-The function will try to create the path if not exists.
+The cmdlet will try to create the path if not exists.
 
 ```yaml
 Type: String
@@ -62,7 +64,7 @@ Accept wildcard characters: False
 ```
 
 ### -LogDebug
-If should log also the debug stream
+Logs the debug stream
 
 ```yaml
 Type: SwitchParameter
