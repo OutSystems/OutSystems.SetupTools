@@ -8,7 +8,7 @@ schema: 2.0.0
 # Publish-OSPlatformLifetime
 
 ## SYNOPSIS
-Install or update Outsystems Lifetime.
+Installs or updates Outsystems Lifetime.
 
 ## SYNTAX
 
@@ -24,12 +24,11 @@ Publish-OSPlatformLifetime [-Force] [-ServiceCenterUser <String>] [-ServiceCente
 ```
 
 ## DESCRIPTION
-This will install or update Lifetime.
+This will install or update OutSystems Lifetime.
 You need to specify a user and a password to connect to Service Center.
-if you dont specify, the default admin will be used.
+If you dont specify, the default admin will be used.
 It will skip the installation if already installed with the right version.
-Service Center needs to be installed using the Install-OSPlatformServiceCenter function.
-Outsystems system components needs to be installed using the Publish-OSPlatformSystemComponents function.
+Service Center needs to be installed using the Install-OSPlatformServiceCenter cmdlet and the OutSystems system components needs to be installed using the Publish-OSPlatformSystemComponents cmdlet.
 
 ## EXAMPLES
 
@@ -41,12 +40,17 @@ Using PSCredentials
 $cred = Get-Credential
 Publish-OSPlatformLifetime -Credential $cred
 
-Another way
+### EXAMPLE 2
+```
 $cred = New-Object System.Management.Automation.PSCredential ("admin", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
+```
+
 Publish-OSPlatformLifetime -Credential $cred
 
-This is deprecated and removed in the next version
+### EXAMPLE 3
+```
 Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+```
 
 ## PARAMETERS
 
@@ -66,7 +70,8 @@ Accept wildcard characters: False
 ```
 
 ### -ServiceCenterUser
-Service Center username.
+Service Center username (deprecated.
+will be removed in future module versions).
 
 ```yaml
 Type: String
@@ -81,7 +86,8 @@ Accept wildcard characters: False
 ```
 
 ### -ServiceCenterPass
-Service Center password.
+Service Center password (deprecated.
+will be removed in future module versions).
 
 ```yaml
 Type: String
@@ -121,5 +127,9 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ### Outsystems.SetupTools.InstallResult
 
 ## NOTES
+The parameters ServiceCenterUser and ServiceCenterPass will be removed in a future module version.
+Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+The recommended way to pass credentials in PowerShell is to use the PSCredential object.
 
 ## RELATED LINKS

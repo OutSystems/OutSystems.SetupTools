@@ -8,7 +8,7 @@ schema: 2.0.0
 # Restart-OSServerServices
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Restarts OutSystems services.
 
 ## SYNTAX
 
@@ -17,16 +17,14 @@ Restart-OSServerServices [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will restart all OutSystems platform services by the recommended order.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Restart-OSServerServices
+```
 
 ## PARAMETERS
 
@@ -36,12 +34,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
-
-### System.Object
 
 ## NOTES
 

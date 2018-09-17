@@ -2,7 +2,7 @@ function Disable-OSServerIPv6
 {
     <#
     .SYNOPSIS
-    Disable IPv6.
+    Disables IPv6.
 
     .DESCRIPTION
     This will disable IPv6 on the server.

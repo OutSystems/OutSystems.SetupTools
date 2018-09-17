@@ -8,7 +8,7 @@ schema: 2.0.0
 # Install-OSServer
 
 ## SYNOPSIS
-Installs or updates the Outsystems Platform server.
+Installs or updates the OutSystems Platform server.
 
 ## SYNTAX
 
@@ -23,7 +23,7 @@ Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <String> [
 ```
 
 ## DESCRIPTION
-This will installs or updates the platform server.
+This will install or update the OutSystems platform server.
 If the platform is already installed, the function will check if version to be installed is higher than the current one and update it.
 
 ## EXAMPLES
@@ -33,15 +33,22 @@ If the platform is already installed, the function will check if version to be i
 Install-OSServer -Version "10.0.823.0"
 ```
 
+### EXAMPLE 2
+```
 Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
+```
+
+### EXAMPLE 3
+```
 Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+```
 
 ## PARAMETERS
 
 ### -InstallDir
 Where the platform will be installed.
 if the platform is already installed, this parameter has no effect.
-if not specified will default to %ProgramFiles%\Outsystems
+If not specified, it will default to %ProgramFiles%\Outsystems
 
 ```yaml
 Type: String
@@ -56,8 +63,8 @@ Accept wildcard characters: False
 ```
 
 ### -SourcePath
-If specified, the function will use the sources in that path.
-If not specified it will download the sources from the Outsystems repository (default behavior).
+If specified, the cmdlet will use the sources in that path.
+If not specified it will download the sources from the OutSystems repository.
 
 ```yaml
 Type: String
@@ -97,7 +104,5 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ### Outsystems.SetupTools.InstallResult
 
 ## NOTES
-All error are non-terminating.
-The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
 
 ## RELATED LINKS

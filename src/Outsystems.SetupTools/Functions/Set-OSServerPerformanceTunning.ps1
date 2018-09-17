@@ -1,10 +1,8 @@
 function Set-OSServerPerformanceTunning
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
-
     <#
     .SYNOPSIS
-    Configures windows and IIS with the recommended performance settings for OutSystems.
+    Configures Windows and IIS with the recommended performance settings for OutSystems.
 
     .DESCRIPTION
     This will configure Windows and IIS with the recommended performance settings for the OutSystems platform.

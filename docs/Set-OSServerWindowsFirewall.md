@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-OSServerWindowsFirewall
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Creates a windows firewall allow rule for the OutSystems services.
 
 ## SYNTAX
 
@@ -17,21 +17,19 @@ Set-OSServerWindowsFirewall [-IncludeRabbitMQ] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will create a firewall rule named Outsystems and will opens the TCP Ports 12000, 12001, 12002, 12003, 12004 in all firewall profiles.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Set-OSServerWindowsFirewall -IncludeRabbitMQ
+```
 
 ## PARAMETERS
 
 ### -IncludeRabbitMQ
-{{Fill IncludeRabbitMQ Description}}
+If specified, it will open the TCP Port 5672 needed for RabbitMQ.
 
 ```yaml
 Type: SwitchParameter
@@ -40,7 +38,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -51,12 +49,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
-
-### System.Object
 
 ## NOTES
 

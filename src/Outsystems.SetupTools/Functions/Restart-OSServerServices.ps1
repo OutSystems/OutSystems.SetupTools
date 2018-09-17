@@ -1,13 +1,14 @@
 function Restart-OSServerServices
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
-
     <#
     .SYNOPSIS
-    Restarts Outsystems services.
+    Restarts OutSystems services.
 
     .DESCRIPTION
-    This will restart all Outsystems platform services by the recommended order.
+    This will restart all OutSystems platform services by the recommended order.
+
+    .EXAMPLE
+    Restart-OSServerServices
 
     #>
 

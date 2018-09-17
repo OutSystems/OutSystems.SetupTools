@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-OSServerPerformanceTunning
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Configures Windows and IIS with the recommended performance settings for OutSystems.
 
 ## SYNTAX
 
@@ -18,21 +18,24 @@ Set-OSServerPerformanceTunning [[-IISNetCompilationPath] <String>] [[-IISHttpCom
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will configure Windows and IIS with the recommended performance settings for the OutSystems platform.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Set-OSServerPerformanceTunning
 ```
 
-{{ Add example description here }}
+### EXAMPLE 2
+```
+Set-OSServerPerformanceTunning -IISNetCompilationPath d:\IISTemp\Compilation -IISHttpCompressionPath d:\IISTemp\Compression
+```
 
 ## PARAMETERS
 
-### -IISHttpCompressionPath
-{{Fill IISHttpCompressionPath Description}}
+### -IISNetCompilationPath
+Sets the IIS compilation folder.
 
 ```yaml
 Type: String
@@ -46,8 +49,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IISNetCompilationPath
-{{Fill IISNetCompilationPath Description}}
+### -IISHttpCompressionPath
+Sets the IIS compression folder.
 
 ```yaml
 Type: String
@@ -55,7 +58,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 0
+Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -67,13 +70,9 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
 
-### System.Object
-
 ## NOTES
+General notes
 
 ## RELATED LINKS

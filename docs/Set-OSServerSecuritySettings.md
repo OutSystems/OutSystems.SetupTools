@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-OSServerSecuritySettings
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Configures Windows and IIS with the recommended security settings for OutSystems.
 
 ## SYNTAX
 
@@ -17,16 +17,15 @@ Set-OSServerSecuritySettings [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will configure Windows and IIS with the recommended security settings for the OutSystems platform.
+Will disable unsafe SSL protocols on Windows and add custom headers to protect IIS from click jacking.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Set-OSServerSecuritySettings
+```
 
 ## PARAMETERS
 
@@ -36,12 +35,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
-
-### System.Object
 
 ## NOTES
 

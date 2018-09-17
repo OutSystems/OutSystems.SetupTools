@@ -1,13 +1,14 @@
 function Start-OSServerServices
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
-
     <#
     .SYNOPSIS
-    Starts Outsystems services.
+    Starts the OutSystems platform services.
 
     .DESCRIPTION
-    This will start all Outsystems platform services by the recommended order.
+    This will start all OutSystems platform services by the recommended order.
+
+    .EXAMPLE
+    Start-OSServerServices
 
     #>
 

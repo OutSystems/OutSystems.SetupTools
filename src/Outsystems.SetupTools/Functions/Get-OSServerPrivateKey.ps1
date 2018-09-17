@@ -2,10 +2,10 @@ function Get-OSServerPrivateKey
 {
     <#
     .SYNOPSIS
-    Returns the Outsystems platform server private key.
+    Returns the OutSystems platform server private key.
 
     .DESCRIPTION
-    This will returns the Outsystems platform server private key. Will throw an exception if the platform is not installed or if the key file doesn't exist.
+    This will returns the OutSystems platform server private key.
 
     .EXAMPLE
     Get-OSServerPrivateKey

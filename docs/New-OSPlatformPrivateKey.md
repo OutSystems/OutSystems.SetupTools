@@ -8,7 +8,7 @@ schema: 2.0.0
 # New-OSPlatformPrivateKey
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Returns a new OutSystems environment private key.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ New-OSPlatformPrivateKey [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will return a new OutSystems platform private key.
 
 ## EXAMPLES
 
@@ -36,14 +36,12 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
 
 ### System.String
 
-
 ## NOTES
+If you are installing a farm environment, the private keys from the OutSystems controller and the frontends must match (private.key file).
+With this cmdlet you can pre-generate the key and use the output in the Invoke-OSConfigurationTool.
 
 ## RELATED LINKS

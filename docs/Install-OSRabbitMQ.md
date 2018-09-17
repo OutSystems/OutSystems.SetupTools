@@ -8,7 +8,7 @@ schema: 2.0.0
 # Install-OSRabbitMQ
 
 ## SYNOPSIS
-Install and configure RabbitMQ for Outsystems.
+Installs and configures RabbitMQ for OutSystems.
 
 ## SYNTAX
 
@@ -24,8 +24,8 @@ Install-OSRabbitMQ [-VirtualHosts <String[]>] [-RemoveGuestUser] -AdminUser <PSC
 
 ## DESCRIPTION
 This will install and configure RabbitMQ for Outsystems.
-It will use the default guest user to perform the configuration.
-If Rabbit is already installed it will skip the configuration.
+It will use the default guest user to perform the RabbitMQ configuration.
+It will skip the configuration and installation if RabbitMQ is already installed.
 
 ## EXAMPLES
 
@@ -34,17 +34,24 @@ If Rabbit is already installed it will skip the configuration.
 Install-OSRabbitMQ
 ```
 
-Install-OSRabbitMQ -VirtualHosts '/OutSystems'
-Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost')
-
 ### EXAMPLE 2
+```
+Install-OSRabbitMQ -VirtualHosts '/OutSystems'
+```
+
+### EXAMPLE 3
+```
+Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost')
+```
+
+### EXAMPLE 4
 ```
 $user = Get-Credential
 ```
 
 Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
 
-### EXAMPLE 3
+### EXAMPLE 5
 ```
 $user = New-Object System.Management.Automation.PSCredential ('superuser', $(ConvertTo-SecureString 'superpass' -AsPlainText -Force))
 ```
@@ -109,9 +116,9 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ### Outsystems.SetupTools.InstallResult
 
 ## NOTES
-After uninstalling RabbitMQ you need to reboot.
-Some registry keys are only deleted after rebooting
-So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this CmdLet
+After uninstalling RabbitMQ you need to reboot the machine.
+Some registry keys are only deleted after rebooting.
+So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this cmdlet
 RabbitMQ configuration is only done when installed.
 Rerunning this CmdLet will not reconfigure RabbitMQ
 

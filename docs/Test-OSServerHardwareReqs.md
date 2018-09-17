@@ -8,7 +8,7 @@ schema: 2.0.0
 # Test-OSServerHardwareReqs
 
 ## SYNOPSIS
-Checks if the server has the necessary hardware requirements.
+Checks if the server has the necessary hardware requirements for the OutSystems platform server.
 
 ## SYNTAX
 
@@ -18,7 +18,7 @@ Test-OSServerHardwareReqs [-MajorVersion] <String> [<CommonParameters>]
 
 ## DESCRIPTION
 This will check if the server has the necessary hardware requirements to run the Outsystems platform.
-Checks available RAM and number of CPUs.
+Checks available RAM and the number of available CPUs.
 
 ## EXAMPLES
 
@@ -31,7 +31,6 @@ Test-OSServerSoftwareReqs -MajorVersion "10.0"
 
 ### -MajorVersion
 Specifies the platform major version.
-The function will install the pre-requisites for the version specified on this parameter.
 Accepted values: 10.0 or 11.0
 
 ```yaml

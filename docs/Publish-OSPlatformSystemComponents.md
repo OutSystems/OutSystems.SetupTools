@@ -40,12 +40,17 @@ Using PSCredentials
 $cred = Get-Credential
 Publish-OSPlatformSystemComponents -Credential $cred
 
-Another way
+### EXAMPLE 2
+```
 $cred = New-Object System.Management.Automation.PSCredential ("admin", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
+```
+
 Publish-OSPlatformSystemComponents -Credential $cred
 
-This is deprecated and removed in the next version
+### EXAMPLE 3
+```
 Publish-OSPlatformSystemComponents -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+```
 
 ## PARAMETERS
 
@@ -120,5 +125,9 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ### Outsystems.SetupTools.InstallResult
 
 ## NOTES
+The parameters ServiceCenterUser and ServiceCenterPass will be removed in the next major version.
+Publish-OSPlatformSystemComponents -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+The recommended way to pass credentials in PowerShell is to use the PSCredential object.
 
 ## RELATED LINKS

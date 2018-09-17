@@ -5,7 +5,8 @@ function Install-OSPlatformLicense
     Installs the OutSystems platform license.
 
     .DESCRIPTION
-    This will install the OutSystems platform license. If a license file is not specified a 30 days trial license will be installed instead.
+    This will install the OutSystems platform license.
+    If the license file is not specified, a 30 days trial license will be installed.
 
     .PARAMETER Path
     The path of the license.lic file.

@@ -8,7 +8,7 @@ schema: 2.0.0
 # Disable-OSServerIPv6
 
 ## SYNOPSIS
-Disable IPv6.
+Disables IPv6.
 
 ## SYNTAX
 

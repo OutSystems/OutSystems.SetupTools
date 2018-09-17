@@ -18,7 +18,7 @@ Install-OSPlatformLicense [[-Path] <String>] [<CommonParameters>]
 
 ## DESCRIPTION
 This will install the OutSystems platform license.
-If a license file is not specified a 30 days trial license will be installed instead.
+If the license file is not specified, a 30 days trial license will be installed.
 
 ## EXAMPLES
 

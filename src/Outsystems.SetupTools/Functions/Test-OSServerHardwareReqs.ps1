@@ -2,14 +2,14 @@ function Test-OSServerHardwareReqs
 {
     <#
     .SYNOPSIS
-    Checks if the server has the necessary hardware requirements.
+    Checks if the server has the necessary hardware requirements for the OutSystems platform server.
 
     .DESCRIPTION
-    This will check if the server has the necessary hardware requirements to run the Outsystems platform. Checks available RAM and number of CPUs.
+    This will check if the server has the necessary hardware requirements to run the Outsystems platform. Checks available RAM and the number of available CPUs.
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    The function will install the pre-requisites for the version specified on this parameter. Accepted values: 10.0 or 11.0
+    Accepted values: 10.0 or 11.0
 
     .EXAMPLE
     Test-OSServerSoftwareReqs -MajorVersion "10.0"

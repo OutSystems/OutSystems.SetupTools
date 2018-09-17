@@ -8,7 +8,7 @@ schema: 2.0.0
 # Install-OSServiceStudio
 
 ## SYNOPSIS
-Installs or updates the Outsystems development environment.
+Installs or updates the OutSystems development environment (Service Studio).
 
 ## SYNTAX
 
@@ -23,8 +23,8 @@ Install-OSServiceStudio [-InstallDir <String>] -SourcePath <String> -Version <St
 ```
 
 ## DESCRIPTION
-This will installs or updates the development environment.
-if the development environment is already installed it will check if version to be installed is higher than the current one.
+This will installs or updates the OutSystems development environment.
+if the development environment is already installed it will check if version to be installed is higher than the current one and update it.
 
 ## EXAMPLES
 
@@ -33,14 +33,21 @@ if the development environment is already installed it will check if version to 
 Install-OSServiceStudio -Version "10.0.823.0"
 ```
 
+### EXAMPLE 2
+```
 Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
+```
+
+### EXAMPLE 3
+```
 Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+```
 
 ## PARAMETERS
 
 ### -InstallDir
 Where the development environment will be installed.
-if the development environment is already installed, this parameter has no effect.
+If the development environment is already installed, this parameter has no effect.
 If not specified will default to %ProgramFiles%\Outsystems
 
 ```yaml
@@ -56,8 +63,8 @@ Accept wildcard characters: False
 ```
 
 ### -SourcePath
-if specified, the function will use the sources in that path.
-if not specified it will download the sources from the Outsystems repository.
+If specified, the function will use the sources in that path.
+if not specified it will download the sources from the OutSystems repository.
 
 ```yaml
 Type: String
@@ -97,7 +104,5 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ### Outsystems.SetupTools.InstallResult
 
 ## NOTES
-All error are non-terminating.
-The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
 
 ## RELATED LINKS

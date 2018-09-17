@@ -1,6 +1,5 @@
 function Set-OSServerSecuritySettings
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
     <#
     .SYNOPSIS
     Configures Windows and IIS with the recommended security settings for OutSystems.

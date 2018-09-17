@@ -2,11 +2,11 @@ function Get-OSServiceStudioInstallDir
 {
     <#
     .SYNOPSIS
-    Returns where the Outsystems development environment is installed.
+    Returns where the OutSystems development environment (Service Studio) is installed.
 
     .DESCRIPTION
-    This will returns where the Outsystems development environment is installed. Cause you can have multiple development environments installed, you need to specify the major version.
-    Will throw an exception if the platform is not installed.
+    This will returns where the OutSystems development environment is installed.
+    Since we can have multiple development environments installed, you need to specify the major version to get.
 
     .PARAMETER MajorVersion
     Major version. 9.0, 9.1, 10.0, 11.0, ...

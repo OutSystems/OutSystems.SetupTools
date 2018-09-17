@@ -9,7 +9,7 @@ function Test-OSServerSoftwareReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    The function will install the pre-requisites for the version specified on this parameter. Accepted values: 10.0 or 11.0
+    Accepted values: 10.0 or 11.0
 
     .EXAMPLE
     Test-OSServerSoftwareReqs -MajorVersion "10.0"

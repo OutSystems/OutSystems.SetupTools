@@ -8,7 +8,7 @@ schema: 2.0.0
 # Set-OSInstallLog
 
 ## SYNOPSIS
-{{Fill in the Synopsis}}
+Sets the module log file location.
 
 ## SYNTAX
 
@@ -17,21 +17,24 @@ Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameter
 ```
 
 ## DESCRIPTION
-{{Fill in the Description}}
+This will set the module log location.
+By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-\<date\>.log
+
+The log will contain the PowerShell verbose stream.
+If you set the -LogDebug switch it will also contain the debug stream.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
+```
 
 ## PARAMETERS
 
-### -File
-{{Fill File Description}}
+### -Path
+The log file path.
+The cmdlet will try to create the path if not exists.
 
 ```yaml
 Type: String
@@ -45,8 +48,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -File
+The log filename.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -LogDebug
-{{Fill LogDebug Description}}
+Logs the debug stream
 
 ```yaml
 Type: SwitchParameter
@@ -55,22 +73,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Path
-{{Fill Path Description}}
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 0
-Default value: None
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -81,12 +84,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## INPUTS
 
-### None
-
-
 ## OUTPUTS
-
-### System.Object
 
 ## NOTES
 
