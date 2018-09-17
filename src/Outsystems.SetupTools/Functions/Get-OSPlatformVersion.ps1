@@ -2,17 +2,18 @@ function Get-OSPlatformVersion
 {
     <#
     .SYNOPSIS
-    Gets the platform version from Service Center.
+    Returns the platform version.
 
     .DESCRIPTION
-    This will return the Outsystems platform version from Service Center API.
+    This will return the OutSystems platform version from the Service Center API.
 
-    .PARAMETER Host
+    .PARAMETER ServiceCenterHost
     Service Center address. If not specified, will default to localhost (127.0.0.1).
 
     .EXAMPLE
     Get-OSPlatformVersion -ServiceCenterHost "10.0.0.1"
 
+    .EXAMPLE
     Using the pipeline
     "10.0.0.1", "10.0.0.1", "10.0.0.3" | Get-OSPlatformVersion
 

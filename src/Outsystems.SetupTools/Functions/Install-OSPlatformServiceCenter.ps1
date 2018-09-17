@@ -2,10 +2,11 @@ function Install-OSPlatformServiceCenter
 {
     <#
     .SYNOPSIS
-    Install or update Outsystems Service Center.
+    Installs or updates the OutSystems Service Center.
 
     .DESCRIPTION
-    This will install or update the Service Center. It will skip the installation if already installed with the right version.
+    This will install or update the OutSystems Service Center.
+    It will skip the installation if already installed with the right version.
 
     .PARAMETER Force
     Forces the reinstallation if already installed.

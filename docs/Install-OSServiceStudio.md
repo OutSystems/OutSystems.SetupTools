@@ -8,11 +8,11 @@ schema: 2.0.0
 # Install-OSServiceStudio
 
 ## SYNOPSIS
-Installs or updates the Outsystems development environment.
+Installs or updates the OutSystems development environment (Service Studio).
 
 ## SYNTAX
 
-### Remote
+### Remote (Default)
 ```
 Install-OSServiceStudio [-InstallDir <String>] -Version <String> [<CommonParameters>]
 ```
@@ -23,9 +23,8 @@ Install-OSServiceStudio [-InstallDir <String>] -SourcePath <String> -Version <St
 ```
 
 ## DESCRIPTION
-This will installs or updates the development environment.
-If the development environment is already installed it will check if version to be installed is higher than the current one.
-If the development environment is already installed with an higher version it will throw an exception.
+This will installs or updates the OutSystems development environment.
+if the development environment is already installed it will check if version to be installed is higher than the current one and update it.
 
 ## EXAMPLES
 
@@ -34,8 +33,15 @@ If the development environment is already installed with an higher version it wi
 Install-OSServiceStudio -Version "10.0.823.0"
 ```
 
+### EXAMPLE 2
+```
 Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
+```
+
+### EXAMPLE 3
+```
 Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+```
 
 ## PARAMETERS
 
@@ -58,7 +64,7 @@ Accept wildcard characters: False
 
 ### -SourcePath
 If specified, the function will use the sources in that path.
-If not specified it will download the sources from the Outsystems repository.
+if not specified it will download the sources from the OutSystems repository.
 
 ```yaml
 Type: String
@@ -94,6 +100,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## INPUTS
 
 ## OUTPUTS
+
+### Outsystems.SetupTools.InstallResult
 
 ## NOTES
 

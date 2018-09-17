@@ -2,23 +2,22 @@ function Publish-OSPlatformLifetime
 {
     <#
     .SYNOPSIS
-    Install or update Outsystems Lifetime.
+    Installs or updates Outsystems Lifetime.
 
     .DESCRIPTION
-    This will install or update Lifetime.
-    You need to specify a user and a password to connect to Service Center. if you dont specify, the default admin will be used.
+    This will install or update OutSystems Lifetime.
+    You need to specify a user and a password to connect to Service Center. If you dont specify, the default admin will be used.
     It will skip the installation if already installed with the right version.
-    Service Center needs to be installed using the Install-OSPlatformServiceCenter function.
-    Outsystems system components needs to be installed using the Publish-OSPlatformSystemComponents function.
+    Service Center needs to be installed using the Install-OSPlatformServiceCenter cmdlet and the OutSystems system components needs to be installed using the Publish-OSPlatformSystemComponents cmdlet.
 
     .PARAMETER Force
     Forces the reinstallation if already installed.
 
     .PARAMETER ServiceCenterUser
-    Service Center username.
+    Service Center username (deprecated. will be removed in future module versions).
 
     .PARAMETER ServiceCenterPass
-    Service Center password.
+    Service Center password (deprecated. will be removed in future module versions).
 
     .PARAMETER Credential
     PSCredential object.
@@ -28,12 +27,18 @@ function Publish-OSPlatformLifetime
     $cred = Get-Credential
     Publish-OSPlatformLifetime -Credential $cred
 
-    Another way
+    .EXAMPLE
     $cred = New-Object System.Management.Automation.PSCredential ("admin", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
     Publish-OSPlatformLifetime -Credential $cred
 
-    This is deprecated and removed in the next version
+    .EXAMPLE
     Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+    .NOTES
+    The parameters ServiceCenterUser and ServiceCenterPass will be removed in a future module version.
+    Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+    The recommended way to pass credentials in PowerShell is to use the PSCredential object.
 
     #>
 

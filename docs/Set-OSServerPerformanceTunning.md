@@ -1,14 +1,14 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
 # Set-OSServerPerformanceTunning
 
 ## SYNOPSIS
-Short description
+Configures Windows and IIS with the recommended performance settings for OutSystems.
 
 ## SYNTAX
 
@@ -18,19 +18,24 @@ Set-OSServerPerformanceTunning [[-IISNetCompilationPath] <String>] [[-IISHttpCom
 ```
 
 ## DESCRIPTION
-Long description
+This will configure Windows and IIS with the recommended performance settings for the OutSystems platform.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-An example
+Set-OSServerPerformanceTunning
+```
+
+### EXAMPLE 2
+```
+Set-OSServerPerformanceTunning -IISNetCompilationPath d:\IISTemp\Compilation -IISHttpCompressionPath d:\IISTemp\Compression
 ```
 
 ## PARAMETERS
 
 ### -IISNetCompilationPath
-Parameter description
+Sets the IIS compilation folder.
 
 ```yaml
 Type: String
@@ -45,7 +50,7 @@ Accept wildcard characters: False
 ```
 
 ### -IISHttpCompressionPath
-Parameter description
+Sets the IIS compression folder.
 
 ```yaml
 Type: String

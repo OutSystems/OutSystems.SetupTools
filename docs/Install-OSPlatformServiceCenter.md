@@ -8,7 +8,7 @@ schema: 2.0.0
 # Install-OSPlatformServiceCenter
 
 ## SYNOPSIS
-Install or update Outsystems Service Center.
+Installs or updates the OutSystems Service Center.
 
 ## SYNTAX
 
@@ -17,7 +17,7 @@ Install-OSPlatformServiceCenter [-Force] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will install or update the Service Center.
+This will install or update the OutSystems Service Center.
 It will skip the installation if already installed with the right version.
 
 ## EXAMPLES
@@ -51,6 +51,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## INPUTS
 
 ## OUTPUTS
+
+### Outsystems.SetupTools.InstallResult
 
 ## NOTES
 

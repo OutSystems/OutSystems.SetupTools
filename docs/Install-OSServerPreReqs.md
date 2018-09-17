@@ -8,7 +8,7 @@ schema: 2.0.0
 # Install-OSServerPreReqs
 
 ## SYNOPSIS
-Install the pre-requisites for the platform server.
+Installs the pre-requisites for the OutSystems platform server.
 
 ## SYNTAX
 
@@ -17,10 +17,8 @@ Install-OSServerPreReqs [-MajorVersion] <String> [[-InstallIISMgmtConsole] <Bool
 ```
 
 ## DESCRIPTION
-This will install the pre-requisites for the platform server version specified.
-It will install .NET 4.6.1 if needed.
-After installing .NET a reboot will be probably needed.
-You should also run the Test-OSServerSoftwareReqs and the Test-OSServerHardwareReqs to check if your server is supported for Outsystems.
+This will install the pre-requisites for the OutSystems platform server.
+You should run first the Test-OSServerSoftwareReqs and the Test-OSServerHardwareReqs cmdlets to check if the server is supported for OutSystems.
 
 ## EXAMPLES
 
@@ -29,14 +27,16 @@ You should also run the Test-OSServerSoftwareReqs and the Test-OSServerHardwareR
 Install-OSServerPreReqs -MajorVersion "10.0"
 ```
 
+### EXAMPLE 2
+```
 Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Specifies the platform major version.
-The function will install the pre-requisites for the version specified on this parameter.
-Supported values: 10.0 or 11.0
+Accepted values: 10.0 or 11.0.
 
 ```yaml
 Type: String
@@ -52,9 +52,7 @@ Accept wildcard characters: False
 
 ### -InstallIISMgmtConsole
 Specifies if the IIS Managament Console will be installed.
-On servers without GUI this feature can't be installed.
-So you should set this parameter to $false.
-Defaults to $true
+On servers without GUI this feature can't be installed so you should set this parameter to $false.
 
 ```yaml
 Type: Boolean
@@ -76,7 +74,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
+### Outsystems.SetupTools.InstallResult
+
 ## NOTES
-General notes
 
 ## RELATED LINKS

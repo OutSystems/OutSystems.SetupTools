@@ -1,13 +1,14 @@
 function Stop-OSServerServices
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
-
     <#
     .SYNOPSIS
-    Stops Outsystems services.
+    Stops the OutSystems platform services.
 
     .DESCRIPTION
     This will stop all Outsystems platform services by the recommended order.
+
+    .EXAMPLE
+    Start-OSServerServices
 
     #>
 

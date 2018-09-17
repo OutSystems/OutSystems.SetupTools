@@ -8,7 +8,7 @@ schema: 2.0.0
 # Get-OSServerVersion
 
 ## SYNOPSIS
-Returns the current Outsystems platform version
+Returns the OutSystems platform server version
 
 ## SYNTAX
 
@@ -17,17 +17,14 @@ Get-OSServerVersion [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns the current Outsystems platform installed version.
-Will throw an exception if the platform is not installed.
+This will returns the OutSystems platform server version.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
 ```
-
-{{ Add example description here }}
+Get-OSServerVersion
+```
 
 ## PARAMETERS
 

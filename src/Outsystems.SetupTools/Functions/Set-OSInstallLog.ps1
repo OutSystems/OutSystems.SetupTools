@@ -1,22 +1,23 @@
 function Set-OSInstallLog
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
     <#
     .SYNOPSIS
-    Sets the log file location.
+    Sets the module log file location.
 
     .DESCRIPTION
-    This will set the name and location where the log file will be stored.
-    By default, the log will have the verbose stream. If you set the -LogDebug switch it will also contain the debug stream.
+    This will set the module log location.
+    By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-<date>.log
+
+    The log will contain the PowerShell verbose stream. If you set the -LogDebug switch it will also contain the debug stream.
 
     .PARAMETER Path
-    The log file path. The function will try to create the path if not exists.
+    The log file path. The cmdlet will try to create the path if not exists.
 
     .PARAMETER File
     The log filename.
 
     .PARAMETER LogDebug
-    If should log also the debug stream
+    Logs the debug stream
 
     .EXAMPLE
     Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug

@@ -2,12 +2,12 @@ function Install-OSRabbitMQ
 {
     <#
     .SYNOPSIS
-    Install and configure RabbitMQ for Outsystems.
+    Installs and configures RabbitMQ for OutSystems.
 
     .DESCRIPTION
     This will install and configure RabbitMQ for Outsystems.
-    It will use the default guest user to perform the configuration.
-    If Rabbit is already installed it will skip the configuration.
+    It will use the default guest user to perform the RabbitMQ configuration.
+    It will skip the configuration and installation if RabbitMQ is already installed.
 
     .PARAMETER VirtualHosts
     List of virtual hosts to add to RabbitMQ.
@@ -20,7 +20,11 @@ function Install-OSRabbitMQ
 
     .EXAMPLE
     Install-OSRabbitMQ
+
+    .EXAMPLE
     Install-OSRabbitMQ -VirtualHosts '/OutSystems'
+
+    .EXAMPLE
     Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost')
 
     .EXAMPLE
@@ -32,8 +36,8 @@ function Install-OSRabbitMQ
     Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
 
     .NOTES
-    After uninstalling RabbitMQ you need to reboot. Some registry keys are only deleted after rebooting
-    So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this CmdLet
+    After uninstalling RabbitMQ you need to reboot the machine. Some registry keys are only deleted after rebooting.
+    So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this cmdlet
     RabbitMQ configuration is only done when installed. Rerunning this CmdLet will not reconfigure RabbitMQ
 
     #>

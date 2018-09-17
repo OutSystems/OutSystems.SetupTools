@@ -1,16 +1,14 @@
 function Set-OSServerWindowsFirewall
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
-
     <#
     .SYNOPSIS
-    Creates windows firewall rule for Outsystems services.
+    Creates a windows firewall allow rule for the OutSystems services.
 
     .DESCRIPTION
     This will create a firewall rule named Outsystems and will opens the TCP Ports 12000, 12001, 12002, 12003, 12004 in all firewall profiles.
 
     .PARAMETER IncludeRabbitMQ
-    If set to true it will open the TCP Port 5672 needed for rabbitMQ. Defaults to false.
+    If specified, it will open the TCP Port 5672 needed for RabbitMQ.
 
     .EXAMPLE
     Set-OSServerWindowsFirewall -IncludeRabbitMQ

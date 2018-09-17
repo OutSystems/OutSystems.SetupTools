@@ -1,17 +1,15 @@
 function New-OSPlatformPrivateKey
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '')]
-
     <#
     .SYNOPSIS
-    Returns a new Outsystems environment private key.
+    Returns a new OutSystems environment private key.
 
     .DESCRIPTION
-    This will return a new platform private key.
+    This will return a new OutSystems platform private key.
 
     .NOTES
-    If you are installing a farm environment, the private keys from the Outsystems controller and the frontends must match (private.key file).
-    With this function you can pre-generate the key and use the output in the Invoke-OSConfigurationTool.
+    If you are installing a farm environment, the private keys from the OutSystems controller and the frontends must match (private.key file).
+    With this cmdlet you can pre-generate the key and use the output in the Invoke-OSConfigurationTool.
 
     #>
 

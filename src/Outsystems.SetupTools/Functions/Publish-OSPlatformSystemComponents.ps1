@@ -27,12 +27,18 @@ function Publish-OSPlatformSystemComponents
     $cred = Get-Credential
     Publish-OSPlatformSystemComponents -Credential $cred
 
-    Another way
+    .EXAMPLE
     $cred = New-Object System.Management.Automation.PSCredential ("admin", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
     Publish-OSPlatformSystemComponents -Credential $cred
 
-    This is deprecated and removed in the next version
+    .EXAMPLE
     Publish-OSPlatformSystemComponents -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+    .NOTES
+    The parameters ServiceCenterUser and ServiceCenterPass will be removed in the next major version.
+    Publish-OSPlatformSystemComponents -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"
+
+    The recommended way to pass credentials in PowerShell is to use the PSCredential object.
 
     #>
 

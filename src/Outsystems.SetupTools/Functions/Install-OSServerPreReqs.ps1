@@ -2,27 +2,25 @@ function Install-OSServerPreReqs
 {
     <#
     .SYNOPSIS
-    Install the pre-requisites for the platform server.
+    Installs the pre-requisites for the OutSystems platform server.
 
     .DESCRIPTION
-    This will install the pre-requisites for the platform server version specified.
-    You should also run the Test-OSServerSoftwareReqs and the Test-OSServerHardwareReqs to check if your server is supported for Outsystems.
+    This will install the pre-requisites for the OutSystems platform server.
+    You should run first the Test-OSServerSoftwareReqs and the Test-OSServerHardwareReqs cmdlets to check if the server is supported for OutSystems.
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    The function will install the pre-requisites for the version specified on this parameter. Accepted values: 10.0 or 11.0
+    Accepted values: 10.0 or 11.0.
 
     .PARAMETER InstallIISMgmtConsole
     Specifies if the IIS Managament Console will be installed.
-    On servers without GUI this feature can't be installed. So you should set this parameter to $false.
-    Defaults to $true if not specified.
+    On servers without GUI this feature can't be installed so you should set this parameter to $false.
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10.0"
-    Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
 
-    .NOTES
-    All error are non-terminating. The function caller should decide what to do using the -ErrorAction parameter or using the $ErrorPreference variable.
+    .EXAMPLE
+    Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
 
     #>
 
