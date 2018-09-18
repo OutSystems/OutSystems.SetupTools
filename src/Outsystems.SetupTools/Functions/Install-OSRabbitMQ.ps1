@@ -9,6 +9,13 @@ function Install-OSRabbitMQ
     It will use the default guest user to perform the RabbitMQ configuration.
     It will skip the configuration and installation if RabbitMQ is already installed.
 
+    RabbitMQ will be installed in <InstallDir>\Platform Server\thirdparty
+
+    .PARAMETER InstallDir
+    RabbitMQ base install directory.
+    If not specified it will default to the OutSystems base directory (c:\Program Files\OutSystems).
+    If the platform server is already installed this parameter has no effect.
+
     .PARAMETER VirtualHosts
     List of virtual hosts to add to RabbitMQ.
 
@@ -48,6 +55,9 @@ function Install-OSRabbitMQ
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter()]
+        [string[]]$InstallDir="$ENV:ProgramFiles\OutSystems",
+
+        [Parameter()]
         [string[]]$VirtualHosts,
 
         [Parameter(ParameterSetName = 'AddAdminUser')]
@@ -73,9 +83,16 @@ function Install-OSRabbitMQ
             Message      = 'RabbitMQ for Outsystems successfully installed'
         }
 
+        $rabbitMQErlangInstallDir = "$InstallDir\Platform Server\thirdparty\Erlang"
+        $rabbitMQInstallDir = "$InstallDir\Platform Server\thirdparty\RabbitMQ Server"
+
+        # Overwrite installdir if the platform server is already installed
         $osInstallDir = GetServerInstallDir
-        $rabbitMQErlangInstallDir = "$osInstallDir\thirdparty\Erlang"
-        $rabbitMQInstallDir = "$osInstallDir\thirdparty\RabbitMQ Server"
+        if ($osInstallDir)
+        {
+            $rabbitMQErlangInstallDir = "$osInstallDir\thirdparty\Erlang"
+            $rabbitMQInstallDir = "$osInstallDir\thirdparty\RabbitMQ Server"
+        }
     }
 
     process
@@ -93,19 +110,7 @@ function Install-OSRabbitMQ
             return $installResult
         }
 
-        if ($(-not $(GetServerVersion)) -or $(-not $osInstallDir))
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
-            WriteNonTerminalError -Message "Outsystems platform is not installed"
-
-            $installResult.Success = $false
-            $installResult.ExitCode = -1
-            $installResult.Message = 'Outsystems platform is not installed'
-
-            return $installResult
-        }
-
-        # Check if Erlang is installed on the right folder and has the right version
+        # Check if Erlang is installed
         if (-not $(GetErlangInstallDir))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang not found. We will try to download and install"
