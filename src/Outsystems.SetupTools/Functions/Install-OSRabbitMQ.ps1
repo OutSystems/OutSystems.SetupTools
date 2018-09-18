@@ -36,9 +36,11 @@ function Install-OSRabbitMQ
     Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
 
     .NOTES
-    After uninstalling RabbitMQ you need to reboot the machine. Some registry keys are only deleted after rebooting.
-    So in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this cmdlet
-    RabbitMQ configuration is only done when installed. Rerunning this CmdLet will not reconfigure RabbitMQ
+    RabbitMQ is installed with the management console bind to localhost only.
+
+    If you uninstall RabbitMQ you need to reboot the machine. Some registry keys are only deleted after rebooting.
+    In case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this cmdlet
+    RabbitMQ configuration is only done when installed. Re-running this cmdlet will not reconfigure RabbitMQ
 
     #>
 
