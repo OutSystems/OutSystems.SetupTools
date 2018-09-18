@@ -1,9 +1,12 @@
 # Outsystems.SetupTools Release History
 
-## 2.0.2.0
+## Unreleased
 
 - Install-OSRabbitMQ:
   - Added: Restricted RabbitMQ management to localhost.
+    - Changed: Removed dependency from the Platform server.
+    - Added: InstallDir parameter
+    - Changed:
 
 ### Changes
 
