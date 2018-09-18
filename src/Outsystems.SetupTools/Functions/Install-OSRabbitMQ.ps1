@@ -29,6 +29,9 @@ function Install-OSRabbitMQ
     Install-OSRabbitMQ
 
     .EXAMPLE
+    Install-OSRabbitMQ -InstallDir 'D:\OutSystems'
+
+    .EXAMPLE
     Install-OSRabbitMQ -VirtualHosts '/OutSystems'
 
     .EXAMPLE
@@ -43,19 +46,21 @@ function Install-OSRabbitMQ
     Install-OSRabbitMQ -VirtualHosts @('/OutSystems', '/AnotherHost') -AdminUser $user -RemoveGuestUser
 
     .NOTES
-    RabbitMQ is installed with the management console bind to localhost only.
+    Notes on re-installation:
 
     If you uninstall RabbitMQ you need to reboot the machine. Some registry keys are only deleted after rebooting.
-    In case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can rerun this cmdlet
-    RabbitMQ configuration is only done when installed. Re-running this cmdlet will not reconfigure RabbitMQ
+    So, in case you want to reinstall RabbitMQ, you need to uninstall, reboot and then you can re-run this cmdlet.
+    RabbitMQ configuration done using the default guest/guest user.
+    If you removed this user on the previous installation, you need to delete the RabbitMQ user data to be able to re-configure rabbit.
+    RabbitMQ user data is located at C:\ProgramData\RabbitMQ.
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName='__AllParameterSets')]
+    [CmdletBinding(DefaultParameterSetName = '__AllParameterSets')]
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter()]
-        [string[]]$InstallDir="$ENV:ProgramFiles\OutSystems",
+        [string[]]$InstallDir = "$ENV:ProgramFiles\OutSystems",
 
         [Parameter()]
         [string[]]$VirtualHosts,
@@ -90,6 +95,7 @@ function Install-OSRabbitMQ
         $osInstallDir = GetServerInstallDir
         if ($osInstallDir)
         {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "OutSystems platform server found. InstallDir defaults to $osInstallDir"
             $rabbitMQErlangInstallDir = "$osInstallDir\thirdparty\Erlang"
             $rabbitMQInstallDir = "$osInstallDir\thirdparty\RabbitMQ Server"
         }
@@ -240,43 +246,70 @@ function Install-OSRabbitMQ
                 }
             }
 
-            # Rabbit installed. Lets wait to become available
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Waiting for RabbitMQ to become available"
-            $waitCounter = 0
-            do
+            # Rabbit installed successfully. Lets flag that the configuration.
+            try
             {
-                $wait = $false
-                if (-not $(isRabbitMQAvailable))
-                {
-                    $wait = $true
-			        Start-Sleep -Seconds 5
-                    $waitCounter += 5
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$waitCounter secs have passed while waiting for RabbitMQ to become available ..."
-                }
-
-                if($waitCounter -ge $OSRabbitMQServiceWaitTimeout) {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Timeout occurred while waiting for RabbitMQ to become available"
-                    WriteNonTerminalError -Message "Timeout occurred while waiting for RabbitMQ to become available"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Timeout occurred while waiting for RabbitMQ to become available'
-
-                    return $installResult
-                }
+                RegWrite -Path 'HKLM:\SOFTWARE\OutSystems\Installer\Server' -Name 'RabbitMQDoConfig' -Type 'DWORD' -Value 1
             }
-            while ($wait)
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the RabbitMQ config flag"
+                WriteNonTerminalError -Message "Error setting the RabbitMQ config flag"
 
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ is now available!!"
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error setting the RabbitMQ config flag'
 
-            #region RabbitConfig
+                return $installResult
+            }
+        }
+
+        $rabbitMQconfigNeeded = RegRead -Path 'HKLM:\SOFTWARE\OutSystems\Installer\Server' -Name 'RabbitMQDoConfig'
+        if ($rabbitMQconfigNeeded -eq 1)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ needs configuration"
+
+            # Test if rabbit management is available. Only if config is needed
+            if ($VirtualHosts -or $($PsCmdlet.ParameterSetName -eq 'AddAdminUser'))
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Waiting for RabbitMQ to become available"
+                $waitCounter = 0
+                do
+                {
+                    $wait = $false
+                    if (-not $(isRabbitMQAvailable))
+                    {
+                        $wait = $true
+                        Start-Sleep -Seconds 5
+                        $waitCounter += 5
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$waitCounter secs have passed while waiting for RabbitMQ to become available ..."
+                    }
+
+                    if ($waitCounter -ge $OSRabbitMQServiceWaitTimeout)
+                    {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Timeout occurred while waiting for RabbitMQ to become available"
+                        WriteNonTerminalError -Message "Timeout occurred while waiting for RabbitMQ to become available"
+
+                        $installResult.Success = $false
+                        $installResult.ExitCode = $exitCode
+                        $installResult.Message = 'Timeout occurred while waiting for RabbitMQ to become available'
+
+                        return $installResult
+                    }
+                }
+                while ($wait)
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ is now available!!"
+            }
+
             foreach ($virtualHost in $VirtualHosts)
             {
-                try {
+                try
+                {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding virtual host $virtualHost"
                     RabbitMQAddVirtualHost -VirtualHost $virtualHost
                 }
-                catch {
+                catch
+                {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error adding the virtual host $virtualHost to RabbitMQ"
                     WriteNonTerminalError -Message "Error adding the virtual host $virtualHost to RabbitMQ"
 
@@ -290,12 +323,14 @@ function Install-OSRabbitMQ
 
             if ($PsCmdlet.ParameterSetName -eq 'AddAdminUser')
             {
-                try {
+                try
+                {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding admin user $($AdminUser.UserName)"
                     RabbitMQAddAdminUser -Credential $AdminUser
                     RabbitMQAddAPermisionToAllVirtualHosts -User $($AdminUser.UserName)
                 }
-                catch {
+                catch
+                {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error adding admin user $($AdminUser.UserName) or setting permissions on the virtual hosts"
                     WriteNonTerminalError -Message "Error adding admin user $($AdminUser.UserName) or setting permissions on the virtual hosts"
 
@@ -308,11 +343,13 @@ function Install-OSRabbitMQ
 
                 if ($RemoveGuestUser)
                 {
-                    try {
+                    try
+                    {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Removing guest user from RabbitMQ"
                         RabbitMQRemoveGuestUser -Credential $AdminUser
                     }
-                    catch {
+                    catch
+                    {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error removing guest user from RabbitMQ"
                         WriteNonTerminalError -Message "Error removing guest user from RabbitMQ"
 
@@ -324,9 +361,28 @@ function Install-OSRabbitMQ
                     }
                 }
             }
-            #endregion
+
+            # Rabbit configured. Lets flag that the configuration.
+            try
+            {
+                RegWrite -Path 'HKLM:\SOFTWARE\OutSystems\Installer\Server' -Name 'RabbitMQDoConfig' -Type 'DWORD' -Value 0
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the RabbitMQ config flag"
+                WriteNonTerminalError -Message "Error setting the RabbitMQ config flag"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error setting the RabbitMQ config flag'
+
+                return $installResult
+            }
         }
-        #endregion
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ configuration already performed"
+        }
 
         if ($installResult.RebootNeeded)
         {
