@@ -269,7 +269,7 @@ function Install-OSRabbitMQ
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ needs configuration"
 
-            # Test if rabbit management is available. Only if config is needed
+            # Test if rabbit management is available. Only if configuration is needed
             if ($VirtualHosts -or $($PsCmdlet.ParameterSetName -eq 'AddAdminUser'))
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Waiting for RabbitMQ to become available"
