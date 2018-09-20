@@ -2,16 +2,25 @@
 
 ## Unreleased
 
+### What's new
+
+- New functions Publish-OSPlatformSolution,
+
+### Changes
+
 - Install-OSRabbitMQ:
   - Added: Restricted RabbitMQ management to localhost.
     - Changed: Removed dependency from the Platform server.
     - Added: InstallDir parameter
     - Changed: Changed RabbitMQ configuration gate. Added a configuration flag to know if needs to be performed or not based on the last install.
 
-- Publish-OSPlatformSolution
-  - New function
+- Publish-OSPlatformSolution: New function to publish an OSP/OAP.
 
-### Changes
+- Get-OSPlatformApplications:
+  - (BREAKING CHANGE): Removed the -ServiceCenterUser and -ServiceCenterPass. Now the cmdlet only accepts -Credential for authentication
+
+- Get-OSPlatformModules:
+  - (BREAKING CHANGE): Removed the -ServiceCenterUser and -ServiceCenterPass. Now the cmdlet only accepts -Credential for authentication
 
 ## 2.0.1.0
 
@@ -36,8 +45,7 @@
 
 ### Changes
 
-- Install-OSRabbitMQ
-  - New: New function to install and configure RabbitMQ
+- Install-OSRabbitMQ: New function to install and configure RabbitMQ
 
 - Install-OSServerPreReqs:
   - Change: Function will now return an object with the result of the installation.
@@ -103,7 +111,7 @@
 
 - Set-OSServerWindowsFirewall:
   - Change: Removed the write-output. Function by default will not output anything.
-  - Added: Parameter -IncludeRabbitMQ to open the needed ports for RabbitMQ
+  - Add: Parameter -IncludeRabbitMQ to open the needed ports for RabbitMQ
 
 - Test-OSServerHardwareReqs:
   - Change: Removed the old output messages. Function will now return an object with the result of the tests.
@@ -115,16 +123,8 @@
 
 - Invoke-OSConfigurationTool:
   - Change: Removed the write-output. Function by default will not output anything.
-  - Added: Support for Outsystems 11.
+  - Add: Support for Outsystems 11.
   - Changed: The only mandatory parameters are now the DB SA account and the DB accounts passwords. Everything else will use the configuration tool defaults if not specified.
-
-- Get-OSPlatformApplications!!!!:
-  - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
-  - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
-
-- Get-OSPlatformModules!!!!!:
-  - Added: Parameter -Credential (PSCredential type). This should be the preferred way to pass credentials. The parameters -ServiceCenterUser and -ServiceCenterPass were not removed for backward compability.
-  - Added: User, Pass/Password, Host alias for ServiceCenterUser, ServiceCenterPass, ServiceCenterHost parameters.
 
 ## 1.7.0.0
 
