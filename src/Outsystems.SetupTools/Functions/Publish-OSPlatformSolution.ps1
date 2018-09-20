@@ -36,6 +36,8 @@ function Publish-OSPlatformSolution
     1 = solution published with warning
     2 = failed
 
+    This cmdlet does not check the integrity of the solution pack.
+
     #>
 
     [CmdletBinding()]
@@ -97,7 +99,7 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Publishing solution $Solution"
         try
         {
-            $publishId = PublishSolutionAsync -SCHost $ServiceCenterHost -File $Solution -Credential $Credential
+            $publishId = PublishSolutionAsync -SCHost $ServiceCenterHost -Solution $Solution -Credential $Credential
         }
         catch
         {
@@ -130,7 +132,7 @@ function Publish-OSPlatformSolution
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Deployment successfully started"
 
-            $publishResult.Success = $false
+            $publishResult.Success = $true
             $publishResult.PublishId = $publishId
             $publishResult.Message = "Deployment successfully started"
 
@@ -140,7 +142,7 @@ function Publish-OSPlatformSolution
         # Check deployment status
         try
         {
-            $result = GetPublishResult -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential
+            $result = GetPublishResult -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -181,6 +183,7 @@ function Publish-OSPlatformSolution
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published"
+        $publishResult.Message = "Solution successfully published"
         $publishResult.PublishId = $publishId
         return $publishResult
     }
