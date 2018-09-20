@@ -8,6 +8,9 @@
     - Added: InstallDir parameter
     - Changed: Changed RabbitMQ configuration gate. Added a configuration flag to know if needs to be performed or not based on the last install.
 
+- Publish-OSPlatformSolution
+  - New function
+
 ### Changes
 
 ## 2.0.1.0
