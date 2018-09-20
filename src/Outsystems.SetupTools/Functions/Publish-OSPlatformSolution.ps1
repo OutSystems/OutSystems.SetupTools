@@ -14,7 +14,7 @@ function Publish-OSPlatformSolution
     Solution file. This can be an OSP or an OAP file.
 
     .PARAMETER Credential
-    Username or PSCredential object with credentials for Service Center
+    Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
     .PARAMETER Wait
     Will waits for the deployment to finish and reports back the deployment result.
@@ -44,18 +44,18 @@ function Publish-OSPlatformSolution
     [OutputType('Outsystems.SetupTools.PublishResult')]
     param (
         [Parameter()]
-        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Host', 'Environment')]
         [string]$ServiceCenterHost = '127.0.0.1',
 
         [Parameter(ValueFromPipeline)]
-        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
         [string]$Solution,
 
         [Parameter()]
-        [ValidateNotNull()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
-        [System.Management.Automation.PSCredential]$Credential,
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
 
         [Parameter()]
         [switch]$Wait
