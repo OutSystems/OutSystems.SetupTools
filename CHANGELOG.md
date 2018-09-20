@@ -4,7 +4,7 @@
 
 ### What's new
 
-- New functions Publish-OSPlatformSolution,
+- New functions Publish-OSPlatformSolution, Publish-OSPlatformOutdatedModules
 
 ### Changes
 
