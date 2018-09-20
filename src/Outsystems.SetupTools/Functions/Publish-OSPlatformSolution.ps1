@@ -1,5 +1,43 @@
 function Publish-OSPlatformSolution
 {
+    <#
+    .SYNOPSIS
+    Deploys a solution pack
+
+    .DESCRIPTION
+    This will deploy a solution pack to an OutSystems environment.
+
+    .PARAMETER ServiceCenterHost
+    Service Center hostname or IP. If not specified, defaults to localhost.
+
+    .PARAMETER Solution
+    Solution file. This can be an OSP or an OAP file.
+
+    .PARAMETER Credential
+    Username or PSCredential object with credentials for Service Center
+
+    .PARAMETER Wait
+    Will waits for the deployment to finish and reports back the deployment result.
+
+    .EXAMPLE
+    $Credential = Get-Credential
+    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential
+
+    .EXAMPLE
+    $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
+    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -Wait
+
+    .NOTES
+    You can run this cmdlet on any machine with HTTP access to Service Center.
+
+    This will return an object with an ExitCode property.
+    0 = success
+    1 = solution published with warning
+    2 = failed
+
+    #>
+
     [CmdletBinding()]
     [OutputType('Outsystems.SetupTools.PublishResult')]
     param (
