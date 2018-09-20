@@ -12,81 +12,62 @@ Function Get-OSPlatformModules
     .PARAMETER ServiceCenterHost
     Service Center hostname or IP. If not specified, defaults to localhost.
 
-    .PARAMETER ServiceCenterUser
-    Service Center username. If not specified, defaults to admin.
-
-    .PARAMETER ServiceCenterPass
-    Service Center password. If not specified, defaults to admin.
-
     .PARAMETER Credential
-    Username or PSCredential object. When you submit the command, you will be prompted for a password.
+    Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
     .EXAMPLE
     $Credential = Get-Credential
     Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
+    .EXAMPLE
     $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
     $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
     Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
-    Unsecure way:
-    Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
-
     .NOTES
-    Supports both local and remote systems.
+    You can run this cmdlet on any machine with HTTP access to Service Center.
+
     #>
 
-    [CmdletBinding(DefaultParametersetname = 'UserAndPass')]
-    [OutputType([System.Array])]
+    [OutputType([object[]])]
     param (
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Parameter(ParameterSetName = 'PSCred')]
-        [Alias('Host')]
-        [string]$ServiceCenterHost = '127.0.0.1',
+        [Parameter(ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Host', 'Environment')]
+        [string[]]$ServiceCenterHost = '127.0.0.1',
 
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Alias('User')]
-        [string]$ServiceCenterUser = $OSSCUser,
-
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Alias('Pass','Password')]
-        [string]$ServiceCenterPass = $OSSCPass,
-
-        [Parameter(ParameterSetName = 'PSCred')]
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
-        [System.Management.Automation.PSCredential]$Credential
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred
     )
 
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
+
+        $SCUser = $Credential.UserName
+        $SCPass = $Credential.GetNetworkCredential().Password
     }
 
     process
     {
-        switch ($PsCmdlet.ParameterSetName)
+        foreach ($SCHost in $ServiceCenterHost)
         {
-            "PSCred"
+            try
             {
-                $ServiceCenterUser = $Credential.UserName
-                $ServiceCenterPass = $Credential.GetNetworkCredential().Password
+                $result = WSGetModules -SCHost $SCHost -SCUser $Credential.UserName -SCPass $Credential.GetNetworkCredential().Password
+
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) applications from $SCHost"
+                return $result
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications from $SCHost" -Exception $_.Exception
+                WriteNonTerminalError -Message "Error getting applications from $SCHost"
             }
         }
-
-        try
-        {
-            $Result = $(GetPlatformServicesWS -SCHost $ServiceCenterHost).Modules_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)))
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting modules" -Exception $_.Exception
-            throw "Error getting modules"
-        }
-
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($Result.Count) modules"
-        return $Result
     }
 
     end
