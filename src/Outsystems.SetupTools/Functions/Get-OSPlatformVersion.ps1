@@ -38,8 +38,7 @@ function Get-OSPlatformVersion
     {
         try
         {
-            $refDummy = ""
-            $version = $(GetOutSystemsPlatformWS -SCHost $ServiceCenterHost).GetPlatformInfo(([ref]$refDummy))
+            $version = GetPlatformVersion -SCHost $ServiceCenterHost
         }
         catch
         {

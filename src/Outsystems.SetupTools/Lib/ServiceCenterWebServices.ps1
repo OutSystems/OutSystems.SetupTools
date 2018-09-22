@@ -31,13 +31,27 @@ function WS_GetSolutionsProxy([string]$SCHost)
 
 function WS_GetOutSystemsPlatformProxy([string]$SCHost)
 {
-    $platformUri = "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
+    $platformUri = "http://$SCHost/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $platformUri"
     $platformWS = New-WebServiceProxy -Uri $platformUri -ErrorAction Stop -Namespace 'OutSystems.Platform'
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
     return $platformWS
+}
+
+function WS_GetPlatformInfo([string]$SCHost)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform info from $SCHost"
+
+    $dummy = ""
+
+    $platformWS = WS_GetOutSystemsPlatformProxy -SCHost $SCHost
+    $result = $($platformWS).GetPlatformInfo(([ref]$dummy))
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
+
+    return $result
 }
 
 function WS_Applications_Get([string]$SCHost, [string]$SCUser, [string]$SCPass)
