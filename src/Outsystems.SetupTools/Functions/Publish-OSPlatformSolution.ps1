@@ -32,9 +32,10 @@ function Publish-OSPlatformSolution
     You can run this cmdlet on any machine with HTTP access to Service Center.
 
     This will return an object with an ExitCode property.
-    0 = success
-    1 = solution published with warning
-    2 = failed
+    -1 = Error while trying to publish the solution
+    0  = Success
+    1  = Solution published with warnings
+    2  = Failed
 
     This cmdlet does not check the integrity of the solution pack.
 
@@ -99,17 +100,18 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Publishing solution $Solution"
         try
         {
-            $publishId = PublishSolutionAsync -SCHost $ServiceCenterHost -Solution $Solution -Credential $Credential
+            $publishAsyncResult = PublishSolutionAsync -SCHost $ServiceCenterHost -Solution $Solution -Credential $Credential
+            $publishId = $publishAsyncResult.publishId
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error starting to publish the solution $Solution" -Exception $_.Exception
-            WriteNonTerminalError -Message "Error starting to publish the solution $Solution"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while trying to publish the solution $Solution" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error while trying to publish the solution $Solution"
 
             $publishResult.Success = $false
             $publishResult.PublishId = $publishId
             $publishResult.ExitCode = -1
-            $publishResult.Message = "Error starting to publish the solution $Solution"
+            $publishResult.Message = "Error while trying to publish the solution $Solution"
 
             return $publishResult
         }
@@ -117,12 +119,21 @@ function Publish-OSPlatformSolution
         # Check if publishId is valid
         if (-not $publishId -or ($publishId -eq 0))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error starting to publish the solution $Solution"
-            WriteNonTerminalError -Message "Error starting to publish the solution $Solution"
+            # Get error message from Service Center
+            if ($publishAsyncResult.Messages)
+            {
+                foreach ($publishMessage in $publishAsyncResult.Messages)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service Center: $($publishMessage.Message) - $($publishMessage.Detail)"
+                }
+            }
+
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while trying to publish the solution $Solution"
+            WriteNonTerminalError -Message "Error while trying to publish the solution $Solution"
 
             $publishResult.Success = $false
             $publishResult.ExitCode = -1
-            $publishResult.Message = "Error starting to publish the solution $Solution"
+            $publishResult.Message = "Error while trying to publish the solution $Solution"
 
             return $publishResult
         }
@@ -146,7 +157,7 @@ function Publish-OSPlatformSolution
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the status of publication id $publishId" -Exception $_.Exception
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the status of publication id $($publishAsyncResult.publishId)" -Exception $_.Exception
             WriteNonTerminalError -Message "Error checking the status of publication id $publishId"
 
             $publishResult.Success = $false
@@ -185,6 +196,7 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published"
         $publishResult.Message = "Solution successfully published"
         $publishResult.PublishId = $publishId
+
         return $publishResult
     }
 
