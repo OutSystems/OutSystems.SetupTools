@@ -29,9 +29,10 @@ function Get-OSPlatformApplications
 
     #>
 
-    [OutputType([object[]])]
+    [OutputType('OutSystems.PlatformServices.CS_Application')]
+    [OutputType('PSCustomObject', ParameterSetName = "PassThru")]
     param (
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
         [Alias('Host', 'Environment')]
         [string[]]$ServiceCenterHost = '127.0.0.1',
@@ -39,33 +40,49 @@ function Get-OSPlatformApplications
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
-        [System.Management.Automation.PSCredential]$Credential = $OSSCCred
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
+
+        [Parameter(ParameterSetName = 'PassThru')]
+        [switch]$PassThru
     )
 
     begin
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
-
-        $SCUser = $Credential.UserName
-        $SCPass = $Credential.GetNetworkCredential().Password
     }
 
     process
     {
         foreach ($SCHost in $ServiceCenterHost)
         {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting applications from $SCHost"
             try
             {
-                $result = WSGetApplications -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
-
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) applications from $SCHost"
-                return $result
+                $result = GetApplications -SCHost $SCHost -Credential $Credential
             }
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications from $SCHost" -Exception $_.Exception
                 WriteNonTerminalError -Message "Error getting applications from $SCHost"
+
+                return $null
+            }
+
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) applications from $SCHost"
+
+            # If PassThru, we create a custom and add the service center host and the credentials to the object to be used in other piped functions
+            if ($PassThru.IsPresent)
+            {
+                return [pscustomobject]@{
+                    ServiceCenterHost = $ServiceCenterHost
+                    Credential        = $Credential
+                    Applications      = $result
+                }
+            }
+            else
+            {
+                return $result
             }
         }
     }
