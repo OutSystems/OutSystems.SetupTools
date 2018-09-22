@@ -86,3 +86,31 @@ function GetPublishResult([string]$SCHost, [int]$PublishId, [pscredential]$Crede
 
     return $result
 }
+
+function GetModules([string]$SCHost, [pscredential]$Credential)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules from $SCHost"
+
+    $SCUser = $Credential.UserName
+    $SCPass = $Credential.GetNetworkCredential().Password
+
+    $result = WS_Modules_Get -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
+
+    return $result
+}
+
+function GetApplications([string]$SCHost, [pscredential]$Credential)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules from $SCHost"
+
+    $SCUser = $Credential.UserName
+    $SCPass = $Credential.GetNetworkCredential().Password
+
+    $result = WS_Applications_Get -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
+
+    return $result
+}
