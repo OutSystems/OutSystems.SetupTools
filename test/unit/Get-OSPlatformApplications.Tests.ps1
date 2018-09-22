@@ -4,61 +4,52 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force -ArgumentList
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSPlatformApplications Tests' {
 
-        Context 'When cannot connect to service center or the webservice returns error' {
-
-            Mock GetPlatformServicesWS { throw "Error" }
-
-            It 'Should throw an error' {
-                { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin" } | Should throw "Error getting applications"
+        # Global mocks
+        Mock GetApplications {
+            $returnResult = [pscustomobject]@{
+                Name = 'MyApp'
+                Key  = 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
             }
+            return $returnResult
+        }
+
+        Context 'When cannot connect to service center' {
+
+            Mock GetApplications { throw "Error" }
+            $result = Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should return the right result' {
+                $result | Should Be $null
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error getting applications from 255.255.255.255' }
+            It 'Should not throw' { { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When can connect and get results' {
+
+            $result = Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255
+
+            It 'Should return the right result' {
+                $result.Name | Should Be 'MyApp'
+                $result.Key | Should Be 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
 
         }
 
-        Context 'Can connect and get results' {
+        Context 'When -PassThru is specified' {
 
-            Mock GetPlatformServicesWS {
-                $obj = [pscustomobject]@{}
-                $obj | Add-Member -MemberType ScriptMethod -Name 'Applications_Get' -Force -Value { @{ 'Name' = 'MyApp'; 'Key' = 'c36e9646-0caf-4510-ad35-28a8b97c28b8' } }
-                return $obj
+            $result = Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -PassThru
+
+            It 'Should return the right result' {
+                $result.ServiceCenterHost | Should Be '255.255.255.255'
+                $result.Credential.UserName | Should Be 'admin'
+                $result.Applications[0].Name | Should Be 'MyApp'
+                $result.Applications[0].Key | Should Be 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
             }
-
-            It 'Should get the app name' {
-                $(Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin").Name | Should Be "MyApp"
-            }
-
-            It 'Should get the app key' {
-                $(Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin").Key | Should Be "c36e9646-0caf-4510-ad35-28a8b97c28b8"
-            }
-
-        }
-
-        Context 'Can connect and get results using PSCredentials' {
-
-            Mock GetPlatformServicesWS {
-                $obj = [pscustomobject]@{}
-                $obj | Add-Member -MemberType ScriptMethod -Name 'Applications_Get' -Force -Value {
-                    param( [string]$SCUser, [string]$SCPass, [bool]$Dummy1, [bool]$Dummy2 )
-
-                    if ($SCUser -eq 'SuperUser' -and $SCPass -eq 'SuperPass') {
-                        return @{ 'Name' = 'MyApp'; 'Key' = 'c36e9646-0caf-4510-ad35-28a8b97c28b8' }
-                    } else {
-                        throw "Big error"
-                    }
-                }
-                return $obj
-            }
-
-            Mock GetHashedPassword { return $SCPass }
-
-            It 'Should get the app name' {
-                $Credential= New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'SuperUser',('SuperPass' | ConvertTo-SecureString -AsPlainText -Force)
-                $(Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -Credential $Credential).Name | Should Be "MyApp"
-            }
-
-            It 'Should get the app key' {
-                $Credential= New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'SuperUser',('SuperPass' | ConvertTo-SecureString -AsPlainText -Force)
-                $(Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -Credential $Credential).Key | Should Be "c36e9646-0caf-4510-ad35-28a8b97c28b8"
-            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
 
         }
     }

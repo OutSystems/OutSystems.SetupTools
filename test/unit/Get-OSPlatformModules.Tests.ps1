@@ -4,61 +4,52 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force -ArgumentList
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSPlatformModules Tests' {
 
-        Context 'When cannot connect to service center or the webservice returns error' {
-
-            Mock GetPlatformServicesWS { Throw "Error" }
-
-            It 'Should throw an error' {
-                { Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin" } | Should Throw "Error getting modules"
+        # Global mocks
+        Mock GetModules {
+            $returnResult = [pscustomobject]@{
+                Name = 'MyModule'
+                Key  = 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
             }
+            return $returnResult
+        }
+
+        Context 'When cannot connect to service center' {
+
+            Mock GetModules { throw "Error" }
+            $result = Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should return the right result' {
+                $result | Should Be $null
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error getting modules from 255.255.255.255' }
+            It 'Should not throw' { { Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When can connect and get results' {
+
+            $result = Get-OSPlatformModules -ServiceCenterHost 255.255.255.255
+
+            It 'Should return the right result' {
+                $result.Name | Should Be 'MyModule'
+                $result.Key | Should Be 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
 
         }
 
-        Context 'Can connect and get results' {
+        Context 'When -PassThru is specified' {
 
-            Mock GetPlatformServicesWS {
-                $obj = [pscustomobject]@{}
-                $obj | Add-Member -MemberType ScriptMethod -Name 'Modules_Get' -Force -Value { @{ 'Name' = 'MyModule'; 'Key' = 'c36e9646-0caf-4510-ad35-28a8b97c28b8' } }
-                return $obj
+            $result = Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -PassThru
+
+            It 'Should return the right result' {
+                $result.ServiceCenterHost | Should Be '255.255.255.255'
+                $result.Credential.UserName | Should Be 'admin'
+                $result.Modules[0].Name | Should Be 'MyModule'
+                $result.Modules[0].Key | Should Be 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
             }
-
-            It 'Should get the module name' {
-                $(Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin").Name | Should Be "MyModule"
-            }
-
-            It 'Should get the module key' {
-                $(Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ServiceCenterUser "admin" -ServiceCenterPass "admin").Key | Should Be "c36e9646-0caf-4510-ad35-28a8b97c28b8"
-            }
-
-        }
-
-        Context 'Can connect and get results using PSCredentials' {
-
-            Mock GetPlatformServicesWS {
-                $obj = [pscustomobject]@{}
-                $obj | Add-Member -MemberType ScriptMethod -Name 'Modules_Get' -Force -Value {
-                    param( [string]$SCUser, [string]$SCPass, [bool]$Dummy1, [bool]$Dummy2 )
-
-                    if ($SCUser -eq 'SuperUser' -and $SCPass -eq 'SuperPass') {
-                        return @{ 'Name' = 'MyModule'; 'Key' = 'c36e9646-0caf-4510-ad35-28a8b97c28b8' }
-                    } else {
-                        throw "Big error"
-                    }
-                }
-                return $obj
-            }
-
-            Mock GetHashedPassword { return $SCPass }
-
-            It 'Should get the app name' {
-                $Credential= New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'SuperUser',('SuperPass' | ConvertTo-SecureString -AsPlainText -Force)
-                $(Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -Credential $Credential).Name | Should Be "MyModule"
-            }
-
-            It 'Should get the app key' {
-                $Credential= New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList 'SuperUser',('SuperPass' | ConvertTo-SecureString -AsPlainText -Force)
-                $(Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -Credential $Credential).Key | Should Be "c36e9646-0caf-4510-ad35-28a8b97c28b8"
-            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSPlatformModules -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
 
         }
     }
