@@ -35,7 +35,7 @@ function Publish-OSPlatformSolution
     -1 = Error while trying to publish the solution
     0  = Success
     1  = Solution published with warnings
-    2  = Failed
+    2  = Solution published with errors
 
     This cmdlet does not check the integrity of the solution pack.
 
@@ -59,7 +59,10 @@ function Publish-OSPlatformSolution
         [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
 
         [Parameter()]
-        [switch]$Wait
+        [switch]$Wait,
+
+        [Parameter()]
+        [switch]$StopOnWarnings
     )
 
     begin
@@ -71,6 +74,8 @@ function Publish-OSPlatformSolution
         $publishResult = [pscustomobject]@{
             PSTypeName = 'Outsystems.SetupTools.PublishResult'
             PublishId  = 0
+            Errors     = 0
+            Warnings   = 0
             Success    = $true
             ExitCode   = 0
             Message    = ''
@@ -79,13 +84,13 @@ function Publish-OSPlatformSolution
 
     process
     {
-        $publishId = 0
+        #region pre-checks
 
         # Check if file exists
         if (-not (Test-Path -Path $Solution))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant find the solution file $Solution"
-            WriteNonTerminalError -Message "Cant find the solution file $Solution"
+            WriteNonTerminalError -Phase 1 -Stream 3 -Message "Cant find the solution file $Solution"
 
             $publishResult.Success = $false
             $publishResult.ExitCode = -1
@@ -93,105 +98,176 @@ function Publish-OSPlatformSolution
 
             return $publishResult
         }
+        #endregion
 
-        # Check if file is OSP or OAP
-
-        # Start deployment
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Publishing solution $Solution"
+        #region start publish step 1
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uploading solution $Solution"
         try
         {
-            $publishAsyncResult = PublishSolutionAsync -SCHost $ServiceCenterHost -Solution $Solution -Credential $Credential
-            $publishId = $publishAsyncResult.publishId
+            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenterHost -Solution $Solution -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while trying to publish the solution $Solution" -Exception $_.Exception
-            WriteNonTerminalError -Message "Error while trying to publish the solution $Solution"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while starting to compile the solution" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error while starting to compile the solution"
 
             $publishResult.Success = $false
-            $publishResult.PublishId = $publishId
+            $publishResult.PublishId = 0
             $publishResult.ExitCode = -1
-            $publishResult.Message = "Error while trying to publish the solution $Solution"
+            $publishResult.Message = "Error while starting to compile the solution"
 
             return $publishResult
         }
 
-        # Check if publishId is valid
-        if (-not $publishId -or ($publishId -eq 0))
-        {
-            # Get error message from Service Center
-            if ($publishAsyncResult.Messages)
-            {
-                foreach ($publishMessage in $publishAsyncResult.Messages)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Service Center: $($publishMessage.Message) - $($publishMessage.Detail)"
-                }
-            }
+        # Here we have the publish id
+        $publishId = $publishAsyncResult.publishId
 
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while trying to publish the solution $Solution"
-            WriteNonTerminalError -Message "Error while trying to publish the solution $Solution"
-
-            $publishResult.Success = $false
-            $publishResult.ExitCode = -1
-            $publishResult.Message = "Error while trying to publish the solution $Solution"
-
-            return $publishResult
-        }
-
-        # If wait switch is not specified just return the publish id
+        # If wait switch is not specified just return the publish id and exit
         if (-not $Wait.IsPresent)
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Deployment successfully started"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution publishing successfully uploaded. Compilation started on the deployement controller"
 
             $publishResult.Success = $true
             $publishResult.PublishId = $publishId
-            $publishResult.Message = "Deployment successfully started"
+            $publishResult.Message = "Solution publishing successfully uploaded. Compilation started on the deployement controller"
 
             return $publishResult
         }
+        #endregion
 
-        # Check deployment status
+        #region get step 1 publish results
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the compilation of the solution ( Publish Id: $publishId )"
+
         try
         {
-            $result = GetPublishResult -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the status of publication id $($publishAsyncResult.publishId)" -Exception $_.Exception
-            WriteNonTerminalError -Message "Error checking the status of publication id $publishId"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the publication status ( Publish Id: $publishId )" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error checking the publication status ( Publish Id: $publishId )"
 
             $publishResult.Success = $false
             $publishResult.PublishId = $publishId
             $publishResult.ExitCode = -1
-            $publishResult.Message = "Error checking the status of publication id $publishId"
+            $publishResult.Message = "Error checking the publication status"
 
             return $publishResult
         }
 
-        switch ($result)
+        # Process results of step 1
+        $publishResult.Warnings = $result.Warnings
+        $publishResult.Errors = $result.Errors
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Found $($publishResult.Errors) errors and $($publishResult.Warnings) warnings while compiling the solution"
+
+        if ($result.Errors -gt 0)
         {
-            1
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published with warnings!!"
-                $publishResult.PublishId = $publishId
-                $publishResult.ExitCode = $result
-                $publishResult.Message = "Solution successfully published with warnings!!"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Errors found while compiling the solution"
+            WriteNonTerminalError -Message "Errors found while compiling the solution"
 
-                return $publishResult
-            }
-            2
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error publishing the solution"
-                WriteNonTerminalError -Message "Error publishing the solution"
+            # Delete the staging. Dont care with the results for now
+            AppMgmt_SolutionPublishStop -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
 
-                $publishResult.Success = $false
-                $publishResult.PublishId = $publishId
-                $publishResult.ExitCode = $result
-                $publishResult.Message = "Error publishing the solution"
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 2
+            $publishResult.Message = "Errors found while compiling the solution"
 
-                return $publishResult
-            }
+            return $publishResult
         }
+
+        if ($($result.Warnings -gt 0) -and $StopOnWarnings.IsPresent)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Warnings found while compiling the solution"
+            WriteNonTerminalError -Message "Warnings found while compiling the solution"
+
+            # Delete the staging. Dont care with the results for now
+            AppMgmt_SolutionPublishStop -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 2
+            $publishResult.Message = "Warnings found while compiling the solution"
+
+            return $publishResult
+        }
+        #endregion
+
+        #region start publish step 2
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Continuing to the deployment..."
+        try
+        {
+            AppMgmt_SolutionPublishContinue -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while starting to deploy the solution" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error while starting to deploy the solution"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error while starting to deploy the solution"
+
+            return $publishResult
+        }
+        #endregion
+
+        #region get step 2 publish results
+        try
+        {
+            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand) -AfterMessageId $result.LastMessageId
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the publication status ( Publish Id: $publishId )"  -Exception $_.Exception
+            WriteNonTerminalError -Message "Error checking the publication status ( Publish Id: $publishId )"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error checking the publication status"
+
+            return $publishResult
+        }
+
+        $publishResult.Warnings += $result.Warnings
+        $publishResult.Errors += $result.Errors
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Found a total of $($result.Errors) errors and $($result.Warnings) warnings after the deployment"
+
+        if ($result.Errors -gt 0)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error publishing the solution"
+            WriteNonTerminalError -Message "Error publishing the solution"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 2
+            $publishResult.Message = "Error publishing the solution"
+
+            return $publishResult
+        }
+
+        if ($result.Warnings -gt 0)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Solution successfully published with warnings!!"
+
+            if ($StopOnWarnings.IsPresent)
+            {
+                WriteNonTerminalError -Message "Solution successfully published with warnings!!"
+                $publishResult.Success = $false
+            }
+            else
+            {
+                $publishResult.Success = $true
+            }
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 1
+            $publishResult.Message = "Solution successfully published with warnings!!"
+
+            return $publishResult
+        }
+        #endregion
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published"
         $publishResult.Message = "Solution successfully published"
