@@ -1,49 +1,77 @@
 
 
-function PublishSolutionAsync([string]$SCHost, [string]$Solution, [pscredential]$Credential)
+function AppMgmt_SolutionPublish([string]$SCHost, [string]$Solution, [pscredential]$Credential, [string]$CallingFunction)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Solution path: $Solution"
 
     $SCUser = $Credential.UserName
     $SCPass = $Credential.GetNetworkCredential().Password
+    $publishId = 0
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Reading file"
     $solutionFile = [System.IO.File]::ReadAllBytes($Solution)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publishing"
-    $publishResult = WSPublishSolutionPack -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -Solution $solutionFile
+    $publishResult = SCWS_SolutionPack_PublishWith2StepOption -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -Solution $solutionFile -TwoStepMode $true
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig id $($publishResult.publishId)"
+    $publishId = $publishResult.publishId
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publish id is: $publishId"
+
+    # Check if publishId is valid
+    if (-not $publishId -or ($publishId -eq 0))
+    {
+        # If pubid is not valid, get error message from Service Center and output them to the verbose stream
+        if ($publishResult.Messages)
+        {
+            foreach ($publishMessage in $publishResult.Messages)
+            {
+                # Service Center messages will be send as the calling function
+                LogMessage -Function $CallingFunction -Phase 1 -Stream 0 -Message "Service Center: $($publishMessage.Message) - $($publishMessage.Detail)"
+            }
+        }
+
+        # Throw an exception to the calling function
+        throw "Error while trying to publish the solution $Solution"
+    }
 
     return $publishResult
 }
 
-function GetPublishResult([string]$SCHost, [int]$PublishId, [pscredential]$Credential, [string]$CallingFunction)
+function AppMgmt_GetPublishResults([string]$SCHost, [int]$PublishId, [pscredential]$Credential, [string]$CallingFunction, [int]$AfterMessageId = 0)
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting publishing results for publication id $PublishId"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting publishing results for publish id $PublishId"
 
     $SCUser = $Credential.UserName
     $SCPass = $Credential.GetNetworkCredential().Password
 
     $finished = $false
-    $lastMessageId = 0
 
     $resultsCount = [pscustomobject]@{
-        Errors       = 0
-        Warnings     = 0
+        Errors        = 0
+        Warnings      = 0
+        LastMessageId = $AfterMessageId
     }
 
-    while(-not $finished)
+    while (-not $finished)
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting publication messages from service center at $SCHost"
-        $objMessages = WSGetPublicationMessages -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -PublishId $PublishId -AfterMessageId $lastMessageId
+        $objMessages = SCWS_SolutionPack_GetPublicationMessages -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -PublishId $PublishId -AfterMessageId $resultsCount.LastMessageId
+
+        $finished = $objMessages.Finished
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Found $($objMessages.Messages.Count)"
         foreach ($message in $objMessages.Messages)
         {
-            # Service Center messages will be send as the calling function. This is an exception from the rest of this file
+            # Service Center messages will be send as the calling function
             LogMessage -Function $CallingFunction -Phase 1 -Stream 0 -Message "Service Center: $($message.Message) - $($message.Detail)"
-            switch ($message.Type) {
+
+            # Log the last message id
+            $resultsCount.LastMessageId = $objMessages.LastMessageId
+
+            # Gather the results
+            switch ($message.Type)
+            {
                 'Warning'
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Adding warning to results counter"
@@ -54,61 +82,73 @@ function GetPublishResult([string]$SCHost, [int]$PublishId, [pscredential]$Crede
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Adding error to results counter"
                     $resultsCount.Errors ++
                 }
+                'PublishStop'
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publish Step-1 is finished"
+                    $finished = $true
+                }
             }
         }
 
-        $finished = $objMessages.Finished
-        if (-not $objMessages.Finished)
+        if (-not $finished)
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Deployment still running"
-            $lastMessageId = $objMessages.LastMessageId
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publish is still running"
             Start-Sleep -Seconds 1
         }
     }
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Deployment finished"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publish finished"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Errors count: $($resultsCount.Errors)"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Warnings count: $($resultsCount.Warnings)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "LastMessageId: $($resultsCount.LastMessageId)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig publish results"
 
-    if ($resultsCount.Errors -ne 0)
-    {
-        $result = 2
-    }
-    elseif ($resultsCount.Warnings -ne 0)
-    {
-        $result = 1
-    }
-    else
-    {
-        $result = 0
-    }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $result"
-
-    return $result
+    # Return results. The calling function should know what to do with this
+    return $resultsCount
 }
 
-function GetModules([string]$SCHost, [pscredential]$Credential)
+function AppMgmt_SolutionPublishContinue([string]$SCHost, [int]$PublishId, [pscredential]$Credential)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Continuing publishid $PublishId"
+
+    $SCUser = $Credential.UserName
+    $SCPass = $Credential.GetNetworkCredential().Password
+
+    SCWS_SolutionPack_PublishContinue -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -PublishId $PublishId
+}
+
+function AppMgmt_SolutionPublishStop([string]$SCHost, [int]$PublishId, [pscredential]$Credential)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Continuing publishid $PublishId"
+
+    $SCUser = $Credential.UserName
+    $SCPass = $Credential.GetNetworkCredential().Password
+
+    WSSC_SolutionPack_PublishAbort -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -PublishId $PublishId
+}
+
+function AppMgmt_GetModules([string]$SCHost, [pscredential]$Credential)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules from $SCHost"
 
     $SCUser = $Credential.UserName
     $SCPass = $Credential.GetNetworkCredential().Password
 
-    $result = WS_Modules_Get -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
+    $result = SCWS_Modules_Get -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
 
     return $result
 }
 
-function GetApplications([string]$SCHost, [pscredential]$Credential)
+function AppMgmt_GetApplications([string]$SCHost, [pscredential]$Credential)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules from $SCHost"
 
     $SCUser = $Credential.UserName
     $SCPass = $Credential.GetNetworkCredential().Password
 
-    $result = WS_Applications_Get -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
+    $result = SCWS_Applications_Get -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
 
