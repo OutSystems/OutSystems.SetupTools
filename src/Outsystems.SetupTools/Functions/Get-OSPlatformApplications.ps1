@@ -59,7 +59,7 @@ function Get-OSPlatformApplications
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting applications from $SCHost"
             try
             {
-                $result = GetApplications -SCHost $SCHost -Credential $Credential
+                $result = AppMgmt_GetApplications -SCHost $SCHost -Credential $Credential
             }
             catch
             {

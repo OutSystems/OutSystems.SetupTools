@@ -5,7 +5,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSPlatformApplications Tests' {
 
         # Global mocks
-        Mock GetApplications {
+        Mock AppMgmt_GetApplications {
             $returnResult = [pscustomobject]@{
                 Name = 'MyApp'
                 Key  = 'c36e9646-0caf-4510-ad35-28a8b97c28b8'
@@ -15,7 +15,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When cannot connect to service center' {
 
-            Mock GetApplications { throw "Error" }
+            Mock AppMgmt_GetApplications { throw "Error" }
             $result = Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should return the right result' {
