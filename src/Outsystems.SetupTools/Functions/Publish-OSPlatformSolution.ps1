@@ -7,7 +7,7 @@ function Publish-OSPlatformSolution
     .DESCRIPTION
     This will deploy a solution pack to an OutSystems environment.
 
-    .PARAMETER ServiceCenterHost
+    .PARAMETER ServiceCenter
     Service Center hostname or IP. If not specified, defaults to localhost.
 
     .PARAMETER Solution
@@ -46,8 +46,8 @@ function Publish-OSPlatformSolution
     param (
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [Alias('Host', 'Environment')]
-        [string]$ServiceCenterHost = '127.0.0.1',
+        [Alias('Host', 'Environment','ServiceCenterHost')]
+        [string]$ServiceCenter = '127.0.0.1',
 
         [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
@@ -104,7 +104,7 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uploading solution $Solution"
         try
         {
-            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenterHost -Solution $Solution -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -140,7 +140,7 @@ function Publish-OSPlatformSolution
 
         try
         {
-            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -166,7 +166,7 @@ function Publish-OSPlatformSolution
             WriteNonTerminalError -Message "Errors found while compiling the solution"
 
             # Delete the staging. Dont care with the results for now
-            AppMgmt_SolutionPublishStop -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            AppMgmt_SolutionPublishStop -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
 
             $publishResult.Success = $false
             $publishResult.PublishId = $publishId
@@ -182,7 +182,7 @@ function Publish-OSPlatformSolution
             WriteNonTerminalError -Message "Warnings found while compiling the solution"
 
             # Delete the staging. Dont care with the results for now
-            AppMgmt_SolutionPublishStop -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            AppMgmt_SolutionPublishStop -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
 
             $publishResult.Success = $false
             $publishResult.PublishId = $publishId
@@ -197,7 +197,7 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Continuing to the deployment..."
         try
         {
-            AppMgmt_SolutionPublishContinue -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            AppMgmt_SolutionPublishContinue -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -216,7 +216,7 @@ function Publish-OSPlatformSolution
         #region get step 2 publish results
         try
         {
-            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenterHost -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand) -AfterMessageId $result.LastMessageId
+            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand) -AfterMessageId $result.LastMessageId
         }
         catch
         {
