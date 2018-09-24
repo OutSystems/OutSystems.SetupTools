@@ -621,7 +621,7 @@ function GetPlatformVersion([string]$SCHost)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform version from $SCHost"
 
-    $result = WSSC_GetPlatformInfo -SCHost $SCHost
+    $result = SCWS_GetPlatformInfo -SCHost $SCHost
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
 
