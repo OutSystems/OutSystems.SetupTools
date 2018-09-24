@@ -5,7 +5,8 @@ function Publish-OSPlatformSolution
     Deploys a solution pack
 
     .DESCRIPTION
-    This will deploy a solution pack to an OutSystems environment.
+    This will deploy a solution pack to an OutSystems environment
+    The cmdlet checks for compilation errors and will stop the deployment on any if the Wait switch is specified
 
     .PARAMETER ServiceCenter
     Service Center hostname or IP. If not specified, defaults to localhost.
@@ -17,7 +18,10 @@ function Publish-OSPlatformSolution
     Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
     .PARAMETER Wait
-    Will waits for the deployment to finish and reports back the deployment result.
+    Will waits for the deployment to finish and reports back the deployment result
+
+    .PARAMETER StopOnWarnings
+    Treat warnings as errors. Deployment will stop on compilation warnings and return success false
 
     .EXAMPLE
     $Credential = Get-Credential
@@ -28,16 +32,21 @@ function Publish-OSPlatformSolution
     $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
     Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -Wait
 
+    .EXAMPLE
+    $Credential = Get-Credential
+    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -StopOnWarnings
+
     .NOTES
     You can run this cmdlet on any machine with HTTP access to Service Center.
 
-    This will return an object with an ExitCode property.
+    The cmdlet will return an object with an ExitCode property that will match one of the following values:
     -1 = Error while trying to publish the solution
     0  = Success
     1  = Solution published with warnings
     2  = Solution published with errors
 
-    This cmdlet does not check the integrity of the solution pack.
+    This cmdlet does not check the integrity of the solution pack before starting.
+    Trusts on the Service Center to make all the checks.
 
     #>
 
