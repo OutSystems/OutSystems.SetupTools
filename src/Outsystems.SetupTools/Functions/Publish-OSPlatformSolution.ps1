@@ -113,7 +113,7 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uploading solution $Solution"
         try
         {
-            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -TwoStepMode $Wait -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -134,11 +134,11 @@ function Publish-OSPlatformSolution
         # If wait switch is not specified just return the publish id and exit
         if (-not $Wait.IsPresent)
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution publishing successfully uploaded. Compilation started on the deployement controller"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution publishing successfully uploaded. Compilation started on the deployment controller"
 
             $publishResult.Success = $true
             $publishResult.PublishId = $publishId
-            $publishResult.Message = "Solution publishing successfully uploaded. Compilation started on the deployement controller"
+            $publishResult.Message = "Solution publishing successfully uploaded. Compilation started on the deployment controller"
 
             return $publishResult
         }
