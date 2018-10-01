@@ -4,7 +4,7 @@
 
 ### What's new
 
-- New functions Publish-OSPlatformSolution, Publish-OSPlatformOutdatedModules
+- New function Publish-OSPlatformSolution and Publish-OSPlatformModules
 
 ### Changes
 
@@ -18,9 +18,11 @@
 
 - Get-OSPlatformApplications:
   - (BREAKING CHANGE): Removed the -ServiceCenterUser and -ServiceCenterPass. Now the cmdlet only accepts -Credential for authentication
+  - Major rework
 
 - Get-OSPlatformModules:
   - (BREAKING CHANGE): Removed the -ServiceCenterUser and -ServiceCenterPass. Now the cmdlet only accepts -Credential for authentication
+  - Major rework
 
 ## 2.0.1.0
 
