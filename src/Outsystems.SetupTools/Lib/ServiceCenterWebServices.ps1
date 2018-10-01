@@ -51,7 +51,7 @@ function SCWS_Applications_Get([string]$SCHost, [string]$SCUser, [string]$SCPass
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting applications from $SCHost"
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $result = $($platformServicesWS).Applications_Get($SCUser, $(GetHashedPassword($SCPass)), $true, $true)
+    $result = $($platformServicesWS).Applications_Get($SCUser, $(EncryptString($SCPass)), $true, $true)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) applications"
 
@@ -63,7 +63,7 @@ function SCWS_Modules_Get([string]$SCHost, [string]$SCUser, [string]$SCPass)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules from $SCHost"
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $result = $($platformServicesWS).Modules_Get($SCUser, $(GetHashedPassword($SCPass)))
+    $result = $($platformServicesWS).Modules_Get($SCUser, $(EncryptString($SCPass)))
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
 
@@ -79,7 +79,7 @@ function SCWS_Module_GetVersions([string]$SCHost, [string]$SCUser, [string]$SCPa
     $publishedVersion = 0
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $result = $($platformServicesWS).Module_GetVersions($SCUser, $(GetHashedPassword($SCPass)), $ModuleKey, [ref]$publishedVersion, [ref]$errorCode, [ref]$errorMessage)
+    $result = $($platformServicesWS).Module_GetVersions($SCUser, $(EncryptString($SCPass)), $ModuleKey, [ref]$publishedVersion, [ref]$errorCode, [ref]$errorMessage)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) module versions"
 
@@ -103,7 +103,7 @@ function SCWS_Staging_PublishWith2StepOption([string]$SCHost, [string]$SCUser, [
         ApplicationsToUpdate = $ApplicationsToUpdate
     } | ConvertTo-Json -Depth 20
 
-    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $SCUser, $(GetHashedPassword($SCPass)))))
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $SCUser, $(EncryptString($SCPass)))))
 
     $result = Invoke-RestMethod -Uri $uri -Headers @{Authorization = "Basic $base64AuthInfo" } -Method POST -ContentType "application/json" -Body $body -Verbose:$false
 
@@ -117,7 +117,7 @@ function SCWS_SolutionPack_PublishWith2StepOption([string]$SCHost, [string]$SCUs
     $publishId = 0
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $result = $($platformServicesWS).SolutionPack_PublishWith2StepOption($SCUser, $(GetHashedPassword($SCPass)), $Solution, $TwoStepMode, [ref]$publishId)
+    $result = $($platformServicesWS).SolutionPack_PublishWith2StepOption($SCUser, $(EncryptString($SCPass)), $Solution, $TwoStepMode, [ref]$publishId)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning publishing id $publishId"
 
@@ -137,7 +137,7 @@ function SCWS_SolutionPack_GetPublicationMessages([string]$SCHost, [string]$SCUs
     $finished = $false
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $result = $($platformServicesWS).SolutionPack_GetPublishMessages($SCUser, $(GetHashedPassword($SCPass)), $PublishId, $AfterMessageId, [ref]$lastMessageId, [ref]$finished)
+    $result = $($platformServicesWS).SolutionPack_GetPublishMessages($SCUser, $(EncryptString($SCPass)), $PublishId, $AfterMessageId, [ref]$lastMessageId, [ref]$finished)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning messages"
 
@@ -155,7 +155,7 @@ function SCWS_SolutionPack_PublishContinue([string]$SCHost, [string]$SCUser, [st
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Continuing publish id $PublishId on $SCHost"
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $null = $($platformServicesWS).SolutionPack_PublishContinue($SCUser, $(GetHashedPassword($SCPass)), $PublishId)
+    $null = $($platformServicesWS).SolutionPack_PublishContinue($SCUser, $(EncryptString($SCPass)), $PublishId)
 }
 
 function WSSC_SolutionPack_PublishAbort([string]$SCHost, [string]$SCUser, [string]$SCPass, [int]$PublishId)
@@ -163,7 +163,7 @@ function WSSC_SolutionPack_PublishAbort([string]$SCHost, [string]$SCUser, [strin
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Stopping publish id $PublishId on $SCHost"
 
     $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
-    $null = $($platformServicesWS).SolutionPack_PublishAbort($SCUser, $(GetHashedPassword($SCPass)), $PublishId)
+    $null = $($platformServicesWS).SolutionPack_PublishAbort($SCUser, $(EncryptString($SCPass)), $PublishId)
 }
 
 
@@ -177,7 +177,7 @@ Function WSGetModuleVersionPublished([string]$SCHost, [string]$SCUser, [string]$
     $publishedVersion = 0
 
     $platformServicesWS = GetPlatformServicesWS -SCHost $SCHost
-    $result = $($platformServicesWS).Module_GetVersions($SCUser, $(GetHashedPassword($SCPass)), $ModuleKey, [ref]$publishedVersion, [ref]$errorCode, [ref]$errorMessage)
+    $result = $($platformServicesWS).Module_GetVersions($SCUser, $(EncryptString($SCPass)), $ModuleKey, [ref]$publishedVersion, [ref]$errorCode, [ref]$errorMessage)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning module version $publishedVersion"
 
