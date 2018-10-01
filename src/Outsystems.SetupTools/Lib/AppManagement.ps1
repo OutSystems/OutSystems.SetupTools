@@ -1,6 +1,6 @@
 
 
-function AppMgmt_SolutionPublish([string]$SCHost, [string]$Solution, [pscredential]$Credential, [string]$CallingFunction)
+function AppMgmt_SolutionPublish([string]$SCHost, [string]$Solution, [pscredential]$Credential, [bool]$TwoStepMode, [string]$CallingFunction)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Solution path: $Solution"
 
@@ -12,7 +12,7 @@ function AppMgmt_SolutionPublish([string]$SCHost, [string]$Solution, [pscredenti
     $solutionFile = [System.IO.File]::ReadAllBytes($Solution)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publishing"
-    $publishResult = SCWS_SolutionPack_PublishWith2StepOption -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -Solution $solutionFile -TwoStepMode $true
+    $publishResult = SCWS_SolutionPack_PublishWith2StepOption -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -Solution $solutionFile -TwoStepMode $TwoStepMode
 
     $publishId = $publishResult.publishId
 
@@ -153,4 +153,52 @@ function AppMgmt_GetApplications([string]$SCHost, [pscredential]$Credential)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
 
     return $result
+}
+
+function AppMgmt_ModulesPublish([string]$SCHost, [object[]]$Modules, [pscredential]$Credential, [string]$StagingName, [bool]$TwoStepMode, [string]$CallingFunction)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publishing $($Modules.Count) modules to $SCHost"
+
+    $SCUser = $Credential.UserName
+    $SCPass = $Credential.GetNetworkCredential().Password
+    $publishId = 0
+
+    # Init array with modules to publish in the expected format
+    $modulesToPublish = @()
+
+    foreach($moduleToPublish in $Modules)
+    {
+        $moduleObject = [pscustomobject]@{
+            REST_Module        = [pscustomobject]@{
+                Name = $moduleToPublish.Name
+                Key  = $moduleToPublish.Key
+                Kind = $moduleToPublish.Kind
+            }
+        }
+        $modulesToPublish += $moduleObject
+    }
+
+    $publishResult = SCWS_Staging_PublishWith2StepOption -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass -ModulesToPublish $modulesToPublish -StagingName $StagingName -TwoStepMode $TwoStepMode
+
+    $publishId = $publishResult.publishId
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publish id is: $publishId"
+
+    # Check if publishId is valid
+    if (-not $publishId -or ($publishId -eq 0))
+    {
+        # If pubid is not valid, get error message from Service Center and output them to the verbose stream
+        if ($publishResult.Messages)
+        {
+            foreach ($publishMessage in $publishResult.Messages)
+            {
+                # Service Center messages will be send as the calling function
+                LogMessage -Function $CallingFunction -Phase 1 -Stream 0 -Message "Service Center: $($publishMessage.REST_PublicationMessage.Message) - $($publishMessage.REST_PublicationMessage.Detail)"
+            }
+        }
+
+        # Throw an exception to the calling function
+        throw "Error while trying to publish modules"
+    }
+
+    return $publishResult
 }
