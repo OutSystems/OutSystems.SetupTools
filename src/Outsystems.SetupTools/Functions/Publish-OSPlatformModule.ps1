@@ -30,12 +30,12 @@ function Publish-OSPlatformModule
     param (
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Host', 'Environment')]
-        [string[]]$ServiceCenterHost = '127.0.0.0',
+        [Alias('Host', 'Environment', 'ServiceCenterHost')]
+        [string]$ServiceCenter = '127.0.0.1',
 
-        [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromPipeline = $true)]
+        [Parameter(ValueFromPipelineByPropertyName = $true, ValueFromPipeline = $true, Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [PSTypeName('OutSystems.PlatformServices.CS_Module')]$Module,
+        [PSTypeName('OutSystems.PlatformServices.CS_Module')]$Modules,
 
         [Parameter(ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
@@ -43,10 +43,10 @@ function Publish-OSPlatformModule
         [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
 
         [Parameter()]
-        [switch]$CreateNewVersion,
+        [switch]$Wait,
 
         [Parameter()]
-        [switch]$StopOnError,
+        [switch]$StopOnWarning,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -57,79 +57,206 @@ function Publish-OSPlatformModule
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
+
+        # Initialize the results object
+        $publishResult = [pscustomobject]@{
+            PSTypeName = 'Outsystems.SetupTools.PublishResult'
+            PublishId  = 0
+            Errors     = 0
+            Warnings   = 0
+            Success    = $true
+            ExitCode   = 0
+            Message    = ''
+        }
     }
 
     process
     {
-        $SCUser = $Credential.UserName
-        $SCPass = $Credential.GetNetworkCredential().Password
-
-        $moduleVersionsToPublish = @()
-        foreach ($outdatedModule in $Module)
+        if (-not $Modules)
         {
-            try
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting published version of module $($outdatedModule.Name)"
-                $modulePublishedVersion = WSGetModuleVersionPublished -SCHost $ServiceCenterHost -SCUser $SCUser -SCPass $SCPass -ModuleKey $outdatedModule.Key
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting published version of module $($outdatedModule.Name)" -Exception $_.Exception
-                WriteNonTerminalError -Message "Error getting published version of module $($outdatedModule.Name)"
+            $publishResult.Success = $true
+            $publishResult.PublishId = 0
+            $publishResult.ExitCode = 0
+            $publishResult.Message = "No modules to publish"
 
-                return
-            }
-
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding module $($outdatedModule.Name) to the list"
-            $ModulesToPublish = [pscustomobject]@{
-                REST_Module        = [pscustomobject]@{
-                    Name = $outdatedModule.Name
-                    Key  = $outdatedModule.Key
-                    Kind = $outdatedModule.Kind
-                }
-                #REST_ModuleVersion = [pscustomobject]@{
-                #    ModuleVersionKey = $modulePublishedVersion.ModuleVersion.ModuleVersionKey
-                #}
-            }
-            $moduleVersionsToPublish += $ModulesToPublish
+            return $publishResult
         }
 
-        if ($moduleVersionsToPublish)
+        #region start publish step 1
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Publishing $($Modules.Count) modules to $ServiceCenter"
+        try
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the deployment"
-            $publishResponse = WSPublishModules -SCHost $ServiceCenterHost -SCUser $SCUser -SCPass $SCPass -ModulesToPublish $moduleVersionsToPublish -StagingName "Publish_Outdated_Modules"
+            $publishAsyncResult = AppMgmt_ModulesPublish -SCHost $ServiceCenter -Modules $Modules -Credential $Credential -StagingName $StagingName -TwoStepMode $Wait -CallingFunction $($MyInvocation.Mycommand)
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while starting to compile the modules" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error while starting to compile the modules"
 
-            # Check deployment status
-            try
-            {
-                $result = GetPublishResult -SCHost $ServiceCenterHost -PublishId $publishResponse.PublishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the status of publication id $publishId" -Exception $_.Exception
-                WriteNonTerminalError -Message "Error checking the status of publication id $publishId"
+            $publishResult.Success = $false
+            $publishResult.PublishId = 0
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error while starting to compile the modules"
 
-                return
-            }
-
-            switch ($result)
-            {
-                1
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published with warnings!!"
-                    return
-                }
-                2
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error publishing the solution"
-                    WriteNonTerminalError -Message "Error publishing the solution"
-
-                    return
-                }
-            }
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published"
+            return $publishResult
         }
 
+        # Here we have the publish id
+        $publishId = $publishAsyncResult.publishId
+
+        # If wait switch is not specified just return the publish id and exit
+        if (-not $Wait.IsPresent)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Compilation started on the deployment controller"
+
+            $publishResult.Success = $true
+            $publishResult.PublishId = $publishId
+            $publishResult.Message = "Compilation started on the deployment controller"
+
+            return $publishResult
+        }
+        #endregion
+
+        #region get step 1 publish results
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the compilation of the modules ( Publish Id: $publishId )"
+
+        try
+        {
+            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the publication status ( Publish Id: $publishId )" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error checking the publication status ( Publish Id: $publishId )"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error checking the publication status"
+
+            return $publishResult
+        }
+
+        # Process results of step 1
+        $publishResult.Warnings = $result.Warnings
+        $publishResult.Errors = $result.Errors
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Found $($publishResult.Errors) errors and $($publishResult.Warnings) warnings while compiling the modules"
+
+        if ($result.Errors -gt 0)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Errors found while compiling the modules"
+            WriteNonTerminalError -Message "Errors found while compiling the modules"
+
+            # Delete the staging. Dont care with the results for now
+            AppMgmt_SolutionPublishStop -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 2
+            $publishResult.Message = "Errors found while compiling the modules"
+
+            return $publishResult
+        }
+
+        if ($($result.Warnings -gt 0) -and $StopOnWarnings.IsPresent)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Warnings found while compiling the modules"
+            WriteNonTerminalError -Message "Warnings found while compiling the modules"
+
+            # Delete the staging. Dont care with the results for now
+            AppMgmt_SolutionPublishStop -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 2
+            $publishResult.Message = "Warnings found while compiling the modules"
+
+            return $publishResult
+        }
+        #endregion
+
+        #region start publish step 2
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Continuing to the deployment..."
+        try
+        {
+            AppMgmt_SolutionPublishContinue -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while starting to deploy the solution" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error while starting to deploy the solution"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error while starting to deploy the solution"
+
+            return $publishResult
+        }
+        #endregion
+
+        #region get step 2 publish results
+        try
+        {
+            $result = AppMgmt_GetPublishResults -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand) -AfterMessageId $result.LastMessageId
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error checking the publication status ( Publish Id: $publishId )"  -Exception $_.Exception
+            WriteNonTerminalError -Message "Error checking the publication status ( Publish Id: $publishId )"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error checking the publication status"
+
+            return $publishResult
+        }
+
+        $publishResult.Warnings += $result.Warnings
+        $publishResult.Errors += $result.Errors
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Found a total of $($result.Errors) errors and $($result.Warnings) warnings after the deployment"
+
+        if ($result.Errors -gt 0)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error publishing the modules"
+            WriteNonTerminalError -Message "Error publishing the modules"
+
+            $publishResult.Success = $false
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 2
+            $publishResult.Message = "Error publishing the modules"
+
+            return $publishResult
+        }
+
+        if ($result.Warnings -gt 0)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Modules successfully published with warnings!!"
+
+            if ($StopOnWarnings.IsPresent)
+            {
+                WriteNonTerminalError -Message "Modules successfully published with warnings!!"
+                $publishResult.Success = $false
+            }
+            else
+            {
+                $publishResult.Success = $true
+            }
+            $publishResult.PublishId = $publishId
+            $publishResult.ExitCode = 1
+            $publishResult.Message = "Modules successfully published with warnings!!"
+
+            return $publishResult
+        }
+        #endregion
+
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Modules successfully published"
+        $publishResult.Message = "Modules successfully published"
+        $publishResult.PublishId = $publishId
+
+        return $publishResult
     }
 
     end
