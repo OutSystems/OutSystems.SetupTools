@@ -15,6 +15,13 @@ Function Get-OSPlatformModules
     .PARAMETER Credential
     Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
+    .PARAMETER PassThru
+    If spedified returns the list of modules grouped by environment. Also returns the ServiceCenter and the Credentials parameters
+    Useful for the Publish-OSPlatformModules function
+
+    .PARAMETER Filter
+    Filter script
+
     .EXAMPLE
     $Credential = Get-Credential
     Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
@@ -30,17 +37,20 @@ Function Get-OSPlatformModules
     #>
 
     [OutputType('OutSystems.PlatformServices.CS_Module')]
-    [OutputType('PSCustomObject', ParameterSetName = "PassThru")]
+    [OutputType('OutSystems.PlatformServices.Modules', ParameterSetName = "PassThru")]
     param (
         [Parameter(ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Host', 'Environment')]
-        [string[]]$ServiceCenterHost = '127.0.0.1',
+        [Alias('Host', 'Environment', 'ServiceCenterHost')]
+        [string]$ServiceCenter = '127.0.0.1',
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
         [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
+
+        [Parameter()]
+        [scriptblock]$Filter,
 
         [Parameter(ParameterSetName = 'PassThru')]
         [switch]$PassThru
@@ -54,35 +64,42 @@ Function Get-OSPlatformModules
 
     process
     {
-        foreach ($SCHost in $ServiceCenterHost)
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting modules from $ServiceCenter"
+        try
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting modules from $SCHost"
-            try
-            {
-                $result = GetModules -SCHost $SCHost -Credential $Credential
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting modules from $SCHost" -Exception $_.Exception
-                WriteNonTerminalError -Message "Error getting modules from $SCHost"
+            $modules = AppMgmt_GetModules -SCHost $ServiceCenter -Credential $Credential
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting modules from $ServiceCenter" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error getting modules from $ServiceCenter"
 
-                return $null
-            }
+            return $null
+        }
 
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) modules from $SCHost"
+        if ($Filter)
+        {
+            $modules = $modules | Where-Object -FilterScript $Filter
+        }
 
-            # If PassThru, we create a custom and add the service center host and the credentials to the object to be used in other piped functions
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($modules.Count) modules from $ServiceCenter"
+
+        if ($modules)
+        {
+            # If PassThru, we create a custom and add the service center and the credentials to the object to be used in another piped functions
             if ($PassThru.IsPresent)
             {
                 return [pscustomobject]@{
-                    ServiceCenterHost = $ServiceCenterHost
-                    Credential        = $Credential
-                    Modules           = $result
+                    PSTypeName    = 'Outsystems.SetupTools.Modules'
+                    ServiceCenter = $ServiceCenter
+                    Credential    = $Credential
+                    Modules       = $modules
                 }
             }
             else
             {
-                return $result
+                return $modules
             }
         }
     }
