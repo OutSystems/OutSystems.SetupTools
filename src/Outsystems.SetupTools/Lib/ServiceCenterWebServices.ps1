@@ -1,42 +1,191 @@
-function GetHashedPassword([string]$SCPass)
+
+function SCWS_GetPlatformServicesProxy([string]$SCHost)
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password to hash $SCPass"
-    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $SCPass
-    $HashedPass = $('#' + $objPass.EncryptedValue)
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password hashed $HashedPass"
+    $platformServicesUri = "http://$SCHost/ServiceCenter/PlatformServices_v8_0_0.asmx?WSDL"
 
-    return $HashedPass
-}
-
-function GetPlatformServicesWS([string]$SCHost)
-{
-    $PlatformServicesUri = "http://$SCHost/ServiceCenter/PlatformServices_v8_0_0.asmx?WSDL"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $PlatformServicesUri"
-    $PlatformServicesWS = New-WebServiceProxy -Uri $PlatformServicesUri -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $platformServicesUri"
+    $platformServicesWS = New-WebServiceProxy -Uri $platformServicesUri -ErrorAction Stop -Namespace 'OutSystems.PlatformServices'
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
-    Return $PlatformServicesWS
+    return $platformServicesWS
 }
 
-function GetSolutionsWS([string]$SCHost)
+function SCWS_GetSolutionsProxy([string]$SCHost)
 {
-    $SolutionsUri = "http://$SCHost/ServiceCenter/Solutions.asmx?WSDL"
+    $solutionsUri = "http://$SCHost/ServiceCenter/Solutions.asmx?WSDL"
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $SolutionsUri"
-    $SolutionsWS = New-WebServiceProxy -Uri $SolutionsUri -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $solutionsUri"
+    $solutionsWS = New-WebServiceProxy -Uri $solutionsUri -ErrorAction Stop -Namespace 'OutSystems.Solutions'
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
-    Return $SolutionsWS
+    return $solutionsWS
 }
 
-function GetOutSystemsPlatformWS([string]$SCHost)
+function SCWS_GetOutSystemsPlatformProxy([string]$SCHost)
 {
-    $OutSystemsPlatformUri = "http://$Host/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
+    $platformUri = "http://$SCHost/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to: $OutSystemsPlatformUri"
-    $OutSystemsPlatformWS = New-WebServiceProxy -Uri $OutSystemsPlatformUri -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $platformUri"
+    $platformWS = New-WebServiceProxy -Uri $platformUri -ErrorAction Stop -Namespace 'OutSystems.Platform'
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
-    Return $OutSystemsPlatformWS
+    return $platformWS
+}
+
+function SCWS_GetPlatformInfo([string]$SCHost)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform info from $SCHost"
+
+    $dummy = ""
+
+    $platformWS = SCWS_GetOutSystemsPlatformProxy -SCHost $SCHost
+    $result = $($platformWS).GetPlatformInfo(([ref]$dummy))
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
+
+    return $result
+}
+
+function SCWS_Applications_Get([string]$SCHost, [string]$SCUser, [string]$SCPass)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting applications from $SCHost"
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $result = $($platformServicesWS).Applications_Get($SCUser, $(EncryptString($SCPass)), $true, $true)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) applications"
+
+    return $result
+}
+
+function SCWS_Modules_Get([string]$SCHost, [string]$SCUser, [string]$SCPass)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules from $SCHost"
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $result = $($platformServicesWS).Modules_Get($SCUser, $(EncryptString($SCPass)))
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) modules"
+
+    return $result
+}
+
+function SCWS_Module_GetVersions([string]$SCHost, [string]$SCUser, [string]$SCPass, [string]$ModuleKey)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting modules versions of module key $ModuleKey"
+
+    $errorCode = 0
+    $errorMessage = ""
+    $publishedVersion = 0
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $result = $($platformServicesWS).Module_GetVersions($SCUser, $(EncryptString($SCPass)), $ModuleKey, [ref]$publishedVersion, [ref]$errorCode, [ref]$errorMessage)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($result.Count) module versions"
+
+    $returnResult = [pscustomobject]@{
+        ErrorCode        = $errorCode
+        ErrorMessage     = $errorMessage
+        PublishedVersion = $publishedVersion
+        ModuleVersions   = $result
+    }
+
+    return $returnResult
+}
+
+function SCWS_Staging_PublishWith2StepOption([string]$SCHost, [string]$SCUser, [string]$SCPass, [object[]]$ModulesToPublish, [object[]]$ApplicationsToUpdate, [string]$StagingName, [bool]$TwoStepMode)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publishing $($ModulesToPublish.Count) modules"
+
+    $uri = "http://$SCHost/ServiceCenter/rest/PlatformServices/Staging_PublishWith2StepOption?StagingName=$StagingName&TwoStepMode=$TwoStepMode"
+    $body = [pscustomobject]@{
+        ModulesToPublish     = $ModulesToPublish
+        ApplicationsToUpdate = $ApplicationsToUpdate
+    } | ConvertTo-Json -Depth 20
+
+    $base64AuthInfo = [Convert]::ToBase64String([Text.Encoding]::ASCII.GetBytes(("{0}:{1}" -f $SCUser, $(EncryptString($SCPass)))))
+
+    $result = Invoke-RestMethod -Uri $uri -Headers @{Authorization = "Basic $base64AuthInfo" } -Method POST -ContentType "application/json" -Body $body -Verbose:$false
+
+    return $result
+}
+
+function SCWS_SolutionPack_PublishWith2StepOption([string]$SCHost, [string]$SCUser, [string]$SCPass, [Byte[]]$Solution, [bool]$TwoStepMode)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Publishing solution to $SCHost"
+
+    $publishId = 0
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $result = $($platformServicesWS).SolutionPack_PublishWith2StepOption($SCUser, $(EncryptString($SCPass)), $Solution, $TwoStepMode, [ref]$publishId)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning publishing id $publishId"
+
+    $returnResult = [pscustomobject]@{
+        PublishId = $publishId
+        Messages  = $result
+    }
+
+    return $returnResult
+}
+
+function SCWS_SolutionPack_GetPublicationMessages([string]$SCHost, [string]$SCUser, [string]$SCPass, [int]$PublishId, [int]$AfterMessageId)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting messages from publishing id $PublishId"
+
+    $lastMessageId = 0
+    $finished = $false
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $result = $($platformServicesWS).SolutionPack_GetPublishMessages($SCUser, $(EncryptString($SCPass)), $PublishId, $AfterMessageId, [ref]$lastMessageId, [ref]$finished)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning messages"
+
+    $returnResult = [pscustomobject]@{
+        Finished      = [bool]$finished
+        LastMessageId = $lastMessageId
+        Messages      = $result
+    }
+
+    return $returnResult
+}
+
+function SCWS_SolutionPack_PublishContinue([string]$SCHost, [string]$SCUser, [string]$SCPass, [int]$PublishId)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Continuing publish id $PublishId on $SCHost"
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $null = $($platformServicesWS).SolutionPack_PublishContinue($SCUser, $(EncryptString($SCPass)), $PublishId)
+}
+
+function WSSC_SolutionPack_PublishAbort([string]$SCHost, [string]$SCUser, [string]$SCPass, [int]$PublishId)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Stopping publish id $PublishId on $SCHost"
+
+    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    $null = $($platformServicesWS).SolutionPack_PublishAbort($SCUser, $(EncryptString($SCPass)), $PublishId)
+}
+
+
+#>###########
+Function WSGetModuleVersionPublished([string]$SCHost, [string]$SCUser, [string]$SCPass, [string]$ModuleKey)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting module published version of module key $ModuleKey"
+
+    $errorCode = 0
+    $errorMessage = ""
+    $publishedVersion = 0
+
+    $platformServicesWS = GetPlatformServicesWS -SCHost $SCHost
+    $result = $($platformServicesWS).Module_GetVersions($SCUser, $(EncryptString($SCPass)), $ModuleKey, [ref]$publishedVersion, [ref]$errorCode, [ref]$errorMessage)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning module version $publishedVersion"
+
+    $returnResult = [pscustomobject]@{
+        ErrorCode     = $errorCode
+        ErrorMessage  = $errorMessage
+        ModuleVersion = $result | Where-Object -FilterScript { $_.Version -eq $publishedVersion }
+    }
+
+    return $returnResult
 }

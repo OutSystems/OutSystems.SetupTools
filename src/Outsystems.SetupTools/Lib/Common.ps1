@@ -254,3 +254,51 @@ function SendFunctionEndEvent([psobject]$InvocationInfo)
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "FunctionEnd event not send. Telemetry is disabled"
     }
 }
+
+function TestFileLock([string]$Path)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if file $Path is locked"
+
+    $file = New-Object System.IO.FileInfo $Path
+
+    if ((Test-Path -Path $Path) -eq $false) {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File does not exist. Returning false."
+        return $false
+    }
+
+    try {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Openning"
+        $stream = $file.Open([System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
+
+        if ($stream) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sucessfully open the file. File is not locked"
+            $stream.Close()
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Closing and returnig false"
+        }
+        return $false
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!!! Returnig true!!"
+        return $true
+    }
+}
+
+function EncryptString([string]$String)
+{
+    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $String
+    $hashedPass = $('#' + $objPass.EncryptedValue)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Encrypted string $hashedPass"
+
+    return $hashedPass
+}
+
+function DecryptString([string]$String)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Decrypting string $String"
+    $decryptedString = [OutSystems.HubEdition.RuntimePlatform.Settings]::DecryptString($String)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $decryptedString"
+
+    return $decryptedString
+}
