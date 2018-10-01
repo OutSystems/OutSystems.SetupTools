@@ -1,11 +1,3 @@
-function GetHashedPassword([string]$SCPass)
-{
-    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $SCPass
-    $hashedPass = $('#' + $objPass.EncryptedValue)
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Password hashed $hashedPass"
-
-    return $hashedPass
-}
 
 function SCWS_GetPlatformServicesProxy([string]$SCHost)
 {
