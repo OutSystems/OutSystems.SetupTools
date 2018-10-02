@@ -2,7 +2,8 @@ function Set-OSServer
 {
     <#
     .SYNOPSIS
-    Short description
+    Goal is to replace Invoke-OSConfigurationTool with this cmdlet
+    This release only applies the current platform config
 
     .DESCRIPTION
     Long description
@@ -108,6 +109,43 @@ function Set-OSServer
         }
         #endregion
 
+        #region generate templates
+        if (-not $(Test-Path -Path "$osInstallDir\server.hsconf"))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration file not found. Generating a new one"
+
+            try
+            {
+                $result = RunConfigTool -Arguments "/GenerateTemplates"
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
+                WriteNonTerminalError -Message "Error lauching the configuration tool"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error lauching the configuration tool'
+
+                return $installResult
+            }
+
+            if ( $result.ExitCode -ne 0 )
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error generating the templates. Exit code: $($result.ExitCode)"
+                WriteNonTerminalError -Message "Error generating the templates. Exit code: $($result.ExitCode)"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = $($result.ExitCode)
+                $installResult.Message = 'Error generating the templates'
+
+                return $installResult
+            }
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($result.ExitCode)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration file generated"
+        }
+        #endregion
+
         #region apply config
         if ($Apply.IsPresent)
         {
@@ -148,7 +186,7 @@ function Set-OSServer
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Platform successfully configured"
-            $installResult.Message = 'OutSystems successfully configured'
+            $installResult.Message = 'OutSystems platform successfully configured'
         }
         #endregion
 
