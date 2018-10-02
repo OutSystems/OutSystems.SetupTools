@@ -1,26 +1,24 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: Outsystems.SetupTools
-online version:
+online version: http://go.microsoft.com/fwlink/?LinkID=217034
 schema: 2.0.0
 ---
 
-# Get-OSPlatformModules
+# Publish-OSPlatformModule
 
 ## SYNOPSIS
-Returns the list of modules installed on an Outsystems environment.
+Creates and publish an OutSystems solution with all modules that are outdated.
 
 ## SYNTAX
 
 ```
-Get-OSPlatformModules [-ServiceCenter <String>] [-Credential <PSCredential>] [-Filter <ScriptBlock>]
- [-PassThru] [<CommonParameters>]
+Publish-OSPlatformModule [[-ServiceCenter] <String>] [-Modules] <Object> [[-Credential] <PSCredential>] [-Wait]
+ [-StopOnWarning] [[-StagingName] <String>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will return the list of modules (espaces and extensions) installed on an Outsystems environment.
-The function can be used to query a remote Outsystems environment for the list of modules installed using the ServiceCenterHost parameter.
-If not specified, the function will query the local machine.
+This will create and publish an OutSystems solution with all modules that are outdated.
 
 ## EXAMPLES
 
@@ -50,9 +48,24 @@ Parameter Sets: (All)
 Aliases: Host, Environment, ServiceCenterHost
 
 Required: False
-Position: Named
+Position: 1
 Default value: 127.0.0.1
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Modules
+{{Fill Modules Description}}
+
+```yaml
+Type: Object
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -66,31 +79,14 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 3
 Default value: $OSSCCred
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -Filter
-Filter script
-
-```yaml
-Type: ScriptBlock
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PassThru
-If spedified returns the list of modules grouped by environment.
-Also returns the ServiceCenter and the Credentials parameters
-Useful for the Publish-OSPlatformModules function
+### -Wait
+{{Fill Wait Description}}
 
 ```yaml
 Type: SwitchParameter
@@ -104,6 +100,36 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -StopOnWarning
+{{Fill StopOnWarning Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -StagingName
+{{Fill StagingName Description}}
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
+Default value: OutSystems_SetupTools_Staging
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
 For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
@@ -112,8 +138,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### OutSystems.PlatformServices.CS_Module
-### OutSystems.PlatformServices.Modules
 ## NOTES
 You can run this cmdlet on any machine with HTTP access to Service Center.
 
