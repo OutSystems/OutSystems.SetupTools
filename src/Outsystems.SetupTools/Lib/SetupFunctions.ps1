@@ -26,13 +26,11 @@ function ConfigureServiceWindowsSearch()
 {
     if ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue))
     {
-
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Disabling the Windows search service."
         Set-Service -Name "WSearch" -StartupType "Disabled" -ErrorAction Stop
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Stopping the Windows search service."
         Get-Service -Name "WSearch" | Stop-Service -ErrorAction Stop
-
     }
     else
     {
@@ -201,7 +199,6 @@ function InstallRabbitMQ([string]$InstallDir)
 
 function InstallRabbitMQPreReqs([string]$RabbitBaseDir)
 {
-
     # Create the rabbitMQ base dir if doesnt exist
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Creating rabbitMQ base dir: $RabbitBaseDir"
     if (-not (Test-Path -Path $RabbitBaseDir))
@@ -562,37 +559,6 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 
 }
 
-Function TestFileLock([string]$Path)
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if file $Path is locked"
-
-    $File = New-Object System.IO.FileInfo $Path
-
-    If ((Test-Path -Path $Path) -eq $false) {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File does not exist. Returning false."
-        Return $false
-    }
-
-    Try {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Openning"
-
-        $Stream = $File.Open([System.IO.FileMode]::Open, [System.IO.FileAccess]::ReadWrite, [System.IO.FileShare]::None)
-
-        If ($Stream) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sucessfully open the file. File is not locked"
-            $Stream.Close()
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Closing and returnig false"
-        }
-
-        Return $false
-
-    } Catch {
-
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!!! Returnig true!!"
-        Return $true
-    }
-}
-
 function GetSCCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\ServiceCenter"
@@ -649,4 +615,15 @@ function GenerateEncryptKey()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $key"
 
     return $key
+}
+
+function GetPlatformVersion([string]$SCHost)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform version from $SCHost"
+
+    $result = SCWS_GetPlatformInfo -SCHost $SCHost
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
+
+    return $result
 }

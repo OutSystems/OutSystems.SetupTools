@@ -12,51 +12,41 @@ function Get-OSPlatformApplications
     .PARAMETER ServiceCenterHost
     Service Center hostname or IP. If not specified, defaults to localhost.
 
-    .PARAMETER ServiceCenterUser
-    Service Center username. If not specified, defaults to admin.
-
-    .PARAMETER ServiceCenterPass
-    Service Center password. If not specified, defaults to admin.
-
     .PARAMETER Credential
-    Username or PSCredential object. When you submit the command, you will be prompted for a password.
+    Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
     .EXAMPLE
     $Credential = Get-Credential
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
-    $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
-    $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
+    .EXAMPLE
+    $password = ConvertTo-SecureString "superpass" -AsPlainText -Force
+    $Credential = New-Object System.Management.Automation.PSCredential ("superuser", $password)
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
-    Unsecure way:
-    Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
-
     .NOTES
-    Supports both local and remote systems.
+    You can run this cmdlet on any machine with HTTP access to Service Center.
 
     #>
 
-    [CmdletBinding(DefaultParametersetname = 'UserAndPass')]
-    [OutputType([PSCustomObject])]
+    [OutputType('OutSystems.PlatformServices.CS_Application')]
+    [OutputType('OutSystems.PlatformServices.Modules', ParameterSetName = "PassThru")]
     param (
-        [Parameter(ParameterSetName = 'UserAndPass', ValueFromPipeline)]
-        [Parameter(ParameterSetName = 'PSCred', ValueFromPipeline)]
-        [Alias('Host')]
-        [string[]]$ServiceCenterHost = '127.0.0.1',
+        [Parameter(ValueFromPipeline = $true)]
+        [ValidateNotNullOrEmpty()]
+        [Alias('Host', 'Environment', 'ServiceCenterHost')]
+        [string]$ServiceCenter = '127.0.0.1',
 
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Alias('User')]
-        [string]$ServiceCenterUser = $OSSCUser,
-
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Alias('Pass','Password')]
-        [string]$ServiceCenterPass = $OSSCPass,
-
-        [Parameter(ParameterSetName = 'PSCred')]
-        [ValidateNotNull()]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
-        [System.Management.Automation.PSCredential]$Credential
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
+
+        [Parameter()]
+        [scriptblock]$Filter,
+
+        [Parameter(ParameterSetName = 'PassThru')]
+        [switch]$PassThru
     )
 
     begin
@@ -67,27 +57,43 @@ function Get-OSPlatformApplications
 
     process
     {
-        switch ($PsCmdlet.ParameterSetName)
-        {
-            "PSCred"
-            {
-                $ServiceCenterUser = $Credential.UserName
-                $ServiceCenterPass = $Credential.GetNetworkCredential().Password
-            }
-        }
-
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting applications from $ServiceCenter"
         try
         {
-            $result = $(GetPlatformServicesWS -SCHost $ServiceCenterHost).Applications_Get($ServiceCenterUser, $(GetHashedPassword($ServiceCenterPass)), $true, $true)
+            $applications = AppMgmt_GetApplications -SCHost $ServiceCenter -Credential $Credential
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications" -Exception $_.Exception
-            throw "Error getting applications"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications from $ServiceCenter" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error getting applications from $ServiceCenter"
+
+            return $null
         }
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) applications"
-        return $result
+        if ($Filter)
+        {
+            $applications = $applications | Where-Object -FilterScript $Filter
+        }
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($applications.Count) applications from $ServiceCenter"
+
+        if ($applications)
+        {
+            # If PassThru, we create a custom and add the service center and the credentials to the object to be used in another piped functions
+            if ($PassThru.IsPresent)
+            {
+                return [pscustomobject]@{
+                    PSTypeName    = 'Outsystems.SetupTools.Applications'
+                    ServiceCenter = $ServiceCenter
+                    Credential    = $Credential
+                    Applications       = $applications
+                }
+            }
+            else
+            {
+                return $modules
+            }
+        }
     }
 
     end

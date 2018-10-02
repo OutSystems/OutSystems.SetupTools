@@ -4,30 +4,30 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force -ArgumentList
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSPlatformVersion Tests' {
 
-        Mock GetOutSystemsPlatformWS {
-            $obj = [pscustomobject]@{}
-            $obj | Add-Member -MemberType ScriptMethod -Name 'GetPlatformInfo' -Force -Value { '10.0.0.1' }
-            return $obj
-        }
+        # Global mocks
+        Mock GetPlatformVersion { return "10.0.0.1" }
 
-        Context 'When cannot connect to service center or the webservice returns error' {
+        Context 'When cannot connect to service center' {
 
-            Mock GetOutSystemsPlatformWS {
-                $obj = [pscustomobject]@{}
-                $obj | Add-Member -MemberType ScriptMethod -Name 'GetPlatformInfo' -Force -Value { throw 'Big error' }
-                return $obj
+            Mock GetPlatformVersion { throw "Error" }
+            $result = Get-OSPlatformVersion -ServiceCenterHost 255.255.255.255 -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should return the right result' {
+                $result | Should Be $null
             }
-
-            Get-OSPlatformVersion -Host 255.255.255.255 -ErrorAction SilentlyContinue -ErrorVariable err
-
             It 'Should output an error' { $err[-1] | Should Be 'Error contacting service center or getting the platform version' }
-            It 'Should not throw' { { Get-OSPlatformVersion -Host 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When can connect' {
-            It 'Should get the platform version' { Get-OSPlatformVersion -Host csdevops-dev.outsystems.net | Should Be '10.0.0.1' }
 
+            $result = Get-OSPlatformVersion -ServiceCenterHost 255.255.255.255 -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should return the right result' {
+                $result | Should Be '10.0.0.1'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSPlatformApplications -ServiceCenterHost 255.255.255.255 -ErrorAction SilentlyContinue } | Should Not throw }
         }
-
     }
 }
