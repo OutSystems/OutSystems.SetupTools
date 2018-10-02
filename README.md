@@ -1,12 +1,18 @@
 # OutSystems.SetupTools
 
-[![Build status](https://ci.appveyor.com/api/projects/status/1i4itt105msarmgu/branch/master?svg=true)](https://ci.appveyor.com/project/pintonunes/OutSystems-setuptools/branch/master)
-
-[![Build status](https://ci.appveyor.com/api/projects/status/1i4itt105msarmgu/branch/dev?svg=true)](https://ci.appveyor.com/project/pintonunes/OutSystems-setuptools/branch/dev)
-
 OutSystems.SetupTools is a powershell module for installing and manage the OutSystems platform installation.
 
 This module allows you to install and configure the OutSystems platform completely using Powershell.
+
+## Branches
+
+### master
+
+[![Build status](https://ci.appveyor.com/api/projects/status/1i4itt105msarmgu/branch/master?svg=true)](https://ci.appveyor.com/project/pintonunes/OutSystems-setuptools/branch/master)
+
+### dev
+
+[![Build status](https://ci.appveyor.com/api/projects/status/1i4itt105msarmgu/branch/dev?svg=true)](https://ci.appveyor.com/project/pintonunes/OutSystems-setuptools/branch/dev)
 
 ## Common scenarios
 
