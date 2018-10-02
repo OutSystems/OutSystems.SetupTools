@@ -12,15 +12,9 @@ Returns the list of applications installed on an Outsystems environment.
 
 ## SYNTAX
 
-### UserAndPass (Default)
 ```
-Get-OSPlatformApplications [-ServiceCenterHost <String[]>] [-ServiceCenterUser <String>]
- [-ServiceCenterPass <String>] [<CommonParameters>]
-```
-
-### PSCred
-```
-Get-OSPlatformApplications [-ServiceCenterHost <String[]>] [-Credential <PSCredential>] [<CommonParameters>]
+Get-OSPlatformApplications [-ServiceCenterHost <String[]>] [-Credential <PSCredential>] [-PassThru]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,12 +31,13 @@ $Credential = Get-Credential
 
 Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
-$password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
-$Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
-Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
+### EXAMPLE 2
+```
+$password = ConvertTo-SecureString "superpass" -AsPlainText -Force
+```
 
-Unsecure way:
-Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -ServiceCenterUser "admin" -ServiceCenterPass "mypass"
+$Credential = New-Object System.Management.Automation.PSCredential ("superuser", $password)
+Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
 ## PARAMETERS
 
@@ -53,7 +48,7 @@ If not specified, defaults to localhost.
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: Host
+Aliases: Host, Environment
 
 Required: False
 Position: Named
@@ -62,50 +57,33 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -ServiceCenterUser
-Service Center username.
-If not specified, defaults to admin.
-
-```yaml
-Type: String
-Parameter Sets: UserAndPass
-Aliases: User
-
-Required: False
-Position: Named
-Default value: $OSSCUser
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ServiceCenterPass
-Service Center password.
-If not specified, defaults to admin.
-
-```yaml
-Type: String
-Parameter Sets: UserAndPass
-Aliases: Pass, Password
-
-Required: False
-Position: Named
-Default value: $OSSCPass
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -Credential
-Username or PSCredential object.
-When you submit the command, you will be prompted for a password.
+Username or PSCredential object with credentials for Service Center.
+If not specified defaults to admin/admin
 
 ```yaml
 Type: PSCredential
-Parameter Sets: PSCred
+Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: $OSSCCred
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PassThru
+{{Fill PassThru Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -118,9 +96,9 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### System.Management.Automation.PSObject
-
+### OutSystems.PlatformServices.CS_Application
+### PSCustomObject
 ## NOTES
-Supports both local and remote systems.
+You can run this cmdlet on any machine with HTTP access to Service Center.
 
 ## RELATED LINKS

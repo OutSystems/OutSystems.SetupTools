@@ -125,7 +125,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ### Outsystems.SetupTools.InstallResult
-
 ## NOTES
 The parameters ServiceCenterUser and ServiceCenterPass will be removed in a future module version.
 Publish-OSPlatformLifetime -Force -ServiceCenterUser "admin" -ServiceCenterPass "admin"

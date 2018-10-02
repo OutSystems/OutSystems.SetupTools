@@ -39,7 +39,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ### System.String
-
 ## NOTES
 If you are installing a farm environment, the private keys from the OutSystems controller and the frontends must match (private.key file).
 With this cmdlet you can pre-generate the key and use the output in the Invoke-OSConfigurationTool.

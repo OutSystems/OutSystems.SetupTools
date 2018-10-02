@@ -54,7 +54,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ### Outsystems.SetupTools.TestResult
-
 ## NOTES
 
 ## RELATED LINKS
