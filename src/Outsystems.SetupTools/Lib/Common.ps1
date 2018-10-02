@@ -284,21 +284,21 @@ function TestFileLock([string]$Path)
     }
 }
 
-function EncryptString([string]$String)
+function GetHashedPassword([string]$Password)
 {
-    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $String
+    $objPass = New-Object -TypeName OutSystems.Common.Password -ArgumentList $Password
     $hashedPass = $('#' + $objPass.EncryptedValue)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Encrypted string $hashedPass"
 
     return $hashedPass
 }
 
-function DecryptString([string]$String)
+function DecryptSetting([string]$Setting)
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Decrypting string $String"
-    $decryptedString = [OutSystems.HubEdition.RuntimePlatform.Settings]::DecryptString($String)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Decrypting string $Setting"
+    $decryptedSetting = [OutSystems.HubEdition.RuntimePlatform.Settings]::DecryptSetting($Setting)
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $decryptedString"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $decryptedSetting"
 
-    return $decryptedString
+    return $decryptedSetting
 }

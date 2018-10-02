@@ -4,10 +4,10 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force -ArgumentList
 
 . $PSScriptRoot\..\..\src\Outsystems.SetupTools\Lib\Common.ps1
 
-Describe 'EncryptString Tests' {
+Describe 'GetHashedPassword Tests' {
     Context 'Normal' {
         It 'Checks if returns a string' {
-            EncryptString -String "MyPass" | Should BeLike "#*"
+            GetHashedPassword -Password "MyPass" | Should BeLike "#*"
         }
     }
 }
