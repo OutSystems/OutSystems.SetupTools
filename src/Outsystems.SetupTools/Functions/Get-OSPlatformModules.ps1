@@ -64,7 +64,6 @@ Function Get-OSPlatformModules
 
     process
     {
-
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting modules from $ServiceCenter"
         try
         {
