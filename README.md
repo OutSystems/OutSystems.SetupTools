@@ -10,9 +10,14 @@ This module allows you to install and configure the OutSystems platform complete
 
 [![Build status](https://ci.appveyor.com/api/projects/status/1i4itt105msarmgu/branch/master?svg=true)](https://ci.appveyor.com/project/pintonunes/OutSystems-setuptools/branch/master)
 
+This is the branch containing the latest release - no contributions should be made directly to this branch.
+
 ### dev
 
 [![Build status](https://ci.appveyor.com/api/projects/status/1i4itt105msarmgu/branch/dev?svg=true)](https://ci.appveyor.com/project/pintonunes/OutSystems-setuptools/branch/dev)
+
+This is the development branch to which contributions should be proposed by contributors as pull requests.
+This development branch will periodically be merged to the master branch, and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
 
 ## Common scenarios
 
