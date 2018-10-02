@@ -5,6 +5,7 @@
 ### What's new
 
 - New function Publish-OSPlatformSolution and Publish-OSPlatformModules
+- New function Set-OSServer
 
 ### Changes
 
@@ -12,9 +13,13 @@
   - Added: Restricted RabbitMQ management to localhost.
     - Changed: Removed dependency from the Platform server.
     - Added: InstallDir parameter
-    - Changed: Changed RabbitMQ configuration gate. Added a configuration flag to know if needs to be performed or not based on the last install.
+    - Changed: Changed RabbitMQ configuration gate. Added a configuration flag to know if needs to be performed or not based on the last install
 
-- Publish-OSPlatformSolution: New function to publish an OSP/OAP.
+- Publish-OSPlatformSolution: New function to publish an OSP/OAP
+
+- Publish-OSPlatformModules: New function publish modules into an environment
+
+- Set-OSServer: New function to replace the Invoke-OSConfigurationTool
 
 - Get-OSPlatformApplications:
   - (BREAKING CHANGE): Removed the -ServiceCenterUser and -ServiceCenterPass. Now the cmdlet only accepts -Credential for authentication
