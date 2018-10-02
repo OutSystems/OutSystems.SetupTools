@@ -30,17 +30,20 @@ function Get-OSPlatformApplications
     #>
 
     [OutputType('OutSystems.PlatformServices.CS_Application')]
-    [OutputType('PSCustomObject', ParameterSetName = "PassThru")]
+    [OutputType('OutSystems.PlatformServices.Modules', ParameterSetName = "PassThru")]
     param (
         [Parameter(ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Host', 'Environment')]
-        [string[]]$ServiceCenterHost = '127.0.0.1',
+        [Alias('Host', 'Environment', 'ServiceCenterHost')]
+        [string]$ServiceCenter = '127.0.0.1',
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
         [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
+
+        [Parameter()]
+        [scriptblock]$Filter,
 
         [Parameter(ParameterSetName = 'PassThru')]
         [switch]$PassThru
@@ -54,35 +57,41 @@ function Get-OSPlatformApplications
 
     process
     {
-        foreach ($SCHost in $ServiceCenterHost)
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting applications from $ServiceCenter"
+        try
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Getting applications from $SCHost"
-            try
-            {
-                $result = AppMgmt_GetApplications -SCHost $SCHost -Credential $Credential
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications from $SCHost" -Exception $_.Exception
-                WriteNonTerminalError -Message "Error getting applications from $SCHost"
+            $applications = AppMgmt_GetApplications -SCHost $ServiceCenter -Credential $Credential
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error getting applications from $ServiceCenter" -Exception $_.Exception
+            WriteNonTerminalError -Message "Error getting applications from $ServiceCenter"
 
-                return $null
-            }
+            return $null
+        }
 
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($result.Count) applications from $SCHost"
+        if ($Filter)
+        {
+            $applications = $applications | Where-Object -FilterScript $Filter
+        }
 
-            # If PassThru, we create a custom and add the service center host and the credentials to the object to be used in other piped functions
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($applications.Count) applications from $ServiceCenter"
+
+        if ($applications)
+        {
+            # If PassThru, we create a custom and add the service center and the credentials to the object to be used in another piped functions
             if ($PassThru.IsPresent)
             {
                 return [pscustomobject]@{
-                    ServiceCenterHost = $ServiceCenterHost
-                    Credential        = $Credential
-                    Applications      = $result
+                    PSTypeName    = 'Outsystems.SetupTools.Applications'
+                    ServiceCenter = $ServiceCenter
+                    Credential    = $Credential
+                    Applications       = $applications
                 }
             }
             else
             {
-                return $result
+                return $modules
             }
         }
     }
