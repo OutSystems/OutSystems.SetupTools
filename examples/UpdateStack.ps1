@@ -14,7 +14,7 @@ $global:ErrorActionPreference = 'Stop'
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force  | Out-Null
 Install-Module -Name Outsystems.SetupTools -Force | Out-Null
-Import-Module -Name Outsystems.SetupTools -ArgumentList $true, 'UpdateOS10' | Out-Null
+Import-Module -Name Outsystems.SetupTools -ArgumentList $true, 'UpdateOS' | Out-Null
 
 # -- Before updating lets refresh outdated modules
 Get-OSPlatformModules -Credential $SCCreds -PassThru -Filter {$_.StatusMessages.Id -eq 6} | Publish-OSPlatformModule -Wait -Verbose | Out-Null
