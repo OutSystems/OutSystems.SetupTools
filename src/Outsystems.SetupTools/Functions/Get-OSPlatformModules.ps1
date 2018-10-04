@@ -16,20 +16,40 @@ Function Get-OSPlatformModules
     Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
     .PARAMETER PassThru
-    If spedified returns the list of modules grouped by environment. Also returns the ServiceCenter and the Credentials parameters
-    Useful for the Publish-OSPlatformModules function
+    If spedified returns the list of modules grouped by environment.
+    Also returns the ServiceCenter and the Credentials parameters. Useful for the Publish-OSPlatformModules cmdLet
 
     .PARAMETER Filter
-    Filter script
+    Filter script to filter returned modules
 
     .EXAMPLE
     $Credential = Get-Credential
-    Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
+    Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential $Credential
 
     .EXAMPLE
     $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
     $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
-    Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
+    Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential $Credential
+
+    .EXAMPLE
+    Filter by module name
+    Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential $Credential -Filter {$_.Name -eq 'MyModule'}
+
+    .EXAMPLE
+    Get all modules with outdated references
+    Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential <username> -Filter {$_.StatusMessages.Id -eq 6}
+
+    .EXAMPLE
+    Get all modules not published since the last version update
+    Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential <username> -Filter {$_.StatusMessages.Id -eq 13}
+
+    .EXAMPLE
+    Get modules all the modules from my factory
+    @('dev','test','qa','prd') | Get-OSPlatformModules -ServiceCenter -Credential <username>
+
+    .EXAMPLE
+    Get all outdated modules from my factory
+    @('dev','test','qa','prd') | Get-OSPlatformModules -ServiceCenter -Credential <username> -Filter {$_.StatusMessages.Id -eq 6}
 
     .NOTES
     You can run this cmdlet on any machine with HTTP access to Service Center.
@@ -37,7 +57,7 @@ Function Get-OSPlatformModules
     #>
 
     [OutputType('OutSystems.PlatformServices.CS_Module')]
-    [OutputType('OutSystems.PlatformServices.Modules', ParameterSetName = "PassThru")]
+    [OutputType('OutSystems.PlatformServices.ModuleList', ParameterSetName = "PassThru")]
     param (
         [Parameter(ValueFromPipeline = $true)]
         [ValidateNotNullOrEmpty()]
@@ -84,13 +104,14 @@ Function Get-OSPlatformModules
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($modules.Count) modules from $ServiceCenter"
 
+        # If not empty after the filter
         if ($modules)
         {
             # If PassThru, we create a custom and add the service center and the credentials to the object to be used in another piped functions
             if ($PassThru.IsPresent)
             {
                 return [pscustomobject]@{
-                    PSTypeName    = 'Outsystems.SetupTools.Modules'
+                    PSTypeName    = 'Outsystems.SetupTools.ModuleList'
                     ServiceCenter = $ServiceCenter
                     Credential    = $Credential
                     Modules       = $modules

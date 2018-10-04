@@ -138,7 +138,7 @@ function Publish-OSPlatformSolution
 
             $publishResult.Success = $true
             $publishResult.PublishId = $publishId
-            $publishResult.Message = "Solution publishing successfully uploaded. Compilation started on the deployment controller"
+            $publishResult.Message = "Solution successfully uploaded. Compilation started on the deployment controller"
 
             return $publishResult
         }
