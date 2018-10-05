@@ -1,5 +1,13 @@
 # Outsystems.SetupTools Release History
 
+## Unreleased
+
+### What's new
+
+- New function Get-OSRepoAvailableVersions
+
+### Changes
+
 ## 2.1.0.0
 
 ### What's new
