@@ -120,6 +120,15 @@ $OSTelSessionId = ''
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSTelOperationId = ''
 
+# AzStorage
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSAzStorageAccountName = 'myfilerepo'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSAzStorageSASToken = 'nAFk4sFRvsisvgwfijMpi67fy6ZAw8yfPvJXeiqOLUc%3D'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSAzStorageContainer = 'sources'
+
+
 # IIS configuration
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSIISConfig = @(
