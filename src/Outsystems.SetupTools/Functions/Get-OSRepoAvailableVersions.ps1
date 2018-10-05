@@ -2,16 +2,20 @@ function Get-OSRepoAvailableVersions
 {
     <#
     .SYNOPSIS
-    Short description
+    Lists the available OutSystems applications versions available in the online repository
 
     .DESCRIPTION
-    Long description
+    This will list the available OutSystems applications versions available in the online repository
+    Usefull for the Install-OSServer and Install-OSServiceStudio cmdLets
 
     .EXAMPLE
-    An example
+    Get all available versions of the OutSystems 10 platform server
+    Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10.0'
 
-    .NOTES
-    General notes
+    .EXAMPLE
+    Get the latest available version of the OutSystems 11 development environment
+    Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11.0' -Latest
+
     #>
 
     [CmdletBinding()]
