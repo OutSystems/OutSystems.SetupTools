@@ -295,10 +295,20 @@ function GetHashedPassword([string]$Password)
 
 function DecryptSetting([string]$Setting)
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Decrypting string $Setting"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Decrypting setting $Setting"
     $decryptedSetting = [OutSystems.HubEdition.RuntimePlatform.Settings]::DecryptSetting($Setting)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $decryptedSetting"
 
     return $decryptedSetting
+}
+
+function EncryptSetting([string]$Setting)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Encrypting setting $Setting"
+    $encryptedSetting = [OutSystems.HubEdition.RuntimePlatform.Settings]::EncryptSetting($Setting)
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $encryptedSetting"
+
+    return $encryptedSetting
 }
