@@ -1,4 +1,4 @@
-function Set-OSServer
+function Set-OSServerConfig
 {
     <#
     .SYNOPSIS
