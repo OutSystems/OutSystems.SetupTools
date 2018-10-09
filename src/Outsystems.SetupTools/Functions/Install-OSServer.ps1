@@ -33,7 +33,7 @@ function Install-OSServer
     Install-OSServer -Version "11.0.108.0" -InstallDir D:\Outsystems -SourcePath c:\temp -SkipRabbitMQ
 
     .EXAMPLE
-    Install the latest 11.0 version
+    To install the latest 11.0 version
 
     Install-OSServer -Verbose -Version $(Get-OSRepoAvailableVersions -MajorVersion 11.0 -Latest -Application 'PlatformServer')
 
