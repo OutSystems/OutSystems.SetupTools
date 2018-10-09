@@ -211,104 +211,6 @@ function InstallRabbitMQPreReqs([string]$RabbitBaseDir)
     Add-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.ip   = 127.0.0.1' -Force -ErrorAction Stop
 }
 
-function RabbitMQAddVirtualHost([string]$VirtualHost)
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Adding virtual host $VirtualHost to RabbitMQ"
-
-    $uri = "$OSRabbitMQDefaultURI/api/vhosts/$([System.Web.HttpUtility]::UrlEncode($VirtualHost))"
-
-    # This throws a statement terminating error. Try/catch it
-    Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -Method Put -ContentType "application/json" -AllowEscapedDotsAndSlashes -Verbose:$false | Out-Null
-}
-
-function RabbitMQAddAdminUser([System.Management.Automation.PSCredential]$Credential)
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Adding admin user $($Credential.Username) to RabbitMQ"
-
-    $uri = "$OSRabbitMQDefaultURI/api/users/$([System.Web.HttpUtility]::UrlEncode($($Credential.Username)))"
-    $body = @{
-        'username' = $Credential.Username
-        'password' = $Credential.GetNetworkCredential().Password
-        'tags' = 'administrator'
-    } | ConvertTo-Json
-
-    # This throws a statement terminating error. Try/catch it
-    Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -Method Put -ContentType "application/json" -Body $body -AllowEscapedDotsAndSlashes -Verbose:$false | Out-Null
-}
-
-function RabbitMQAddAPermisionToAllVirtualHosts([string]$User)
-{
-    # Get all virtual hosts
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting all virtual hosts"
-
-    $uri = "$OSRabbitMQDefaultURI/api/vhosts"
-
-    # Needs to be in a try/catch block or will continue the execution
-    try
-    {
-        $apiResponse = Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -Method Get -ContentType "application/json" -AllowEscapedDotsAndSlashes -Verbose:$false
-    }
-    catch
-    {
-        throw $_
-    }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "We found $($apiResponse.name.Count) virtual hosts"
-
-    # Set full permissions on all vhosts to the user
-    foreach ($virtualHost in $apiResponse.name)
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Adding full permission to user $User on virtual host $virtualHost"
-        $uri = "$OSRabbitMQDefaultURI/api/permissions/$([System.Web.HttpUtility]::UrlEncode($virtualHost))/$([System.Web.HttpUtility]::UrlEncode($User))"
-        $body = @{
-                'configure' = '.*'
-                'read' = '.*'
-                'write' = '.*'
-        } | ConvertTo-Json -ErrorAction Stop
-
-        # Needs to be in a try/catch block or will continue the execution
-        try
-        {
-            Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -Method Put -ContentType "application/json" -Body $body -AllowEscapedDotsAndSlashes -Verbose:$false | Out-Null
-        }
-        catch
-        {
-            throw $_
-        }
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Finished configuring virtual host permissions"
-    }
-}
-
-function RabbitMQRemoveGuestUser()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Removing the guest user"
-    $uri = "$OSRabbitMQDefaultURI/api/users/guest"
-
-    # This throws a statement terminating error. Try/catch it
-    Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -Method Delete -ContentType "application/json" -AllowEscapedDotsAndSlashes -Verbose:$false | Out-Null
-}
-
-function isRabbitMQAvailable()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if RabbitMQ server in $OSRabbitMQDefaultURI is available"
-
-    $uri = "$OSRabbitMQDefaultURI/api/overview"
-
-    try
-    {
-         # This throws a statement terminating error. Try/catch it
-        Invoke-RestMethod -Uri $uri -Credential $OSRabbitMQDefaultCredentials -AllowEscapedDotsAndSlashes -Verbose:$false | Out-Null
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "RabbitMQ $OSRabbitMQDefaultURI server is NOT available"
-        return $false
-    }
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server is now available"
-
-    return $true
-}
-
 function GetErlangInstallDir()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\WOW6432Node\Ericsson\Erlang\<version>\default"
@@ -548,7 +450,6 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
     Catch {
         Throw "Error launching the process $CommandPath $CommandArguments"
     }
-
 }
 
 function GetSCCompiledVersion()
