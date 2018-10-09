@@ -2,14 +2,15 @@ function Install-OSServer
 {
     <#
     .SYNOPSIS
-    Installs or updates the OutSystems Platform server.
+    Installs or updates the OutSystems Platform server
 
     .DESCRIPTION
-    This will install or update the OutSystems platform server.
-    If the platform is already installed, the function will check if version to be installed is higher than the current one and update it.
+    This will install or update the OutSystems platform server
+    It will also install RabbitMQ on version 11.0 and later
+    If the platform is already installed, the cmdLet will check if version to be installed is higher than the current one and update it
 
     .PARAMETER InstallDir
-    Where the platform will be installed. if the platform is already installed, this parameter has no effect.
+    Where the platform will be installed. if the platform is already installed, this parameter has no effect
     If not specified, it will default to %ProgramFiles%\Outsystems
 
     .PARAMETER SourcePath
@@ -27,6 +28,14 @@ function Install-OSServer
 
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+
+    .EXAMPLE
+    Install-OSServer -Version "11.0.108.0" -InstallDir D:\Outsystems -SourcePath c:\temp -SkipRabbitMQ
+
+    .EXAMPLE
+    Install the latest 11.0 version
+
+    Install-OSServer -Verbose -Version $(Get-OSRepoAvailableVersions -MajorVersion 11.0 -Latest -Application 'PlatformServer')
 
     #>
 
@@ -64,8 +73,6 @@ function Install-OSServer
 
         $osVersion = GetServerVersion
         $osInstallDir = GetServerInstallDir
-
-        $majorVersion = "$($Version.Major).$($Version.Minor)"
     }
 
     process
@@ -178,7 +185,6 @@ function Install-OSServer
 
                         return $installResult
                     }
-
                 }
                 "Local"
                 {
