@@ -8,6 +8,13 @@
 
 ### Changes
 
+- Install-OSServer:
+  - Added: This cmdLet will now install RabbitMQ and Erlang if version specified is OutSystems 11
+  - Added: Parameter -SkipRabbitMQ that will skip the RabbitMQ installation if specified
+
+- Install-OSRabbitMQ:
+  - (BREAKING CHANGE): This cmdLet was removed. The installation is performed by the Install-OSServer and the configuration is done by the configuration tool
+
 ## 2.1.0.0
 
 ### What's new
