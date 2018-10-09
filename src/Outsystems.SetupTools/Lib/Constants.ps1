@@ -77,10 +77,6 @@ $OSRepoURLDotNET = 'https://download.microsoft.com/download/9/E/6/9E63300C-0941-
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLDotNETCore = 'https://aka.ms/dotnetcore-2-windowshosting'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURLErlang = 'http://erlang.org/download/otp_win64_20.3.exe'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURLRabbitMQ = 'https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.4/rabbitmq-server-3.7.4.exe'
 
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -95,18 +91,6 @@ $OSLogDebug = $false
 # RabbitMQ related. installDir is set on the Install-RabbitMQ cmdLet cause it depends on where the plaform is installed
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRabbitMQBaseDir = "$ENV:ALLUSERSPROFILE\RabbitMQ"
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRabbitMQServiceWaitTimeout = 300
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRabbitMQDefaultURI = 'http://localhost:15672'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRabbitMQDefaultVirtualhost = '/'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRabbitMQDefaultUser = 'guest'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRabbitMQDefaultPassword = 'guest'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRabbitMQDefaultCredentials = New-Object System.Management.Automation.PSCredential ($OSRabbitMQDefaultUser, $(ConvertTo-SecureString $OSRabbitMQDefaultPassword -AsPlainText -Force))
 
 # Telemetry
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
