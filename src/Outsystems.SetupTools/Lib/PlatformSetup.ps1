@@ -163,32 +163,24 @@ function InstallDotNetCore()
     return $($result.ExitCode)
 }
 
-function InstallErlang([string]$InstallDir)
+function InstallErlang([string]$InstallDir, [string]$Sources)
 {
-    $installer = "$ENV:TEMP\otp_win64.exe"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLErlang"
-    DownloadOSSources -URL $OSRepoURLErlang -SavePath $installer
-
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $result = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
+
+    $result = Start-Process -FilePath $Sources -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
 
     return $($result.ExitCode)
 }
 
-function InstallRabbitMQ([string]$InstallDir)
+function InstallRabbitMQ([string]$InstallDir, [string]$Sources)
 {
-    $installer = "$ENV:TEMP\rabbitmq-server-3.7.4.exe"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLRabbitMQ"
-    DownloadOSSources -URL $OSRepoURLRabbitMQ -SavePath $installer
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
 
     # This needed to be like this because the rabbit installer is buggy and hangs the Start-Process!!
-    $proc = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait:$false -PassThru -ErrorAction Stop
+    $proc = Start-Process -FilePath $Sources -ArgumentList "/S", "/D=$InstallDir" -Wait:$false -PassThru -ErrorAction Stop
     Wait-Process $proc.Id
     $intReturnCode = $proc.ExitCode
 
