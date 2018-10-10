@@ -77,7 +77,6 @@ function Install-OSPlatformServiceCenter
 
         if ($doInstall -or $Force.IsPresent)
         {
-
             if ($Force.IsPresent)
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
@@ -91,7 +90,7 @@ function Install-OSPlatformServiceCenter
                 }
                 '11.0'
                 {
-                    $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogData.xif'
+                    $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif'
                 }
                 default
                 {
