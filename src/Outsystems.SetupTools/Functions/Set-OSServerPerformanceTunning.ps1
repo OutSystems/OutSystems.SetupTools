@@ -38,11 +38,12 @@ function Set-OSServerPerformanceTunning
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
+
+        $osVersion = GetServerVersion
     }
 
     process
     {
-
         if (-not $(IsAdmin))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
@@ -51,7 +52,7 @@ function Set-OSServerPerformanceTunning
             return
         }
 
-        if ($(-not $(GetServerVersion)) -or $(-not $(GetServerInstallDir)))
+        if ($(-not $osVersion) -or $(-not $(GetServerInstallDir)))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
             WriteNonTerminalError -Message "Outsystems platform is not installed"
@@ -123,16 +124,16 @@ function Set-OSServerPerformanceTunning
         foreach ($Config in $OSIISConfig)
         {
             # Reset array at each loop
-            $InterestingApps = @()
+            $interestingApps = @()
 
             # Build an array with all matching Apps.
             foreach ($App in $($Config.Match))
             {
-                $InterestingApps += $DefaultWebSiteApps -like $App
+                $interestingApps += $DefaultWebSiteApps -like $App
             }
 
             # if an app was found
-            if ($InterestingApps.Count -gt 0)
+            if ($interestingApps.Count -gt 0)
             {
 
                 # Check if AppPool exists. if not, create a new one.
@@ -160,25 +161,37 @@ function Set-OSServerPerformanceTunning
                 Start-WebCommitDelay
 
                 $AppPoolItem.managedRuntimeVersion = "v4.0"
-                $AppPoolItem.managedPipelineMode = "Classic"
 
                 $AppPoolItem.recycling.periodicRestart.time = [TimeSpan]::FromMinutes(0)
                 $AppPoolItem.recycling.periodicRestart.requests = 0
-                #$AppPoolItem.recycling.periodicRestart.requests = 0 -- specific times #TODO: specific times
 
                 $AppPoolItem.recycling.logEventOnRecycle = "Time,Requests,Schedule,Memory,IsapiUnhealthy,OnDemand,ConfigChange,PrivateMemory"
                 $AppPoolItem.processModel.idleTimeout = [TimeSpan]::FromMinutes(0)
-
-                #TODO: Set maximum failures to 0
 
                 $AppPoolItem.failure.rapidFailProtection = $false
 
                 $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * 1MB * ($($Config.MemoryPercentage) / 100))
 
+                # Version specific config
+                switch ("$(([version]$osVersion).Major).$(([version]$osVersion).Minor)")
+                {
+                    '10.0'
+                    {
+                        $AppPoolItem.managedPipelineMode = "Classic"
+                    }
+                    '11.0'
+                    {
+                        $AppPoolItem.managedPipelineMode = "Integrated"
+                    }
+                }
+
                 $AppPoolItem | Set-Item
 
+                # Clear periodic restarts schedule
+                $AppPoolItem | Clear-ItemProperty -Name recycling.periodicRestart.schedule
+
                 # Move the InterestingApp to the AppPool
-                foreach ($InterestingApp In $InterestingApps)
+                foreach ($InterestingApp In $interestingApps)
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Moving Application $InterestingApp to Application Pool $($Config.PoolName)"
                     Set-ItemProperty -Path "IIS:\Sites\Default Web Site$InterestingApp" -Name applicationPool -Value $($Config.PoolName)
