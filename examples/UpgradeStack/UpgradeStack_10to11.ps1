@@ -9,8 +9,8 @@ $RabbitMQCreds = Get-Credential -Message 'RabbitMQ user credentials'
 
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force  | Out-Null
-#Install-Module -Name Outsystems.SetupTools -Force -MinimumVersion 2.2.0.0 | Out-Null
-Import-Module .\Outsystems.SetupTools -ArgumentList $true, 'UpgradeOS10to11' | Out-Null
+Install-Module -Name Outsystems.SetupTools -Force -MinimumVersion 2.2.0.0 | Out-Null
+Import-Module -Name Outsystems.SetupTools -MinimumVersion 2.2.0.0 -ArgumentList $true, 'UpgradeOS10to11' | Out-Null
 
 # -- Get platform major version
 $OSServerVersion = Get-OSServerVersion
