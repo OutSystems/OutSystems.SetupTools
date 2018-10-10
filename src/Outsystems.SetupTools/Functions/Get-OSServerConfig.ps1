@@ -2,17 +2,18 @@ function Get-OSServerConfig
 {
     <#
     .SYNOPSIS
-    Goal is to replace Invoke-OSConfigurationTool with this cmdlet
-    This release only applies the current platform config
+    Returns the platform server environment configuration
 
     .DESCRIPTION
-    Long description
+    This will return the platform server environment configuration
+    Encrypted settings are returned un-encrypted
 
     .EXAMPLE
-    An example
+    Get-OSServerConfig -Setting 'PlatformDatabaseConfiguration/AdminUser'
 
     .NOTES
-    General notes
+    Check the server.hsconf file on the platform server installation folder to know which settings are available
+
     #>
 
     [CmdletBinding()]
