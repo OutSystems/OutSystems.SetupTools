@@ -85,8 +85,8 @@ function Get-OSServerConfig
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Cant find setting. Check if its a valid setting for the platform version"
-            WriteNonTerminalError -Message "Cant find setting. Check if its a valid setting for the platform version"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Cant find setting. Check if its a valid setting for installed platform version"
+            WriteNonTerminalError -Message "Cant find setting. Check if its a valid setting for installed platform version"
 
             return $null
         }
@@ -110,7 +110,7 @@ function Get-OSServerConfig
             }
             else
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning decrypted value: $result"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning decrypted value: $decryptedResult"
                 return $decryptedResult
             }
         }
