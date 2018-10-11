@@ -2,10 +2,10 @@ function Invoke-OSConfigurationTool
 {
     <#
     .SYNOPSIS
-    Documentation to be done!
+    THIS IS DEPRECATED!! Use the New-OSServerConfig and the Set-OSServerConfig instead
 
     .DESCRIPTION
-    Documentation to be done!
+    THIS IS DEPRECATED!! Use the New-OSServerConfig and the Set-OSServerConfig instead
 
 
     #>
