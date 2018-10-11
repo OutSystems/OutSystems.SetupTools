@@ -2,24 +2,31 @@ function Get-OSServerConfig
 {
     <#
     .SYNOPSIS
-    Returns the platform server environment configuration
+    Returns the OutSystems server configuration
 
     .DESCRIPTION
-    This will return the platform server environment configuration
+    This will return the OutSystems server current configuration
     Encrypted settings are returned un-encrypted
 
     .EXAMPLE
-    Get-OSServerConfig -Setting 'PlatformDatabaseConfiguration/AdminUser'
+    Get-OSServerConfig -SettingSection 'PlatformDatabaseConfiguration' -Setting 'AdminUser'
 
     .NOTES
-    Check the server.hsconf file on the platform server installation folder to know which settings are available
+    Check the server.hsconf file on the platform server installation folder to know which section settings and settings are available
 
     #>
 
     [CmdletBinding()]
     [OutputType('System.String')]
     param(
-        [Parameter()]
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidatePattern('^[a-zA-Z]+$')]
+        [string]$SettingSection,
+
+        [Parameter(Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
+        [ValidatePattern('^[a-zA-Z]+$')]
         [string]$Setting
     )
 
@@ -30,7 +37,6 @@ function Get-OSServerConfig
 
         $osInstallDir = GetServerInstallDir
         $configurationFile = "$osInstallDir\server.hsconf"
-        $Setting = "EnvironmentConfiguration/$Setting"
     }
 
     process
@@ -52,10 +58,10 @@ function Get-OSServerConfig
             return $null
         }
 
-        if (-not $(Test-Path -Path $configurationFile))
+        if ($(-not $(Test-Path -Path "$osInstallDir\server.hsconf")) -or $(-not $(Test-Path -Path "$osInstallDir\private.key")))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error loading the configuration file (server.hsconf). File doesn't exist"
-            WriteNonTerminalError -Message "Error loading the configuration file (server.hsconf). File doesn't exist"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant find configuration file and/or private.key file. Please run New-OSServerConfig cmdLet to generate a new one"
+            WriteNonTerminalError -Message "Cant find configuration file and/or private.key. Please run New-OSServerConfig cmdLet to generate a new one"
 
             return $null
         }
@@ -76,9 +82,10 @@ function Get-OSServerConfig
         #endregion
 
         #region read setting
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Reading value from section $SettingSection, setting $Setting"
         try
         {
-            $xmlNode = $hsConf.SelectSingleNode($Setting)
+            $xmlNode = $hsConf.EnvironmentConfiguration.$SettingSection.SelectSingleNode($Setting)
             if (-not $xmlNode)
             {
                 throw "Error getting setting $Setting"
@@ -93,9 +100,9 @@ function Get-OSServerConfig
         }
         #endregion
 
-        #region return results
-        $result = $xmlNode.ChildNodes.Value
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Value from config file: $result"
+        #region getting value
+        $result = $xmlNode.'#text'
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "The raw value from the configuration is $result"
 
         if ($xmlNode.encrypted -eq 'true')
         {
@@ -109,18 +116,13 @@ function Get-OSServerConfig
 
                 return $null
             }
-            else
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning decrypted value: $decryptedResult"
-                return $decryptedResult
-            }
-        }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning value: $result"
-            return $result
+            # Value is good
+            $result = $decryptedResult
         }
         #endregion
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $result"
+        return $result
     }
 
     end
