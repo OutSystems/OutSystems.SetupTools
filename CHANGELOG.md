@@ -4,7 +4,7 @@
 
 ### What's new
 
-- New function Get-OSRepoAvailableVersions
+- New functions Get-OSRepoAvailableVersions, New-OSServerConfig, Get-OSServerConfig, Set-OSServerConfig
 
 ### Changes
 
@@ -14,6 +14,9 @@
 
 - Install-OSRabbitMQ:
   - (BREAKING CHANGE): This cmdLet was removed. The installation is performed by the Install-OSServer and the configuration is done by the configuration tool
+
+- Invoke-OSConfigurationTool
+  - This cmdlet is now deprecated and will be removed in the next version. Use the New-OSServerConfig and the Set-OSServerConfig for configuring the platform
 
 ## 2.1.0.0
 
