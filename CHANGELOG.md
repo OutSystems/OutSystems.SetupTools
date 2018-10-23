@@ -1,6 +1,6 @@
 # Outsystems.SetupTools Release History
 
-## Unreleased
+## 2.2.0.0
 
 ### What's new
 
