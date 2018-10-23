@@ -1,40 +1,45 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: OutSystems.SetupTools
-online version: http://go.microsoft.com/fwlink/?LinkID=217034
+online version:
 schema: 2.0.0
 ---
 
-# Set-OSInstallLog
+# Get-OSRepoAvailableVersions
 
 ## SYNOPSIS
-Sets the module log file location.
+Lists the available OutSystems applications versions available in the online repository
 
 ## SYNTAX
 
 ```
-Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameters>]
+Get-OSRepoAvailableVersions [-Application] <String> [-MajorVersion] <String> [-Latest] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will set the module log location.
-By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-\<date\>.log
-
-The log will contain the PowerShell verbose stream.
-If you set the -LogDebug switch it will also contain the debug stream.
+This will list the available OutSystems applications versions available in the online repository
+Usefull for the Install-OSServer and Install-OSServiceStudio cmdLets
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
+Get all available versions of the OutSystems 10 platform server
 ```
+
+Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10.0'
+
+### EXAMPLE 2
+```
+Get the latest available version of the OutSystems 11 development environment
+```
+
+Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11.0' -Latest
 
 ## PARAMETERS
 
-### -Path
-The log file path.
-The cmdlet will try to create the path if not exists.
+### -Application
+{{Fill Application Description}}
 
 ```yaml
 Type: String
@@ -48,8 +53,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -File
-The log filename.
+### -MajorVersion
+{{Fill MajorVersion Description}}
 
 ```yaml
 Type: String
@@ -63,8 +68,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -LogDebug
-Logs the debug stream
+### -Latest
+{{Fill Latest Description}}
 
 ```yaml
 Type: SwitchParameter
@@ -86,6 +91,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
+### String
 ## NOTES
 
 ## RELATED LINKS

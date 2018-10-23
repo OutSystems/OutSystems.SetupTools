@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -13,8 +13,8 @@ Returns the list of applications installed on an Outsystems environment.
 ## SYNTAX
 
 ```
-Get-OSPlatformApplications [-ServiceCenterHost <String[]>] [-Credential <PSCredential>] [-PassThru]
- [<CommonParameters>]
+Get-OSPlatformApplications [-ServiceCenter <String>] [-Credential <PSCredential>] [-Filter <ScriptBlock>]
+ [-PassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,14 +41,13 @@ Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
 ## PARAMETERS
 
-### -ServiceCenterHost
-Service Center hostname or IP.
-If not specified, defaults to localhost.
+### -ServiceCenter
+{{Fill ServiceCenter Description}}
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: (All)
-Aliases: Host, Environment
+Aliases: Host, Environment, ServiceCenterHost
 
 Required: False
 Position: Named
@@ -69,6 +68,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: $OSSCCred
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Filter
+{{Fill Filter Description}}
+
+```yaml
+Type: ScriptBlock
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -97,7 +111,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ### OutSystems.PlatformServices.CS_Application
-### PSCustomObject
+### OutSystems.PlatformServices.Modules
 ## NOTES
 You can run this cmdlet on any machine with HTTP access to Service Center.
 

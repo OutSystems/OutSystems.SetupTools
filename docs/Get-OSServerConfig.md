@@ -1,40 +1,36 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
 Module Name: OutSystems.SetupTools
-online version: http://go.microsoft.com/fwlink/?LinkID=217034
+online version:
 schema: 2.0.0
 ---
 
-# Set-OSInstallLog
+# Get-OSServerConfig
 
 ## SYNOPSIS
-Sets the module log file location.
+Returns the OutSystems server configuration
 
 ## SYNTAX
 
 ```
-Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameters>]
+Get-OSServerConfig [-SettingSection] <String> [-Setting] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will set the module log location.
-By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-\<date\>.log
-
-The log will contain the PowerShell verbose stream.
-If you set the -LogDebug switch it will also contain the debug stream.
+This will return the OutSystems server current configuration
+Encrypted settings are returned un-encrypted
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
+Get-OSServerConfig -SettingSection 'PlatformDatabaseConfiguration' -Setting 'AdminUser'
 ```
 
 ## PARAMETERS
 
-### -Path
-The log file path.
-The cmdlet will try to create the path if not exists.
+### -SettingSection
+{{Fill SettingSection Description}}
 
 ```yaml
 Type: String
@@ -48,8 +44,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -File
-The log filename.
+### -Setting
+{{Fill Setting Description}}
 
 ```yaml
 Type: String
@@ -63,21 +59,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -LogDebug
-Logs the debug stream
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
 For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
@@ -86,6 +67,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
+### System.String
 ## NOTES
+Check the server.hsconf file on the platform server installation folder to know which section settings and settings are available
 
 ## RELATED LINKS

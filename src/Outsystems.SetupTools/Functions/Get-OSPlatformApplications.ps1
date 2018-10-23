@@ -91,7 +91,7 @@ function Get-OSPlatformApplications
             }
             else
             {
-                return $modules
+                return $applications
             }
         }
     }

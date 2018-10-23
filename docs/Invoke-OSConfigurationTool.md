@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -8,7 +8,8 @@ schema: 2.0.0
 # Invoke-OSConfigurationTool
 
 ## SYNOPSIS
-Documentation to be done!
+THIS IS DEPRECATED!!
+Use the New-OSServerConfig and the Set-OSServerConfig instead
 
 ## SYNTAX
 
@@ -20,7 +21,8 @@ Invoke-OSConfigurationTool [[-Controller] <String>] [[-PrivateKey] <String>] [-O
 ```
 
 ## DESCRIPTION
-Documentation to be done!
+THIS IS DEPRECATED!!
+Use the New-OSServerConfig and the Set-OSServerConfig instead
 
 ## EXAMPLES
 

@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
