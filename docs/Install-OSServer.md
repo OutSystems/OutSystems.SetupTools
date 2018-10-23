@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -8,23 +8,25 @@ schema: 2.0.0
 # Install-OSServer
 
 ## SYNOPSIS
-Installs or updates the OutSystems Platform server.
+Installs or updates the OutSystems Platform server
 
 ## SYNTAX
 
 ### Remote (Default)
 ```
-Install-OSServer [-InstallDir <String>] -Version <String> [<CommonParameters>]
+Install-OSServer [-InstallDir <String>] -Version <Version> [-SkipRabbitMQ] [<CommonParameters>]
 ```
 
 ### Local
 ```
-Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <String> [<CommonParameters>]
+Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <Version> [-SkipRabbitMQ]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will install or update the OutSystems platform server.
-If the platform is already installed, the function will check if version to be installed is higher than the current one and update it.
+This will install or update the OutSystems platform server
+It will also install RabbitMQ on version 11.0 and later
+If the platform is already installed, the cmdLet will check if version to be installed is higher than the current one and update it
 
 ## EXAMPLES
 
@@ -43,11 +45,23 @@ Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
 Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 ```
 
+### EXAMPLE 4
+```
+Install-OSServer -Version "11.0.108.0" -InstallDir D:\Outsystems -SourcePath c:\temp -SkipRabbitMQ
+```
+
+### EXAMPLE 5
+```
+To install the latest 11.0 version
+```
+
+Install-OSServer -Verbose -Version $(Get-OSRepoAvailableVersions -MajorVersion 11.0 -Latest -Application 'PlatformServer')
+
 ## PARAMETERS
 
 ### -InstallDir
 Where the platform will be installed.
-if the platform is already installed, this parameter has no effect.
+if the platform is already installed, this parameter has no effect
 If not specified, it will default to %ProgramFiles%\Outsystems
 
 ```yaml
@@ -82,13 +96,28 @@ Accept wildcard characters: False
 The version to be installed.
 
 ```yaml
-Type: String
+Type: Version
 Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipRabbitMQ
+{{Fill SkipRabbitMQ Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

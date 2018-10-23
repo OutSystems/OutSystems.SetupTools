@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -29,7 +29,7 @@ If not specified, the function will query the local machine.
 $Credential = Get-Credential
 ```
 
-Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
+Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential $Credential
 
 ### EXAMPLE 2
 ```
@@ -37,7 +37,42 @@ $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
 ```
 
 $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
-Get-OSPlatformModules -ServiceCenterHost "8.8.8.8" -Credential $Credential
+Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential $Credential
+
+### EXAMPLE 3
+```
+Filter by module name
+```
+
+Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential $Credential -Filter {$_.Name -eq 'MyModule'}
+
+### EXAMPLE 4
+```
+Get all modules with outdated references
+```
+
+Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential \<username\> -Filter {$_.StatusMessages.Id -eq 6}
+
+### EXAMPLE 5
+```
+Get all modules not published since the last version update
+```
+
+Get-OSPlatformModules -ServiceCenter "8.8.8.8" -Credential \<username\> -Filter {$_.StatusMessages.Id -eq 13}
+
+### EXAMPLE 6
+```
+Get modules all the modules from my factory
+```
+
+@('dev','test','qa','prd') | Get-OSPlatformModules -ServiceCenter -Credential \<username\>
+
+### EXAMPLE 7
+```
+Get all outdated modules from my factory
+```
+
+@('dev','test','qa','prd') | Get-OSPlatformModules -ServiceCenter -Credential \<username\> -Filter {$_.StatusMessages.Id -eq 6}
 
 ## PARAMETERS
 
@@ -73,7 +108,7 @@ Accept wildcard characters: False
 ```
 
 ### -Filter
-Filter script
+Filter script to filter returned modules
 
 ```yaml
 Type: ScriptBlock
@@ -89,8 +124,8 @@ Accept wildcard characters: False
 
 ### -PassThru
 If spedified returns the list of modules grouped by environment.
-Also returns the ServiceCenter and the Credentials parameters
-Useful for the Publish-OSPlatformModules function
+Also returns the ServiceCenter and the Credentials parameters.
+Useful for the Publish-OSPlatformModules cmdLet
 
 ```yaml
 Type: SwitchParameter
@@ -113,7 +148,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ### OutSystems.PlatformServices.CS_Module
-### OutSystems.PlatformServices.Modules
+### OutSystems.PlatformServices.ModuleList
 ## NOTES
 You can run this cmdlet on any machine with HTTP access to Service Center.
 
