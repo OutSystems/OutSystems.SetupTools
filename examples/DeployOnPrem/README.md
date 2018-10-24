@@ -4,6 +4,8 @@ This is a set of scripts to install Outsystems On-Prem.
 
 The scripts will do all the hard part of installing all the pre-requisites, the platform and the post configuration and will let you configure the platform using the Configuration Tool.
 
+For a complete unattend setup use the DeployOnAzure examples.
+
 ## Online machines
 
 Use this scripts if your machine is connected to Internet.
