@@ -22,7 +22,12 @@ Use this scripts if your machine is connected to Internet.
 
 2. Open a new powershell window and go to the place where you downloaded the script
 
-3. Run the script ( .\\<scriptName.ps1> [parameters] )
+3. Since the script was downloaded from Internet you need to allow it to run. Type on powershell:
+    ```powershell
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+    ```
+
+4. Run the script ( .\\<scriptName.ps1> [parameters] )
     * The scripts takes two parameters. -MajorVersion and -InstallDir
     * "MajorVersion" is the major version you want to install. This can be "10.0" or "11.0". This parameter is mandatory
     * "InstallDir" is the place where you want to install OutSystems. If you dont specify this parameter it will default to %ProgramFiles%\OutSystems
@@ -31,12 +36,12 @@ Use this scripts if your machine is connected to Internet.
     .\DC-OnPrem.ps1 -MajorVersion 11.0 -InstallDir E:\OutSystems
     ```
 
-4. Wait until the Configuration Tool pops on the screen. This can take 5 to 10 minutes depending on the machine speed.
+5. Wait until the Configuration Tool pops on the screen. This can take 5 to 10 minutes depending on the machine speed.
 
-5. Configure the platform normally."Apply and Exit"
+6. Configure the platform normally."Apply and Exit"
     * **IMPORTANT**: Say NO when the configuration tool ask you to install Service Center
 
-6. Go back to the powershell and press ENTER to finish the setup.
+7. Go back to the powershell and press ENTER to finish the setup.
 
 ## Offline machines
 
