@@ -1,6 +1,6 @@
 # OutSystems On-Prem installation
 
-This a set of scripts to install Outsystems On-Prem.
+This is a set of scripts to install Outsystems On-Prem.
 
 The scripts will do all the hard part of installing all the pre-requisites, the platform and the post configuration and will let you configure the platform using the Configuration Tool.
 
@@ -34,7 +34,7 @@ Use this scripts if your machine is connected to Internet.
 5. Configure the platform normally."Apply and Exit"
     * **IMPORTANT**: Say NO when the configuration tool ask you to install Service Center
 
-6. Go back to the shell and press ENTER to finish the setup.
+6. Go back to the powershell and press ENTER to finish the setup.
 
 ## Offline machines
 
