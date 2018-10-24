@@ -12,9 +12,9 @@ Use this scripts if your machine is connected to Internet.
 
 ### Download
 
-* [Deployment Controller](https://raw.githubusercontent.com/OutSystems/OutSystems.SetupTools/dev/DeployOnPrem/DC-OnPrem.ps1) ( Right-Click and "Save Link As" )
+* [Deployment Controller](https://raw.githubusercontent.com/OutSystems/OutSystems.SetupTools/dev/examples/DeployOnPrem/DC-OnPrem.ps1) ( Right-Click and "Save Link As" )
 
-* [Frontend](https://raw.githubusercontent.com/OutSystems/OutSystems.SetupTools/dev/DeployOnPrem/FE-OnPrem.ps1) ( Right-Click and "Save Link As" )
+* [Frontend](https://raw.githubusercontent.com/OutSystems/OutSystems.SetupTools/dev/examples/DeployOnPrem/FE-OnPrem.ps1) ( Right-Click and "Save Link As" )
 
 ### Instructions
 
