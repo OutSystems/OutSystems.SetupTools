@@ -20,6 +20,9 @@ function Install-OSServer
     .PARAMETER Version
     The version to be installed.
 
+    .PARAMETER WithLifetime
+    If specified, the cmdlet will install the platform server with lifetime.
+
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0"
 
