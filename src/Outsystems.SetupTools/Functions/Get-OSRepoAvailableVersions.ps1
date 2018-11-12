@@ -8,6 +8,17 @@ function Get-OSRepoAvailableVersions
     This will list the available OutSystems applications versions available in the online repository
     Usefull for the Install-OSServer and Install-OSServiceStudio cmdLets
 
+    .PARAMETER Application
+    Specifies which application to retrieve the version
+    This can be 'PlatformServer', 'ServiceStudio', 'Lifetime'
+
+    .PARAMETER MajorVersion
+    Specifies the platform major version
+    Accepted values: 10.0 or 11.0
+
+    .PARAMETER Latest
+    If specified, will only return the latest version
+
     .EXAMPLE
     Get all available versions of the OutSystems 10 platform server
     Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10.0'
@@ -22,7 +33,7 @@ function Get-OSRepoAvailableVersions
     [OutputType('String')]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('PlatformServer', 'ServiceStudio')]
+        [ValidateSet('PlatformServer', 'ServiceStudio', 'Lifetime')]
         [string]$Application,
 
         [Parameter(Mandatory = $true)]
@@ -65,6 +76,10 @@ function Get-OSRepoAvailableVersions
             'ServiceStudio'
             {
                 $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe',''
+            }
+            'Lifetime'
+            {
+                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe',''
             }
         }
 
