@@ -44,13 +44,16 @@ function Install-OSServer
     param(
         [Parameter(ParameterSetName = 'Local')]
         [Parameter(ParameterSetName = 'Remote')]
+        [ValidateNotNullOrEmpty()]
         [string]$InstallDir = $OSDefaultInstallDir,
 
         [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [string]$SourcePath,
 
         [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Remote', Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [version]$Version,
 
         [Parameter()]
