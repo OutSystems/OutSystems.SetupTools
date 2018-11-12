@@ -57,7 +57,10 @@ function Install-OSServer
         [version]$Version,
 
         [Parameter()]
-        [switch]$SkipRabbitMQ
+        [switch]$SkipRabbitMQ,
+
+        [Parameter()]
+        [switch]$WithLifetime
     )
 
     begin
@@ -76,6 +79,14 @@ function Install-OSServer
 
         $osVersion = GetServerVersion
         $osInstallDir = GetServerInstallDir
+
+        # Installer name
+        $osInstaller = "PlatformServer-$Version.exe"
+        if ($WithLifetime.IsPresent)
+        {
+            # Lifetime installer instead
+            $osInstaller = "LifeTimeWithPlatformServer-$Version.exe"
+        }
     }
 
     process
@@ -170,12 +181,12 @@ function Install-OSServer
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SourcePath not specified. Downloading installer from repository"
 
-                    $installer = "$ENV:TEMP\PlatformServer-$Version.exe"
+                    $installer = "$ENV:TEMP\$osInstaller"
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Saving installer to $installer"
 
                     try
                     {
-                        DownloadOSSources -URL "$OSRepoURL\PlatformServer-$Version.exe" -SavePath $installer
+                        DownloadOSSources -URL "$OSRepoURL\$osInstaller" -SavePath $installer
                     }
                     catch
                     {
@@ -192,7 +203,7 @@ function Install-OSServer
                 "Local"
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SourcePath specified. Using the local installer"
-                    $installer = "$SourcePath\PlatformServer-$Version.exe"
+                    $installer = "$SourcePath\$osInstaller"
                 }
             }
 
