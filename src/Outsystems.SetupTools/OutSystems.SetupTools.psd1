@@ -12,7 +12,7 @@
 RootModule = 'OutSystems.SetupTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.2.0.0'
+ModuleVersion = '2.3.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -75,7 +75,41 @@ RequiredAssemblies = @(
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = '*'
+FunctionsToExport = @(
+    'Disable-OSServerIPv6',
+    'Get-OSPlatformApplications',
+    'Get-OSPlatformModules',
+    'Get-OSPlatformVersion',
+    'Get-OSRepoAvailableVersions',
+    'Get-OSServerConfig',
+    'Get-OSServerInstallDir',
+    'Get-OSServerPrivateKey',
+    'Get-OSServerVersion',
+    'Get-OSServiceStudioInstallDir',
+    'Get-OSServiceStudioVersion',
+    'Install-OSPlatformLicense',
+    'Install-OSPlatformServiceCenter',
+    'Install-OSServer',
+    'Install-OSServerPreReqs',
+    'Install-OSServiceStudio',
+    'Invoke-OSConfigurationTool',
+    'New-OSPlatformPrivateKey',
+    'New-OSServerConfig',
+    'Publish-OSPlatformLifetime',
+    'Publish-OSPlatformModule',
+    'Publish-OSPlatformSolution',
+    'Publish-OSPlatformSystemComponents',
+    'Restart-OSServerServices',
+    'Set-OSInstallLog',
+    'Set-OSServerConfig',
+    'Set-OSServerPerformanceTunning',
+    'Set-OSServerSecuritySettings',
+    'Set-OSServerWindowsFirewall',
+    'Start-OSServerServices',
+    'Stop-OSServerServices',
+    'Test-OSServerHardwareReqs',
+    'Test-OSServerSoftwareReqs'
+)
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = '*'
@@ -114,6 +148,8 @@ PrivateData = @{
 
         # ReleaseNotes of this module
         # ReleaseNotes = ''
+
+        Prerelease = '-beta1'
 
     } # End of PSData hashtable
 
