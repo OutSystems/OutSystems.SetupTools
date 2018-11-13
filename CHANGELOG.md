@@ -8,7 +8,8 @@
 
 ### Changes
 
-- Fixed Install-OSServer. Now checks if an empty -InstallDir parameter is specified.
+- Fixed Install-OSServer. Now throws if an empty/null -InstallDir, -SourcePath and -Version parameters is specified.
+- Fixed Install-OSServiceStudio. Now throws if an empty/null -InstallDir, -SourcePath and -Version parameters is specified.
 
 ## 2.2.0.0
 
