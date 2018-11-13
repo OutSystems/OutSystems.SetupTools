@@ -1,5 +1,16 @@
 # Outsystems.SetupTools Release History
 
+## Unreleased
+
+### What's new
+
+- Added support for Lifetime in Install-OSServer and Get-OSRepoAvailableVersions
+
+### Changes
+
+- Fixed Install-OSServer. Now throws if an empty/null -InstallDir, -SourcePath and -Version parameters is specified.
+- Fixed Install-OSServiceStudio. Now throws if an empty/null -InstallDir, -SourcePath and -Version parameters is specified.
+
 ## 2.2.0.0
 
 ### What's new

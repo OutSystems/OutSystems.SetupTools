@@ -178,5 +178,29 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock IsAdmin { return $false }
             It 'Should throw an exception' { { Install-OSServer -Version '10.0.0.1' -ErrorAction Stop } | Should throw }
         }
+
+        Context 'When lifetime switch is specified' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\LifeTimeWithPlatformServer-11.0.0.1.exe" } }
+
+            $result = Install-OSServer -Version '11.0.0.1' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation using the lifetime installer' { Assert-MockCalled @assRunParams }
+        }
+
+        Context 'When lifetime switch is NOT specified' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\PlatformServer-11.0.0.1.exe" } }
+
+            $result = Install-OSServer -Version '11.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation using the normal installer' { Assert-MockCalled @assRunParams }
+        }
     }
 }
