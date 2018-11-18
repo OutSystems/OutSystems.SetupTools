@@ -16,6 +16,8 @@ Use this scripts if your machine is connected to Internet.
 
 * [Frontend](https://raw.githubusercontent.com/OutSystems/OutSystems.SetupTools/dev/examples/DeployOnPrem/FE-OnPrem.ps1) ( Right-Click and "Save Link As" )
 
+* [Lifetime](https://raw.githubusercontent.com/OutSystems/OutSystems.SetupTools/dev/examples/DeployOnPrem/LT-OnPrem.ps1) ( Right-Click and "Save Link As" )
+
 ### Instructions
 
 1. Download the script

@@ -24,7 +24,7 @@ Test-OSServerSoftwareReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop
 Install-OSServerPreReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop | Out-Null
 
 # -- Download and install OS Server and Dev environment from repo
-Install-OSServer -Version $(Get-OSRepoAvailableVersions -MajorVersion $MajorVersion -Application 'PlatformServer' -Latest) -InstallDir $InstallDir -Verbose -ErrorAction Stop | Out-Null
+Install-OSServer -Version $(Get-OSRepoAvailableVersions -MajorVersion $MajorVersion -Application 'Lifetime' -Latest) -InstallDir $InstallDir -WithLifetime -Verbose -ErrorAction Stop | Out-Null
 Install-OSServiceStudio -Version $(Get-OSRepoAvailableVersions -MajorVersion $MajorVersion -Application 'ServiceStudio' -Latest) -InstallDir $InstallDir -Verbose -ErrorAction Stop | Out-Null
 
 # Start configuration tool
