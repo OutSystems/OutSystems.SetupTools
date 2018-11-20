@@ -5,15 +5,18 @@ function Get-OSPlatformApplications
     Returns the list of applications installed on an Outsystems environment.
 
     .DESCRIPTION
-    This will return the list of applications installed on an Outsystems environment.
+    This will return the list of applications installed on an OutSystems environment.
     The function can be used to query a remote Outsystems environment for the list of applications installed using the ServiceCenterHost parameter.
     If not specified, the function will query the local machine.
 
-    .PARAMETER ServiceCenterHost
+    .PARAMETER ServiceCenter
     Service Center hostname or IP. If not specified, defaults to localhost.
 
     .PARAMETER Credential
     Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
+
+    .PARAMETER Filter
+    Filter script block
 
     .EXAMPLE
     $Credential = Get-Credential
@@ -23,6 +26,9 @@ function Get-OSPlatformApplications
     $password = ConvertTo-SecureString "superpass" -AsPlainText -Force
     $Credential = New-Object System.Management.Automation.PSCredential ("superuser", $password)
     Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
+
+    .EXAMPLE
+    Get-OSPlatformModules -Credential $SCCreds -Filter {$_.StatusMessages.Id -eq 6}
 
     .NOTES
     You can run this cmdlet on any machine with HTTP access to Service Center.
