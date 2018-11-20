@@ -84,7 +84,7 @@ function Get-OSRepoAvailableVersions
         }
 
         # Filter only major version and sort desc
-        $versions = $versions | Where-Object -FilterScript { $_ -like "$MajorVersion*" } | Sort-Object -Descending
+        [Array]$versions = $versions | Where-Object -FilterScript { $_ -like "$MajorVersion*" } | Sort-Object -Descending
 
         if ($Latest.IsPresent)
         {
