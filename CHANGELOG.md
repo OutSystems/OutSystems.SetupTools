@@ -1,5 +1,12 @@
 # Outsystems.SetupTools Release History
 
+## 2.3.1.0
+
+### Changes
+
+- Fixed a bug Get-OSRepoAvailableVersions when Lifetime is specified as application with the -Latest paramater.
+- Updated Get-OSPlatformApplications help.
+
 ## 2.3.0.0
 
 ### What's new
