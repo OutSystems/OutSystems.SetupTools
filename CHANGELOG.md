@@ -4,6 +4,12 @@
 
 ### Changes
 
+- Fixed Set-OSServerConfig to not check for the private.key. The configuration tool will create a new private key if not present
+
+## 2.3.2.0
+
+### Changes
+
 - Changed the New-OSServerConfig. HSconf templates are now copied and modified instead of being generated with the configuration tool. In some cases the configuration tool throws the error: The process cannot access the file 'C:\Windows\Microsoft.NET\Framework64\v4.0.30319\config\machine.config' because it is being used by another process.
 
 ## 2.3.1.0
