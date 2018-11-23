@@ -131,20 +131,6 @@ function New-OSServerConfig
         }
         #endregion
 
-        #region init templates
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting initial configuration settings"
-        try
-        {
-            Set-OSServerConfig -SettingSection 'OtherConfigurations' -Setting 'InstallationDir' -Value "$osInstallDir\" -ErrorAction Stop
-            Set-OSServerConfig -SettingSection 'OtherConfigurations' -Setting 'PlatformVersion' -Value $osVersion -ErrorAction Stop
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error setting initial configuration settings"
-            WriteNonTerminalError -Message "Error setting initial configuration settings"
-        }
-         #endregion
-
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "New OutSystems configuration successfully created!!"
     }
 
