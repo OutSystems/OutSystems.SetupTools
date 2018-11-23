@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EnvironmentConfiguration>
+  <PlatformDatabaseConfiguration ProviderKey="MySQL">
+    <Server encrypted="false"></Server>
+    <Schema encrypted="false"></Schema>
+    <LogUser encrypted="false">OSLOG</LogUser>
+    <LogPassword encrypted="false"></LogPassword>
+    <ServicesAdvancedSettings encrypted="false"></ServicesAdvancedSettings>
+    <AdminUser encrypted="false">OSADMIN</AdminUser>
+    <AdminPassword encrypted="false"></AdminPassword>
+    <RuntimeUser encrypted="false">OSRUNTIME</RuntimeUser>
+    <RuntimePassword encrypted="false"></RuntimePassword>
+    <RuntimeAdvancedSettings encrypted="false"></RuntimeAdvancedSettings>
+  </PlatformDatabaseConfiguration>
+  <LoggingDatabaseConfiguration ProviderKey="MySQL">
+    <Server encrypted="false"></Server>
+    <Schema encrypted="false"></Schema>
+    <AdminUser encrypted="false">OSADMIN</AdminUser>
+    <AdminPassword encrypted="false"></AdminPassword>
+    <RuntimeUser encrypted="false">OSRUNTIME</RuntimeUser>
+    <RuntimePassword encrypted="false"></RuntimePassword>
+    <RuntimeAdvancedSettings encrypted="false"></RuntimeAdvancedSettings>
+  </LoggingDatabaseConfiguration>
+  <SessionDatabaseConfiguration ProviderKey="MySQL">
+    <Server encrypted="false"></Server>
+    <Schema encrypted="false"></Schema>
+    <SessionAdvancedSettings encrypted="false"></SessionAdvancedSettings>
+    <UsedAuthenticationMode encrypted="false">Database Authentication</UsedAuthenticationMode>
+    <SessionUser encrypted="false">OSSTATE</SessionUser>
+    <SessionPassword encrypted="false"></SessionPassword>
+    <DeleteExpiredSessionsAvoidLockRowCount encrypted="false">1000</DeleteExpiredSessionsAvoidLockRowCount>
+    <DeleteExpiredSessionVarsAvoidLockRowCount encrypted="false">1000</DeleteExpiredSessionVarsAvoidLockRowCount>
+  </SessionDatabaseConfiguration>
+  <ServiceConfiguration>
+    <CompilerServerHostname>localhost</CompilerServerHostname>
+    <CompilerServerPort>12000</CompilerServerPort>
+    <DeploymentServerPort>12001</DeploymentServerPort>
+    <LogQueuePath>.\Private$\OutSystemsLog</LogQueuePath>
+    <LogServerPort>12003</LogServerPort>
+    <RMIRegistryPort>2033</RMIRegistryPort>
+    <SchedulerServerPort>12002</SchedulerServerPort>
+    <SupportAsynchronousLog>True</SupportAsynchronousLog>
+  </ServiceConfiguration>
+  <ServerConfiguration>
+    <ApplicationServerPort>80</ApplicationServerPort>
+    <ApplicationServerSecurePort>443</ApplicationServerSecurePort>
+    <MaxConcurrentTimers>3</MaxConcurrentTimers>
+    <WeeksToKeep>4</WeeksToKeep>
+  </ServerConfiguration>
+  <KannelConfiguration>
+    <KannelHost>127.0.0.1</KannelHost>
+    <KannelPassword encrypted="true">XXXXXXXXX</KannelPassword>
+    <KannelPort>13013</KannelPort>
+    <KannelStatusPassword encrypted="true">XXXXXXXXX</KannelStatusPassword>
+    <KannelStatusPort>13000</KannelStatusPort>
+    <KannelUsername>hubserver</KannelUsername>
+    <KannelVersion>1.2</KannelVersion>
+    <MaxBulkSms>500</MaxBulkSms>
+    <UnifiedPrefix>+351</UnifiedPrefix>
+  </KannelConfiguration>
+  <SMSConfiguration>
+    <SMSCInboundFailedQueue>.\Private$\InboundFailedQueue</SMSCInboundFailedQueue>
+    <SMSCInboundQueue>.\Private$\InboundQueue</SMSCInboundQueue>
+    <SMSCInboundThreads>5</SMSCInboundThreads>
+    <SMSConnectorPort>12004</SMSConnectorPort>
+    <SMSCOutboundFailedQueue>.\Private$\OutboundFailedQueue</SMSCOutboundFailedQueue>
+    <SMSCOutboundQueue>.\Private$\OutboundQueue</SMSCOutboundQueue>
+    <SMSCOutboundThreads>10</SMSCOutboundThreads>
+    <SMSCTriesBeforeQuiting>15</SMSCTriesBeforeQuiting>
+  </SMSConfiguration>
+  <NetworkConfiguration>
+    <ApplicationServerVersion>(Unknown version)</ApplicationServerVersion>
+    <FrontendIpAddress></FrontendIpAddress>
+    <OutgoingIPAddress></OutgoingIPAddress>
+    <RequiresSoapHeadersSlowRetrieval>False</RequiresSoapHeadersSlowRetrieval>
+    <ServerKind>IIS</ServerKind>
+  </NetworkConfiguration>
+  <CacheInvalidationConfiguration>
+    <ServiceHost>localhost</ServiceHost>
+    <ServicePassword encrypted="true"></ServicePassword>
+    <ServicePort>5672</ServicePort>
+    <ServiceUsername>admin</ServiceUsername>
+    <TlsEnabled>False</TlsEnabled>
+    <TlsServerCanonicalName></TlsServerCanonicalName>
+    <VirtualHost>/outsystems</VirtualHost>
+  </CacheInvalidationConfiguration>
+  <OtherConfigurations>
+    <DBIntrospectionTimeout>90</DBIntrospectionTimeout>
+    <DBTimeout>30</DBTimeout>
+    <DBUpdateTimeout>600</DBUpdateTimeout>
+    <InstallationDir></InstallationDir>
+    <InstanceName>DEFAULT</InstanceName>
+    <LogSlowSQLThresholdInMs>200</LogSlowSQLThresholdInMs>
+    <PlatformVersion>11.0.108.0</PlatformVersion>
+    <QueuesAvailable>False</QueuesAvailable>
+  </OtherConfigurations>
+  <ExtensionPointConfigurations />
+</EnvironmentConfiguration>

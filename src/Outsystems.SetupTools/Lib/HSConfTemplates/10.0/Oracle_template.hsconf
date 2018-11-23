@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<EnvironmentConfiguration>
+  <PlatformDatabaseConfiguration ProviderKey="Oracle">
+    <IntrospectionMethod encrypted="false">auto</IntrospectionMethod>
+    <CI_AI encrypted="false">true</CI_AI>
+    <DateFunction encrypted="false">CURRENT_TIMESTAMP</DateFunction>
+    <DDLLockTimeout encrypted="false">600</DDLLockTimeout>
+    <NamingType encrypted="false">Service Name</NamingType>
+    <TNSName encrypted="false"></TNSName>
+    <Host encrypted="false">localhost</Host>
+    <Port encrypted="false">1521</Port>
+    <ServiceName encrypted="false"></ServiceName>
+    <AdminTablespace encrypted="false">OSSYS</AdminTablespace>
+    <IndexTablespace encrypted="false">OSIDX</IndexTablespace>
+    <RuntimeTablespace encrypted="false">OSUSR</RuntimeTablespace>
+    <LogTablespace encrypted="false">OSLOG</LogTablespace>
+    <NLS_Language encrypted="false"></NLS_Language>
+    <NLS_Territory encrypted="false">AMERICA</NLS_Territory>
+    <AdminUser encrypted="false">OSADMIN</AdminUser>
+    <AdminPassword encrypted="false"></AdminPassword>
+    <RuntimeUser encrypted="false">OSRUNTIME</RuntimeUser>
+    <RuntimePassword encrypted="false"></RuntimePassword>
+    <LogUser encrypted="false">OSLOG</LogUser>
+    <LogPassword encrypted="false"></LogPassword>
+    <RuntimeAdvancedSettings encrypted="false">Incr Pool Size=1;</RuntimeAdvancedSettings>
+    <ServicesAdvancedSettings encrypted="false">Incr Pool Size=1;</ServicesAdvancedSettings>
+  </PlatformDatabaseConfiguration>
+  <SessionDatabaseConfiguration ProviderKey="Oracle">
+    <IntrospectionMethod encrypted="false"></IntrospectionMethod>
+    <CI_AI encrypted="false">false</CI_AI>
+    <DateFunction encrypted="false"></DateFunction>
+    <DDLLockTimeout encrypted="false">0</DDLLockTimeout>
+    <IdType encrypted="false">Service Name</IdType>
+    <TNSName encrypted="false"></TNSName>
+    <Host encrypted="false">localhost</Host>
+    <Port encrypted="false">1521</Port>
+    <ServiceName encrypted="false"></ServiceName>
+    <NLS_Language encrypted="false"></NLS_Language>
+    <NLS_Territory encrypted="false">AMERICA</NLS_Territory>
+    <SessionTablespace encrypted="false">OSSTATE</SessionTablespace>
+    <SessionUser encrypted="false">OSSTATE</SessionUser>
+    <SessionPassword encrypted="false"></SessionPassword>
+    <SessionAdvancedSettings encrypted="false">Incr Pool Size=1;</SessionAdvancedSettings>
+    <DeleteExpiredSessionsAvoidLockRowCount encrypted="false">1000</DeleteExpiredSessionsAvoidLockRowCount>
+    <DeleteExpiredSessionVarsAvoidLockRowCount encrypted="false">1000</DeleteExpiredSessionVarsAvoidLockRowCount>
+  </SessionDatabaseConfiguration>
+  <ServiceConfiguration>
+    <CompilerServerHostname>localhost</CompilerServerHostname>
+    <CompilerServerPort>12000</CompilerServerPort>
+    <DeploymentServerPort>12001</DeploymentServerPort>
+    <LogQueuePath>.\Private$\OutSystemsLog</LogQueuePath>
+    <LogServerPort>12003</LogServerPort>
+    <RMIRegistryPort>2033</RMIRegistryPort>
+    <SchedulerServerPort>12002</SchedulerServerPort>
+    <SupportAsynchronousLog>True</SupportAsynchronousLog>
+  </ServiceConfiguration>
+  <ServerConfiguration>
+    <ApplicationServerPort>80</ApplicationServerPort>
+    <ApplicationServerSecurePort>443</ApplicationServerSecurePort>
+    <MaxConcurrentTimers>3</MaxConcurrentTimers>
+    <WeeksToKeep>4</WeeksToKeep>
+  </ServerConfiguration>
+  <KannelConfiguration>
+    <KannelHost>127.0.0.1</KannelHost>
+    <KannelPassword encrypted="true">$2$RzBsszS+ZUSr/l2qwmnb6g==yRIxge7DZQmMKmDyjde4Dw==</KannelPassword>
+    <KannelPort>13013</KannelPort>
+    <KannelStatusPassword encrypted="true">$2$uIRvc67p2H5KNlt22c+o5g==HRg8wvofF5Zk1/dhuXQpsg==</KannelStatusPassword>
+    <KannelStatusPort>13000</KannelStatusPort>
+    <KannelUsername>hubserver</KannelUsername>
+    <KannelVersion>1.2</KannelVersion>
+    <MaxBulkSms>500</MaxBulkSms>
+    <UnifiedPrefix>+351</UnifiedPrefix>
+  </KannelConfiguration>
+  <SMSConfiguration>
+    <SMSCInboundFailedQueue>.\Private$\InboundFailedQueue</SMSCInboundFailedQueue>
+    <SMSCInboundQueue>.\Private$\InboundQueue</SMSCInboundQueue>
+    <SMSCInboundThreads>5</SMSCInboundThreads>
+    <SMSConnectorPort>12004</SMSConnectorPort>
+    <SMSCOutboundFailedQueue>.\Private$\OutboundFailedQueue</SMSCOutboundFailedQueue>
+    <SMSCOutboundQueue>.\Private$\OutboundQueue</SMSCOutboundQueue>
+    <SMSCOutboundThreads>10</SMSCOutboundThreads>
+    <SMSCTriesBeforeQuiting>15</SMSCTriesBeforeQuiting>
+  </SMSConfiguration>
+  <NetworkConfiguration>
+    <ApplicationServerVersion>(Unknown version)</ApplicationServerVersion>
+    <FrontendIpAddress></FrontendIpAddress>
+    <OutgoingIPAddress></OutgoingIPAddress>
+    <RequiresSoapHeadersSlowRetrieval>False</RequiresSoapHeadersSlowRetrieval>
+    <ServerKind>IIS</ServerKind>
+  </NetworkConfiguration>
+  <OtherConfigurations>
+    <DBIntrospectionTimeout>90</DBIntrospectionTimeout>
+    <DBTimeout>30</DBTimeout>
+    <DBUpdateTimeout>600</DBUpdateTimeout>
+    <InstallationDir></InstallationDir>
+    <InstanceName>DEFAULT</InstanceName>
+    <PlatformVersion></PlatformVersion>
+    <QueuesAvailable>False</QueuesAvailable>
+  </OtherConfigurations>
+  <ExtensionPointConfigurations />
+</EnvironmentConfiguration>
