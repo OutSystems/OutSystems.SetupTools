@@ -154,10 +154,10 @@ function Set-OSServerConfig
             return $null
         }
 
-        if (-not $(Test-Path -Path "$osInstallDir\server.hsconf"))
+        if ($(-not $(Test-Path -Path "$osInstallDir\server.hsconf")) -or $(-not $(Test-Path -Path "$osInstallDir\private.key")))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant find configuration file. Please run New-OSServerConfig cmdLet to generate a new one"
-            WriteNonTerminalError -Message "Cant find configuration file. Please run New-OSServerConfig cmdLet to generate a new one"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Cant find configuration file and/or private.key file. Please run New-OSServerConfig cmdLet to generate a new one"
+            WriteNonTerminalError -Message "Cant find configuration file and/or private.key. Please run New-OSServerConfig cmdLet to generate a new one"
 
             return $null
         }

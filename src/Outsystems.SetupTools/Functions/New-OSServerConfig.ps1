@@ -104,17 +104,41 @@ function New-OSServerConfig
         }
         #endregion
 
+        #region generate templates
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Generating new configuration for database provider $DatabaseProvider"
+
+        try
+        {
+            $result = RunConfigTool -Arguments "/GenerateTemplates"
+        }
+        catch
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
+            WriteNonTerminalError -Message "Error lauching the configuration tool"
+
+            return $null
+        }
+
+        if ( $result.ExitCode -ne 0 )
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error generating the templates. Exit code: $($result.ExitCode)"
+            WriteNonTerminalError -Message "Error generating the templates. Exit code: $($result.ExitCode)"
+
+            return $null
+        }
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration files generated"
+        #endregion
+
         #region copy template
-        $osMajorVersion = "$(([version]$osVersion).Major).$(([version]$osVersion).Minor)"
         switch($DatabaseProvider)
         {
             'SQL'
             {
-                $templateFile = "$PSScriptRoot\..\Lib\HSConfTemplates\$osMajorVersion\SqlServer_template.hsconf"
+                $templateFile = "$osInstallDir\docs\SqlServer_template.hsconf"
             }
             'Oracle'
             {
-                $templateFile = "$PSScriptRoot\..\Lib\HSConfTemplates\$osMajorVersion\Oracle_template.hsconf"
+                $templateFile = "$osInstallDir\docs\Oracle_template.hsconf"
             }
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Copying configuration to the platform server folder"
