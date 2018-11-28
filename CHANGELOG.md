@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.4.0.0
+
+### Changes
+
+- Install-OSServerPreReqs: Added parameter -SourcePath. The cmdLet can now use a local folder containning the pre-reqs binaries.
+
 ## 2.3.5.0
 
 ### Changes
