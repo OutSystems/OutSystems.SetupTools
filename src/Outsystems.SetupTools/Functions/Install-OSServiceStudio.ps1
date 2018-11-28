@@ -39,6 +39,7 @@ function Install-OSServiceStudio
 
         [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
+        [Alias('Sources')]
         [string]$SourcePath,
 
         [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
