@@ -13,6 +13,7 @@ $majorVersion = "$($([version]$OfflineConfiguration.ServerVersion).Major).$($([v
 
 # -- Import module from local folder
 Import-Module -Name "$PSScriptRoot\Modules\AzureRM.profile" | Out-Null
+Import-Module -Name "$PSScriptRoot\Modules\Azure.Storage" | Out-Null
 Import-Module -Name "$PSScriptRoot\Modules\AzureRM.Storage" | Out-Null
 Import-Module -Name "$PSScriptRoot\Modules\Outsystems.SetupTools" | Out-Null
 
