@@ -57,7 +57,7 @@ function Install-OSServerPreReqs
             Success = $true
             RebootNeeded = $false
             ExitCode = 0
-            Message = 'Outsystems platform server pre-requisites successfully installed'
+            Message = 'OutSystems platform server pre-requisites successfully installed'
         }
     }
 
@@ -87,12 +87,12 @@ function Install-OSServerPreReqs
         }
 
         #region check
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Checking pre-requisites for Outsystems major version $MajorVersion"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Checking pre-requisites for OutSystems major version $MajorVersion"
 
         # Check build tools 2015. Its required for all OS versions
         if (-not $(IsMSIInstalled -ProductCode '{8C918E5B-E238-401F-9F6E-4FB84B024CA2}'))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 not found but its required for Outsystems. We will try to download and install"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 not found but its required for OutSystems. We will try to download and install"
             $installBuildTools = $true
         }
         else
@@ -149,7 +149,7 @@ function Install-OSServerPreReqs
         #endregion
 
         #region install
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing pre-requisites for Outsystems major version $MajorVersion"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing pre-requisites for OutSystems major version $MajorVersion"
 
         # Windows features
         # Exit codes available at: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc733119(v=ws.11)
@@ -337,7 +337,7 @@ function Install-OSServerPreReqs
         #endregion
 
         #region configuration
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring pre-requisites for Outsystems major version $MajorVersion"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring pre-requisites for OutSystems major version $MajorVersion"
 
         #Configure the WMI windows service
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the WMI windows service"
@@ -446,7 +446,7 @@ function Install-OSServerPreReqs
         if ($installResult.RebootNeeded)
         {
             $installResult.ExitCode = 3010
-            $installResult.Message = 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
+            $installResult.Message = 'OutSystems platform server pre-requisites successfully installed but a reboot is required'
         }
         return $installResult
     }
