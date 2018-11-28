@@ -103,12 +103,19 @@ function GetDotNetCoreVersion()
     return $output
 }
 
-function InstallDotNet()
+function InstallDotNet([string]$Sources)
 {
-    $installer = "$ENV:TEMP\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
-    DownloadOSSources -URL $OSRepoURLDotNET -SavePath $installer
+    if($Sources)
+    {
+        $installer = "$Sources\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+    }
+    else
+    {
+        $installer = "$ENV:TEMP\NDP471-KB4033342-x86-x64-AllOS-ENU.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
+        DownloadOSSources -URL $OSRepoURLDotNET -SavePath $installer
+    }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
     $result = Start-Process -FilePath $installer -ArgumentList "/q", "/norestart", "/MSIOPTIONS `"ALLUSERS=1 REBOOT=ReallySuppress`"" -Wait -PassThru -ErrorAction Stop
@@ -133,12 +140,19 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
-function InstallBuildTools()
+function InstallBuildTools([string]$Sources)
 {
-    $installer = "$ENV:TEMP\BuildTools_Full.exe"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLBuildTools"
-    DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $installer
+    if($Sources)
+    {
+        $installer = "$Sources\BuildTools_Full.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+    }
+    else
+    {
+        $installer = "$ENV:TEMP\BuildTools_Full.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLBuildTools"
+        DownloadOSSources -URL $OSRepoURLBuildTools -SavePath $installer
+    }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
     $result = Start-Process -FilePath $installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
@@ -148,12 +162,19 @@ function InstallBuildTools()
     return $($result.ExitCode)
 }
 
-function InstallDotNetCore()
+function InstallDotNetCore([string]$Sources)
 {
-    $installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
-    DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
+    if($Sources)
+    {
+        $installer = "$Sources\DotNetCore_2_WindowsHosting.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+    }
+    else
+    {
+        $installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
+        DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
+    }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
     $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop

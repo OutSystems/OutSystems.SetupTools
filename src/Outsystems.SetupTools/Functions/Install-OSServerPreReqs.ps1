@@ -16,11 +16,17 @@ function Install-OSServerPreReqs
     Specifies if the IIS Managament Console will be installed.
     On servers without GUI this feature can't be installed so you should set this parameter to $false.
 
+    .PARAMETER SourcePath
+    Specifies a local path having the pre-requisites binaries.
+
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10.0"
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+
+     .EXAMPLE
+    Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
 
     #>
 
@@ -30,6 +36,11 @@ function Install-OSServerPreReqs
         [Parameter(Mandatory = $true)]
         [ValidateSet('10.0', '11.0')]
         [string]$MajorVersion,
+
+        [Parameter()]
+        [Alias('Sources')]
+        [ValidateNotNullOrEmpty()]
+        [string]$SourcePath,
 
         [Parameter()]
         [bool]$InstallIISMgmtConsole = $true
@@ -189,7 +200,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Build Tools 2015"
-                $exitCode = InstallBuildTools
+                $exitCode = InstallBuildTools -Sources $SourcePath
             }
             catch
             {
@@ -236,7 +247,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCore
+                $exitCode = InstallDotNetCore -Sources $SourcePath
             }
             catch
             {
@@ -283,7 +294,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 4.7.1"
-                $exitCode = InstallDotNet
+                $exitCode = InstallDotNet -Sources $SourcePath
             }
             catch
             {
