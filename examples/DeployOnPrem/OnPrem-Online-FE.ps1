@@ -28,8 +28,7 @@ Install-OSServer -Version $(Get-OSRepoAvailableVersions -MajorVersion $MajorVers
 Install-OSServiceStudio -Version $(Get-OSRepoAvailableVersions -MajorVersion $MajorVersion -Application 'ServiceStudio' -Latest) -InstallDir $InstallDir -Verbose -ErrorAction Stop | Out-Null
 
 # Start configuration tool
-Write-Output "Launching the configuration tool... "
-& "$InstallDir\Platform Server\ConfigurationTool.exe"
+Write-Output "Copy the private.key and server.hsconf from the Deployment Controller and launch the configuration tool manually... "
 [void](Read-Host 'Configure the platform and press Enter to continue the OutSystems setup...')
 
 # -- Apply system tunning and security settings

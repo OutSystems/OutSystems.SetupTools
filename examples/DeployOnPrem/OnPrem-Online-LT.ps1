@@ -36,6 +36,12 @@ Write-Output "Launching the configuration tool... "
 Install-OSPlatformServiceCenter -Verbose -ErrorAction Stop | Out-Null
 Publish-OSPlatformSystemComponents -Verbose -ErrorAction Stop | Out-Null
 
+# Wait for the license before install lifetime
+[void](Read-Host 'Install the OutSystems license and press Enter to continue the Lifetime setup...')
+
+# Install Lifetime
+Publish-OSPlatformLifetime -Verbose -ErrorAction Stop | Out-Null
+
 # -- Apply system tunning and security settings
 Set-OSServerPerformanceTunning -Verbose -ErrorAction Stop | Out-Null
 Set-OSServerSecuritySettings -Verbose -ErrorAction Stop | Out-Null
