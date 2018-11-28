@@ -59,15 +59,20 @@ To create the bundle:
 
 2. Open a new powershell window as administrator, and go to the place where you downloaded the script.
 
-3. Run the script ( .\\CreateOfflineBundle.ps1> [parameters] ).
+3. Since the script was downloaded from Internet you need to allow it to run by running:
+    ```powershell
+    Set-ExecutionPolicy -Scope Process -ExecutionPolicy Unrestricted
+    ```
+
+4. Run the script ( .\\CreateOfflineBundle.ps1> [parameters] ).
     * The scripts takes one parameters. *-MajorVersion*.
     * *MajorVersion* is the major OutSystems version that will be downloaded to the bundle. This can be "10.0" or "11.0"and its a mandatory parameter.
 
-4. When the script finish you will have a file named *OfflineBundle.zip* in the same path where you ran the script with everything inside needed to install OutSystems.
+5. When the script finish you will have a file named *OfflineBundle.zip* in the same path where you ran the script with everything inside needed to install OutSystems.
 
-5. Copy the file to the offline machine and unzip.
+6. Copy the file to the offline machine and unzip.
 
-6. Inside you have three files like the *Online* installation. Those scripts do not require parameters. You have an optional parameter *-InstallDir* to specify where you want to install OutSystems.
+7. Inside you have three files like the *Online* installation. Those scripts do not require parameters. You have an optional parameter *-InstallDir* to specify where you want to install OutSystems.
     * Example:
     ```powershell
     .\OnPrem-Offline-DC.ps1 -InstallDir E:\OutSystems
