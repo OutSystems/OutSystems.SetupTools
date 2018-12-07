@@ -67,6 +67,7 @@ function Install-OSPlatformLicense
 
                 return
             }
+            $Path = "$Path\license.lic"
         }
         else
         {
