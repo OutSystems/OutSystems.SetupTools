@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.4.1.0
+
+### Changes
+
+- Install-OSPlatformLicense: Fixed bug when a local path is specified
+
 ## 2.4.0.0
 
 ### Changes
