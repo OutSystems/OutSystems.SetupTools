@@ -1,10 +1,16 @@
 # Outsystems.SetupTools Release History
 
+## 2.4.2.0
+
+### Changes
+
+- Set-OSServerConfig: Fixed an issue when trying to set a parameter on an empty XML node.
+
 ## 2.4.1.0
 
 ### Changes
 
-- Install-OSPlatformLicense: Fixed bug when a local path is specified
+- Install-OSPlatformLicense: Fixed bug when a local path is specified.
 
 ## 2.4.0.0
 
