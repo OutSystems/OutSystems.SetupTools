@@ -187,7 +187,7 @@ function Set-OSServerConfig
                 }
 
                 # Write setting in the configuration
-                if (-not $hsConf.EnvironmentConfiguration.$SettingSection)
+                if (-not $($($hsConf.EnvironmentConfiguration).SelectSingleNode($SettingSection)))
                 {
                     # Create the config section
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration section $SettingSection doesn't exists. Creating a new one"
@@ -196,7 +196,7 @@ function Set-OSServerConfig
                     $hsConf.EnvironmentConfiguration.AppendChild($newElement) | Out-Null
                 }
 
-                if ($hsConf.EnvironmentConfiguration.$SettingSection.$Setting)
+                if ($($hsConf.EnvironmentConfiguration).SelectSingleNode($SettingSection).SelectSingleNode($Setting))
                 {
                     # Delete the existing setting
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting $Setting already exists. Deleting"
