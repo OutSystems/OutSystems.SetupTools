@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 
 # -- Import configuration file
 $OfflineConfiguration = Import-Clixml "$PSScriptRoot\Configuration.xml"
-$majorVersion = "$($([version]$OfflineConfiguration.ServerVersion).Major).$($([version]$OfflineConfiguration.ServerVersion).Minor)"
+$majorVersion = "$($([version]$OfflineConfiguration.LifetimeVersion).Major).$($([version]$OfflineConfiguration.LifetimeVersion).Minor)"
 
 # -- Import module from local folder
 Import-Module -Name "$PSScriptRoot\Modules\AzureRM.profile" | Out-Null
@@ -25,7 +25,7 @@ Test-OSServerSoftwareReqs -MajorVersion $majorVersion -Verbose -ErrorAction Stop
 Install-OSServerPreReqs -MajorVersion $MajorVersion -SourcePath "$PSScriptRoot\PreReqs" -Verbose -ErrorAction Stop | Out-Null
 
 # -- Download and install OS Server and Dev environment from repo
-Install-OSServer -Version $OfflineConfiguration.ServerVersion -InstallDir $InstallDir -SourcePath "$PSScriptRoot\Sources" -WithLifetime -Verbose -ErrorAction Stop | Out-Null
+Install-OSServer -Version $OfflineConfiguration.LifetimeVersion -InstallDir $InstallDir -SourcePath "$PSScriptRoot\Sources" -WithLifetime -Verbose -ErrorAction Stop | Out-Null
 Install-OSServiceStudio -Version $OfflineConfiguration.ServiceStudioVersion -InstallDir $InstallDir -SourcePath "$PSScriptRoot\Sources" -Verbose -ErrorAction Stop | Out-Null
 
 # Start configuration tool
