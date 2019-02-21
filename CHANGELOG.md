@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.4.3.0
+
+### Changes
+
+- Set-OSServerPerformanceTunning: Fixed an issue with newer powershell versions.
+
 ## 2.4.2.0
 
 ### Changes
