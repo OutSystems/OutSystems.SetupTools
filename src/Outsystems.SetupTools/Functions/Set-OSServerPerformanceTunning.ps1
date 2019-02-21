@@ -127,9 +127,9 @@ function Set-OSServerPerformanceTunning
             $interestingApps = @()
 
             # Build an array with all matching Apps.
-            foreach ($App in $($Config.Match))
+            foreach ($appMatchPattern in $($Config.Match))
             {
-                $interestingApps += $DefaultWebSiteApps -like $App
+                $interestingApps += $DefaultWebSiteApps | Where-Object -FilterScript {$_ -like $appMatchPattern}
             }
 
             # if an app was found
