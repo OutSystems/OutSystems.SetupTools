@@ -22,7 +22,12 @@ Test-OSServerHardwareReqs -MajorVersion $majorVersion -Verbose -ErrorAction Stop
 Test-OSServerSoftwareReqs -MajorVersion $majorVersion -Verbose -ErrorAction Stop | Out-Null
 
 # -- Install PreReqs
-Install-OSServerPreReqs -MajorVersion $MajorVersion -SourcePath "$PSScriptRoot\PreReqs" -Verbose -ErrorAction Stop | Out-Null
+$result = Install-OSServerPreReqs -MajorVersion $MajorVersion -SourcePath "$PSScriptRoot\PreReqs" -Verbose -ErrorAction Stop
+if ($result.RebootNeeded)
+{
+    Write-Warning -Message "OutSystems pre-requisites installed but a reboot is need. Restart the script after rebooting!!"
+    exit 3010
+}
 
 # -- Download and install OS Server and Dev environment from repo
 Install-OSServer -Version $OfflineConfiguration.LifetimeVersion -InstallDir $InstallDir -SourcePath "$PSScriptRoot\Sources" -WithLifetime -Verbose -ErrorAction Stop | Out-Null

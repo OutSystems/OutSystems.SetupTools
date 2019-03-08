@@ -21,7 +21,12 @@ Test-OSServerHardwareReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop
 Test-OSServerSoftwareReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop | Out-Null
 
 # -- Install PreReqs
-Install-OSServerPreReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop | Out-Null
+$result = Install-OSServerPreReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop
+if ($result.RebootNeeded)
+{
+    Write-Warning -Message "OutSystems pre-requisites installed but a reboot is need. Restart the script after rebooting!!"
+    exit 3010
+}
 
 # -- Download and install OS Server and Dev environment from repo
 Install-OSServer -Version $(Get-OSRepoAvailableVersions -MajorVersion $MajorVersion -Application 'PlatformServer' -Latest) -InstallDir $InstallDir -SkipRabbitMQ -Verbose -ErrorAction Stop | Out-Null
