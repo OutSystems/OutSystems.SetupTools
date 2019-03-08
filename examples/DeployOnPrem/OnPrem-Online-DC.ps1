@@ -24,7 +24,7 @@ Test-OSServerSoftwareReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop
 $result = Install-OSServerPreReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop
 if ($result.RebootNeeded)
 {
-    Write-Warning -Message "OutSystems pre-requisites installed but a reboot is need. Restart the script after rebooting!!"
+    Write-Warning -Message "OutSystems pre-requisites installed but a reboot is needed. Reboot the machine and then re-run this script!!"
     exit 3010
 }
 
