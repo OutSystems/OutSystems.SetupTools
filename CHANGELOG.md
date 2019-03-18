@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.5.0.0
+
+### Changes
+
+- Get-OSServerInfo: New function that returns the server installdir, version, machine name and serial. Deprecates Get-OSServerInstallDir and Get-OSServerVersion
+
 ## 2.4.3.0
 
 ### Changes
