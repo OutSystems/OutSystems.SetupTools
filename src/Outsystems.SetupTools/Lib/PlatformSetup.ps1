@@ -402,6 +402,26 @@ function GetServerInstallDir()
     return $output
 }
 
+function GetServerMachineName()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Platform Server\MachineName"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Platform Server" -Name "MachineName"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
+    return $output
+}
+
+function GetServerSerialNumber()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Platform Server\SerialNumber"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Platform Server" -Name "SerialNumber"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+
+    return $output
+}
+
 function GetServiceStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
