@@ -1,7 +1,7 @@
 # OutSystems.SetupTools
 
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/outsystems.setuptools.svg)
-![AppVeyor](https://img.shields.io/appveyor/ci/pintonunes/OutSystems-setuptools.svg)![AppVeyor tests](https://img.shields.io/appveyor/tests/pintonunes/OutSystems-setuptools.svg)
+![AppVeyor](https://img.shields.io/appveyor/ci/pintonunes/OutSystems-setuptools.svg) ![AppVeyor tests](https://img.shields.io/appveyor/tests/pintonunes/OutSystems-setuptools.svg) [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 OutSystems.SetupTools is a powershell module for installing and manage the OutSystems platform installation.
 
@@ -92,6 +92,6 @@ Usage and script examples at the [examples](examples) folder.
 
 Hopefully this is obvious, but:
 
-> This is an open source project (under the [Apache v2 license]), and all contributors are volunteers. All commands are executed at your own risk.
-This module is not supported by OutSystems.
+> This is an open source project and all contributors are volunteers. All commands are executed at your own risk.
+This module is not directly supported by OutSystems.
 
