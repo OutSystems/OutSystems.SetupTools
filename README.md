@@ -93,5 +93,5 @@ Usage and script examples at the [examples](examples) folder.
 Hopefully this is obvious, but:
 
 > This is an open source project and all contributors are volunteers. All commands are executed at your own risk.
-This module is not directly supported by OutSystems.
+This module is not directly supported by OutSystems. All issues with this module should be reported here.
 
