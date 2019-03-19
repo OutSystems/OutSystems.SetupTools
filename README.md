@@ -15,8 +15,6 @@ This is the branch containing the latest release - no contributions should be ma
 
 ### dev
 
-
-
 This is the development branch to which contributions should be proposed by contributors as pull requests.
 This development branch will periodically be merged to the master branch, and be released to [PowerShell Gallery](https://www.powershellgallery.com/).
 
