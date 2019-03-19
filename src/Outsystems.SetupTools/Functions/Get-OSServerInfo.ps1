@@ -5,7 +5,7 @@ function Get-OSServerInfo
     Returns a summary information about the OutSystems Server
 
     .DESCRIPTION
-    This will returns the OutSystems Server version, install directory, serial number and machine name.
+    This will returns the OutSystems Server version, install directory, serial number, machine name and private key.
 
     .EXAMPLE
     Get-OSServerInfo
@@ -28,6 +28,7 @@ function Get-OSServerInfo
             Version      = ''
             MachineName  = ''
             SerialNumber = ''
+            PrivateKey   = ''
         }
     }
 
@@ -48,10 +49,37 @@ function Get-OSServerInfo
         $serverInfo.MachineName = GetServerMachineName
         $serverInfo.SerialNumber = GetServerSerialNumber
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning server InstallDir: $($serverInfo.InstallDir)"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning server version: $($serverInfo.Version)"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning server machine name: $($serverInfo.MachineName)"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning server machine serial number: $($serverInfo.SerialNumber)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server InstallDir is: $($serverInfo.InstallDir)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server version is: $($serverInfo.Version)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server machine name is: $($serverInfo.MachineName)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server serial number is: $($serverInfo.SerialNumber)"
+
+        #region private key
+        $privateKeyFile = "$($serverInfo.InstallDir)\private.key"
+        if (Test-Path -Path $privateKeyFile)
+        {
+            $regex = "^--*"
+            Get-Content -Path $privateKeyFile -ErrorAction SilentlyContinue | ForEach-Object {
+                if (-not ($_ -match $regex))
+                {
+                    $serverInfo.PrivateKey = $_
+                }
+            }
+
+            if ($serverInfo.PrivateKey)
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server private key is: $($serverInfo.PrivateKey)"
+            }
+            else
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Private Key file found but there was an error processing the file"
+            }
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Private Key file not found at $privateKeyFile"
+        }
+        #endregion
 
         return $serverInfo
     }
