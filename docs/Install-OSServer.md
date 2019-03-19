@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -14,12 +14,12 @@ Installs or updates the OutSystems Platform server
 
 ### Remote (Default)
 ```
-Install-OSServer [-InstallDir <String>] -Version <Version> [-SkipRabbitMQ] [<CommonParameters>]
+Install-OSServer [-InstallDir <String>] -Version <Version> [-SkipRabbitMQ] [-WithLifetime] [<CommonParameters>]
 ```
 
 ### Local
 ```
-Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <Version> [-SkipRabbitMQ]
+Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <Version> [-SkipRabbitMQ] [-WithLifetime]
  [<CommonParameters>]
 ```
 
@@ -83,7 +83,7 @@ If not specified it will download the sources from the OutSystems repository.
 ```yaml
 Type: String
 Parameter Sets: Local
-Aliases:
+Aliases: Sources
 
 Required: True
 Position: Named
@@ -109,6 +109,21 @@ Accept wildcard characters: False
 
 ### -SkipRabbitMQ
 {{Fill SkipRabbitMQ Description}}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WithLifetime
+If specified, the cmdlet will install the platform server with lifetime.
 
 ```yaml
 Type: SwitchParameter

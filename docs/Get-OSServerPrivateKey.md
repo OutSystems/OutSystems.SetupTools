@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -8,6 +8,9 @@ schema: 2.0.0
 # Get-OSServerPrivateKey
 
 ## SYNOPSIS
+# !!!
+DEPRECATED - Use Get-OSServerInfo !!!
+#
 Returns the OutSystems platform server private key.
 
 ## SYNTAX

@@ -5,28 +5,25 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSServerInstallDir
+# Get-OSServerInfo
 
 ## SYNOPSIS
-# !!!
-DEPRECATED - Use Get-OSServerInfo !!!
-#
-Returns where the OutSystems platform server is installed.
+Returns a summary information about the OutSystems Server
 
 ## SYNTAX
 
 ```
-Get-OSServerInstallDir [<CommonParameters>]
+Get-OSServerInfo [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns where the OutSystems platform server is installed.
+This will returns the OutSystems Server version, install directory, serial number, machine name and private key.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSServerInstallDir
+Get-OSServerInfo
 ```
 
 ## PARAMETERS
@@ -39,7 +36,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### System.String
+### Outsystems.SetupTools.ServerInfo
 ## NOTES
 
 ## RELATED LINKS

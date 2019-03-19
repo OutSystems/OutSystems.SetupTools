@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -13,7 +13,8 @@ Installs the pre-requisites for the OutSystems platform server.
 ## SYNTAX
 
 ```
-Install-OSServerPreReqs [-MajorVersion] <String> [[-InstallIISMgmtConsole] <Boolean>] [<CommonParameters>]
+Install-OSServerPreReqs [-MajorVersion] <String> [[-SourcePath] <String>] [[-InstallIISMgmtConsole] <Boolean>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -30,6 +31,11 @@ Install-OSServerPreReqs -MajorVersion "10.0"
 ### EXAMPLE 2
 ```
 Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+```
+
+### EXAMPLE 3
+```
+Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
 ```
 
 ## PARAMETERS
@@ -50,6 +56,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -SourcePath
+Specifies a local path having the pre-requisites binaries.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: Sources
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -InstallIISMgmtConsole
 Specifies if the IIS Managament Console will be installed.
 On servers without GUI this feature can't be installed so you should set this parameter to $false.
@@ -60,7 +81,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: 3
 Default value: True
 Accept pipeline input: False
 Accept wildcard characters: False
