@@ -4,7 +4,8 @@
 
 ### Changes
 
-- Get-OSServerInfo: New function that returns the server installdir, version, machine name and serial. Deprecates Get-OSServerInstallDir and Get-OSServerVersion
+- Get-OSServerInfo: New function that returns the server installdir, version, machine, serial and privateKey. Deprecates Get-OSServerInstallDir Get-OSServerVersion, Get-OSServerPrivateKey
+- Removed Invoke-OSConfigurationTool. Deprecated for a long time.
 
 ## 2.4.3.0
 
