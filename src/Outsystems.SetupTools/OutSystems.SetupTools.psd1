@@ -92,7 +92,6 @@ FunctionsToExport = @(
     'Install-OSServer',
     'Install-OSServerPreReqs',
     'Install-OSServiceStudio',
-    'Invoke-OSConfigurationTool',
     'New-OSPlatformPrivateKey',
     'New-OSServerConfig',
     'Publish-OSPlatformLifetime',
