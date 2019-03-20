@@ -111,7 +111,7 @@ FunctionsToExport = @(
     'Test-OSServerSoftwareReqs',
     'Get-OSServerInfo',
     'Get-OSServiceStudioInfo',
-    'Get-OSPlatformDeploymentZones',
+    'Get-OSPlatformDeploymentZone',
     'Set-OSPlatformDeploymentZone'
 )
 
