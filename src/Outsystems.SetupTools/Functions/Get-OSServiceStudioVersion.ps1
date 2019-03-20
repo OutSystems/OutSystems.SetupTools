@@ -2,7 +2,7 @@ function Get-OSServiceStudioVersion
 {
     <#
     .SYNOPSIS
-    # !!! DEPRECATED - Use Get-OSServiceStudioInfo !!! #
+    DEPRECATED - Use Get-OSServiceStudioInfo
     Returns the OutSystems development environment (Service Studio) installed version.
 
     .DESCRIPTION

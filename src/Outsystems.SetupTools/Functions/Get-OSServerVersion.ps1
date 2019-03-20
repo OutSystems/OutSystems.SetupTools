@@ -2,7 +2,7 @@ function Get-OSServerVersion
 {
     <#
     .SYNOPSIS
-    # !!! DEPRECATED - Use Get-OSServerInfo !!! #
+    DEPRECATED - Use Get-OSServerInfo
     Returns the OutSystems platform server version
 
     .DESCRIPTION
