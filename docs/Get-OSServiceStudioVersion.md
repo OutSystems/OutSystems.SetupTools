@@ -8,6 +8,7 @@ schema: 2.0.0
 # Get-OSServiceStudioVersion
 
 ## SYNOPSIS
+DEPRECATED - Use Get-OSServiceStudioInfo
 Returns the OutSystems development environment (Service Studio) installed version.
 
 ## SYNTAX

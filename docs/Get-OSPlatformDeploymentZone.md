@@ -5,26 +5,25 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSServerVersion
+# Get-OSPlatformDeploymentZone
 
 ## SYNOPSIS
-DEPRECATED - Use Get-OSServerInfo
-Returns the OutSystems platform server version
+Returns the OutSystems environment deployment zones
 
 ## SYNTAX
 
 ```
-Get-OSServerVersion [<CommonParameters>]
+Get-OSPlatformDeploymentZone [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns the OutSystems platform server version.
+This will return the OutSystems environment deployment zones
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSServerVersion
+Get-OSPlatformDeploymentZones
 ```
 
 ## PARAMETERS
@@ -37,7 +36,8 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### System.Version
+### Outsystems.SetupTools.DeploymentZone
 ## NOTES
+This cmdLet requires at least OutSystems 11
 
 ## RELATED LINKS

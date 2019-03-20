@@ -8,9 +8,7 @@ schema: 2.0.0
 # Get-OSServerInstallDir
 
 ## SYNOPSIS
-# !!!
-DEPRECATED - Use Get-OSServerInfo !!!
-#
+DEPRECATED - Use Get-OSServerInfo
 Returns where the OutSystems platform server is installed.
 
 ## SYNTAX

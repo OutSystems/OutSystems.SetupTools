@@ -8,9 +8,7 @@ schema: 2.0.0
 # Get-OSServerPrivateKey
 
 ## SYNOPSIS
-# !!!
-DEPRECATED - Use Get-OSServerInfo !!!
-#
+DEPRECATED - Use Get-OSServerInfo
 Returns the OutSystems platform server private key.
 
 ## SYNTAX

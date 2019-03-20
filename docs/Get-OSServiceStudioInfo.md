@@ -5,27 +5,26 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSServiceStudioInstallDir
+# Get-OSServiceStudioInfo
 
 ## SYNOPSIS
-DEPRECATED - Use Get-OSServiceStudioInfo
-Returns where the OutSystems development environment (Service Studio) is installed.
+Returns where the OutSystems Service Studio install location and version.
 
 ## SYNTAX
 
 ```
-Get-OSServiceStudioInstallDir [-MajorVersion] <String> [<CommonParameters>]
+Get-OSServiceStudioInfo [-MajorVersion] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns where the OutSystems development environment is installed.
+This will returns where the OutSystems Service Studio install location and version.
 Since we can have multiple development environments installed, you need to specify the major version to get.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSServiceStudioInstallDir -MajorVersion "10.0"
+Get-OSServiceStudioInfo -MajorVersion "10.0"
 ```
 
 ## PARAMETERS
@@ -54,7 +53,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### System.String
+### Outsystems.SetupTools.ServiceStudioInfo
 ## NOTES
 
 ## RELATED LINKS
