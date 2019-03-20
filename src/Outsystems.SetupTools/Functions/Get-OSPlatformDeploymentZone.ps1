@@ -1,4 +1,4 @@
-function Get-OSPlatformDeploymentZones
+function Get-OSPlatformDeploymentZone
 {
     <#
     .SYNOPSIS
