@@ -2,6 +2,7 @@ function Get-OSServiceStudioInstallDir
 {
     <#
     .SYNOPSIS
+    DEPRECATED - Use Get-OSServiceStudioInfo
     Returns where the OutSystems development environment (Service Studio) is installed.
 
     .DESCRIPTION

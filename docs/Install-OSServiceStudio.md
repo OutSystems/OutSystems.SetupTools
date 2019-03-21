@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -69,7 +69,7 @@ if not specified it will download the sources from the OutSystems repository.
 ```yaml
 Type: String
 Parameter Sets: Local
-Aliases:
+Aliases: Sources
 
 Required: True
 Position: Named

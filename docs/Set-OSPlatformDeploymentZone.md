@@ -5,51 +5,53 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-OSInstallLog
+# Set-OSPlatformDeploymentZone
 
 ## SYNOPSIS
-Sets the module log file location.
+Sets the OutSystems environment deployment zone
 
 ## SYNTAX
 
 ```
-Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameters>]
+Set-OSPlatformDeploymentZone [[-DeploymentZone] <String>] [-ZoneAddress] <String> [[-EnableHTTPS] <Boolean>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will set the module log location.
-By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-\<date\>.log
-
-The log will contain the PowerShell verbose stream.
-If you set the -LogDebug switch it will also contain the debug stream.
+This will return set an OutSystems environment deployment zone
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
+Get-OSPlatformDeploymentZones -ZoneAddress 8.8.8.8
+```
+
+### EXAMPLE 2
+```
+Get-OSPlatformDeploymentZones -DeploymentZone 'myzone' -ZoneAddress 8.8.8.8 -EnableHTTPS:$true
 ```
 
 ## PARAMETERS
 
-### -Path
-The log file path.
-The cmdlet will try to create the path if not exists.
+### -DeploymentZone
+The name of the deployment zone.
+Defaults to Global
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 1
-Default value: None
+Default value: Global
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -File
-The log filename.
+### -ZoneAddress
+The new address for the target Deployment Zone
 
 ```yaml
 Type: String
@@ -63,17 +65,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -LogDebug
-Logs the debug stream
+### -EnableHTTPS
+Enable HTTPS for the target Deployment Zone.
+If this parameter is not provided the setting will remain unchanged
 
 ```yaml
-Type: SwitchParameter
+Type: Boolean
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
-Default value: False
+Position: 3
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -87,5 +90,6 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 ## OUTPUTS
 
 ## NOTES
+This cmdLet requires at least OutSystems 11
 
 ## RELATED LINKS

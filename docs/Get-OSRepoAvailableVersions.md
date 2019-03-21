@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -39,7 +39,8 @@ Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11.0' -L
 ## PARAMETERS
 
 ### -Application
-{{Fill Application Description}}
+Specifies which application to retrieve the version
+This can be 'PlatformServer', 'ServiceStudio', 'Lifetime'
 
 ```yaml
 Type: String
@@ -54,7 +55,8 @@ Accept wildcard characters: False
 ```
 
 ### -MajorVersion
-{{Fill MajorVersion Description}}
+Specifies the platform major version
+Accepted values: 10.0 or 11.0
 
 ```yaml
 Type: String
@@ -69,7 +71,7 @@ Accept wildcard characters: False
 ```
 
 ### -Latest
-{{Fill Latest Description}}
+If specified, will only return the latest version
 
 ```yaml
 Type: SwitchParameter

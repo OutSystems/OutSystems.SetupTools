@@ -1,7 +1,7 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
-online version: http://go.microsoft.com/fwlink/?LinkID=217034
+Module Name: Outsystems.SetupTools
+online version:
 schema: 2.0.0
 ---
 

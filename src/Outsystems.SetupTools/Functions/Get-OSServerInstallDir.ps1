@@ -2,6 +2,7 @@ function Get-OSServerInstallDir
 {
     <#
     .SYNOPSIS
+    DEPRECATED - Use Get-OSServerInfo
     Returns where the OutSystems platform server is installed.
 
     .DESCRIPTION

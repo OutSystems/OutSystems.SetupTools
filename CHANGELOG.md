@@ -4,7 +4,11 @@
 
 ### Changes
 
-- Get-OSServerInfo: New function that returns the server installdir, version, machine name and serial. Deprecates Get-OSServerInstallDir and Get-OSServerVersion
+- Added Get-OSServerInfo. New function that returns the server installdir, version, machine name, serial and privateKey. Deprecates Get-OSServerInstallDir Get-OSServerVersion, Get-OSServerPrivateKey
+- Added Get-OSServiceStudioInfo: New function that returns the service studio installdir and version. Deprecates Get-OSServiceStudioInstallDir Get-OSServiceStudioVersion
+- Removed Invoke-OSConfigurationTool. Deprecated for a long time
+- Added Get-OSPlatformDeploymentZone. New function that returns the environment deployment zones
+- Added Get-OSPlatformDeploymentZone. New function that sets the environment deployment zone address
 
 ## 2.4.3.0
 

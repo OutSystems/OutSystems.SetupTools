@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -8,6 +8,7 @@ schema: 2.0.0
 # Get-OSServiceStudioInstallDir
 
 ## SYNOPSIS
+DEPRECATED - Use Get-OSServiceStudioInfo
 Returns where the OutSystems development environment (Service Studio) is installed.
 
 ## SYNTAX

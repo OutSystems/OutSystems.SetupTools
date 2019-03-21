@@ -2,6 +2,7 @@ function Get-OSServerPrivateKey
 {
     <#
     .SYNOPSIS
+    DEPRECATED - Use Get-OSServerInfo
     Returns the OutSystems platform server private key.
 
     .DESCRIPTION

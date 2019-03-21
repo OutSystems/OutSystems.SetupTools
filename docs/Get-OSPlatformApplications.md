@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -18,7 +18,7 @@ Get-OSPlatformApplications [-ServiceCenter <String>] [-Credential <PSCredential>
 ```
 
 ## DESCRIPTION
-This will return the list of applications installed on an Outsystems environment.
+This will return the list of applications installed on an OutSystems environment.
 The function can be used to query a remote Outsystems environment for the list of applications installed using the ServiceCenterHost parameter.
 If not specified, the function will query the local machine.
 
@@ -39,10 +39,16 @@ $password = ConvertTo-SecureString "superpass" -AsPlainText -Force
 $Credential = New-Object System.Management.Automation.PSCredential ("superuser", $password)
 Get-OSPlatformApplications -ServiceCenterHost "8.8.8.8" -Credential $Credential
 
+### EXAMPLE 3
+```
+Get-OSPlatformModules -Credential $SCCreds -Filter {$_.StatusMessages.Id -eq 6}
+```
+
 ## PARAMETERS
 
 ### -ServiceCenter
-{{Fill ServiceCenter Description}}
+Service Center hostname or IP.
+If not specified, defaults to localhost.
 
 ```yaml
 Type: String
@@ -73,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -Filter
-{{Fill Filter Description}}
+Filter script block
 
 ```yaml
 Type: ScriptBlock

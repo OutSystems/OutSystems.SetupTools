@@ -5,26 +5,25 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSServerVersion
+# Get-OSServerInfo
 
 ## SYNOPSIS
-DEPRECATED - Use Get-OSServerInfo
-Returns the OutSystems platform server version
+Returns a summary information about the OutSystems Server
 
 ## SYNTAX
 
 ```
-Get-OSServerVersion [<CommonParameters>]
+Get-OSServerInfo [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns the OutSystems platform server version.
+This will returns the OutSystems Server version, install directory, serial number, machine name and private key.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSServerVersion
+Get-OSServerInfo
 ```
 
 ## PARAMETERS
@@ -37,7 +36,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### System.Version
+### Outsystems.SetupTools.ServerInfo
 ## NOTES
 
 ## RELATED LINKS

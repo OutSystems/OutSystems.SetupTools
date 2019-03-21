@@ -5,49 +5,43 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSPlatformVersion
+# Get-OSServiceStudioInfo
 
 ## SYNOPSIS
-Returns the platform version.
+Returns where the OutSystems Service Studio install location and version.
 
 ## SYNTAX
 
 ```
-Get-OSPlatformVersion [[-ServiceCenterHost] <String[]>] [<CommonParameters>]
+Get-OSServiceStudioInfo [-MajorVersion] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will return the OutSystems platform version from the Service Center API.
+This will returns where the OutSystems Service Studio install location and version.
+Since we can have multiple development environments installed, you need to specify the major version to get.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSPlatformVersion -ServiceCenterHost "10.0.0.1"
+Get-OSServiceStudioInfo -MajorVersion "10.0"
 ```
-
-### EXAMPLE 2
-```
-Using the pipeline
-```
-
-"10.0.0.1", "10.0.0.1", "10.0.0.3" | Get-OSPlatformVersion
 
 ## PARAMETERS
 
-### -ServiceCenterHost
-Service Center address.
-If not specified, will default to localhost (127.0.0.1).
+### -MajorVersion
+Major version.
+9.0, 9.1, 10.0, 11.0, ...
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: (All)
-Aliases: Host
+Aliases:
 
-Required: False
+Required: True
 Position: 1
-Default value: 127.0.0.1
-Accept pipeline input: True (ByValue)
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -59,7 +53,7 @@ For more information, see about_CommonParameters (http://go.microsoft.com/fwlink
 
 ## OUTPUTS
 
-### System.Version
+### Outsystems.SetupTools.ServiceStudioInfo
 ## NOTES
 
 ## RELATED LINKS

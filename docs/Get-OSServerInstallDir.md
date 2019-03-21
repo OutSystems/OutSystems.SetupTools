@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: OutSystems.SetupTools
+Module Name: Outsystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -8,6 +8,7 @@ schema: 2.0.0
 # Get-OSServerInstallDir
 
 ## SYNOPSIS
+DEPRECATED - Use Get-OSServerInfo
 Returns where the OutSystems platform server is installed.
 
 ## SYNTAX
