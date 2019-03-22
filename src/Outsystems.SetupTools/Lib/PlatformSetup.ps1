@@ -433,7 +433,7 @@ function GetServiceStudioInstallDir([string]$MajorVersion)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
-    return $output.Replace("\Service Studio", "")
+    return $output
 }
 
 function GetServerVersion()
