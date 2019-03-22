@@ -1,6 +1,6 @@
 # Outsystems.SetupTools Release History
 
-## 2.5.1.0
+## 2.5.1.0 and 2.5.2.0
 
 ### Changes
 
