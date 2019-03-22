@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.5.1.0
+
+### Changes
+
+- Fixed internal function regarding service studio installation. Was throwing an error when service studio was not installed
+
 ## 2.5.0.0
 
 ### Changes
