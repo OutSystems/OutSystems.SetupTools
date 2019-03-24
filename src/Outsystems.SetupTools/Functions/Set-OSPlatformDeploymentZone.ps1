@@ -17,10 +17,10 @@ function Set-OSPlatformDeploymentZone
     Enable HTTPS for the target Deployment Zone. If this parameter is not provided the setting will remain unchanged
 
     .EXAMPLE
-    Get-OSPlatformDeploymentZones -ZoneAddress 8.8.8.8
+    Set-OSPlatformDeploymentZone -ZoneAddress 8.8.8.8
 
     .EXAMPLE
-    Get-OSPlatformDeploymentZones -DeploymentZone 'myzone' -ZoneAddress 8.8.8.8 -EnableHTTPS:$true
+    Set-OSPlatformDeploymentZone -DeploymentZone 'myzone' -ZoneAddress 8.8.8.8 -EnableHTTPS:$true
 
     .NOTES
     This cmdLet requires at least OutSystems 11
