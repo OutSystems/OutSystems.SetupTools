@@ -58,7 +58,7 @@ function Set-OSPlatformDeploymentZone
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
 
-            return $null
+            return
         }
 
         if ($(-not $osVersion) -or $(-not $osInstallDir))
@@ -66,7 +66,7 @@ function Set-OSPlatformDeploymentZone
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "OutSystems platform is not installed"
             WriteNonTerminalError -Message "OutSystems platform is not installed"
 
-            return $null
+            return
         }
 
         if ($osVersion -lt '11.0.0.0')
@@ -74,7 +74,7 @@ function Set-OSPlatformDeploymentZone
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "This cmdLet is only supported on OutSystems 11 or higher"
             WriteNonTerminalError -Message "This cmdLet is only supported on OutSystems 11 or higher"
 
-            return $null
+            return
         }
         #endregion
 
@@ -99,7 +99,7 @@ function Set-OSPlatformDeploymentZone
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the configuration tool"
             WriteNonTerminalError -Message "Error launching the configuration tool. Exit code: $($result.ExitCode)"
 
-            return $null
+            return
         }
 
         $confToolOutputLog = $($result.Output) -Split ("`r`n")
@@ -115,11 +115,10 @@ function Set-OSPlatformDeploymentZone
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error setting the deployment zones. Exit code: $($result.ExitCode)"
             WriteNonTerminalError -Message "Error setting the deployment zones. Exit code: $($result.ExitCode)"
 
-            return $null
+            return
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Successfully set the deployment zone"
-        return $return
 
         #endregion
     }
