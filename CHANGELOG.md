@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.5.3.0
+
+### Changes
+
+- Install-OSServiceStudio. Added -FullPathInstallDir switch
+
 ## 2.5.1.0 and 2.5.2.0
 
 ### Changes
