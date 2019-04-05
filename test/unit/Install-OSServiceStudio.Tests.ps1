@@ -103,7 +103,29 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServiceStudioVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems\Development Environment 10.0" } }
+
             $result = Install-OSServiceStudio -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems service studio successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServiceStudio -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When the service studio is not installed and -FullPathInstallDir is specified' {
+
+            Mock GetServiceStudioVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems" } }
+
+            $result = Install-OSServiceStudio -Version '10.0.0.1' -FullPathInstallDir -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation' { Assert-MockCalled @assRunParams }
             It 'Should return the right result' {

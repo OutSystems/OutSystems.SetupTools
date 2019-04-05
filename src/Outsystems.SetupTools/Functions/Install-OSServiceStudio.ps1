@@ -18,6 +18,9 @@ function Install-OSServiceStudio
     .PARAMETER Version
     The version to be installed.
 
+    .PARAMETER FullPathInstallDir
+    If specified, the InstallDir will not be appended with \DevelopmentEnvironment-<Version>
+
     .EXAMPLE
     Install-OSServiceStudio -Version "10.0.823.0"
 
@@ -26,6 +29,9 @@ function Install-OSServiceStudio
 
     .EXAMPLE
     Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+
+    .EXAMPLE
+    Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp -FullPathInstallDir
 
     #>
 
@@ -45,7 +51,12 @@ function Install-OSServiceStudio
         [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Remote', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]$Version
+        [string]$Version,
+
+        [Parameter(ParameterSetName = 'Local')]
+        [Parameter(ParameterSetName = 'Remote')]
+        [ValidateNotNullOrEmpty()]
+        [switch]$FullPathInstallDir
     )
 
     begin
@@ -85,7 +96,15 @@ function Install-OSServiceStudio
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
-            $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+
+            if (-not $FullPathInstallDir.IsPresent)
+            {
+                $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+            }
+            else
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "FullPathInstallDir specified. Not appending \Development Environment <version>"
+            }
             $doInstall = $true
         }
         elseif ([version]$osVersion -lt [version]$Version)
@@ -156,7 +175,7 @@ function Install-OSServiceStudio
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
-                $result = Start-Process -FilePath $Installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru
+                $result = Start-Process -FilePath $Installer -ArgumentList "/S /D=$InstallDir" -Wait -PassThru
                 $exitCode = $result.ExitCode
             }
             catch
