@@ -51,13 +51,26 @@ function Install-OSServiceStudio
         [Parameter(ParameterSetName = 'Local', Mandatory = $true)]
         [Parameter(ParameterSetName = 'Remote', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [string]$Version,
-
-        [Parameter(ParameterSetName = 'Local')]
-        [Parameter(ParameterSetName = 'Remote')]
-        [ValidateNotNullOrEmpty()]
-        [switch]$FullPathInstallDir
+        [string]$Version
     )
+
+    dynamicParam
+    {
+        $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+
+        if ($InstallDir)
+        {
+            $FullPathInstallDirAttrib = New-Object System.Management.Automation.ParameterAttribute
+            $FullPathInstallDirAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+            $FullPathInstallDirAttribCollection.Add($FullPathInstallDirAttrib)
+            $FullPathInstallDirAttribCollection.Add($(New-Object Management.Automation.ValidateNotNullOrEmptyAttribute))
+            $FullPathInstallDirParam = New-Object System.Management.Automation.RuntimeDefinedParameter('FullPathInstallDir', [switch], $FullPathInstallDirAttribCollection)
+
+            $paramDictionary.Add('FullPathInstallDir', $FullPathInstallDirParam)
+        }
+
+        return $paramDictionary
+    }
 
     begin
     {
@@ -97,7 +110,7 @@ function Install-OSServiceStudio
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
 
-            if (-not $FullPathInstallDir.IsPresent)
+            if (-not $PSBoundParameters.FullPathInstallDir.IsPresent)
             {
                 $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
             }

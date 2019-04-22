@@ -67,11 +67,26 @@ function Install-OSServer
         [switch]$SkipRabbitMQ,
 
         [Parameter()]
-        [switch]$WithLifetime,
-
-        [ValidateNotNullOrEmpty()]
-        [switch]$FullPathInstallDir
+        [switch]$WithLifetime
     )
+
+    dynamicParam
+    {
+        $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
+
+        if ($InstallDir)
+        {
+            $FullPathInstallDirAttrib = New-Object System.Management.Automation.ParameterAttribute
+            $FullPathInstallDirAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+            $FullPathInstallDirAttribCollection.Add($FullPathInstallDirAttrib)
+            $FullPathInstallDirAttribCollection.Add($(New-Object Management.Automation.ValidateNotNullOrEmptyAttribute))
+            $FullPathInstallDirParam = New-Object System.Management.Automation.RuntimeDefinedParameter('FullPathInstallDir', [switch], $FullPathInstallDirAttribCollection)
+
+            $paramDictionary.Add('FullPathInstallDir', $FullPathInstallDirParam)
+        }
+
+        return $paramDictionary
+    }
 
     begin
     {
@@ -119,7 +134,7 @@ function Install-OSServer
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
 
-            if (-not $FullPathInstallDir.IsPresent)
+            if (-not $PSBoundParameters.FullPathInstallDir.IsPresent)
             {
                 $InstallDir = "$InstallDir\Platform Server"
             }
