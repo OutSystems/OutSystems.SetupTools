@@ -7,8 +7,11 @@ function Write-OSInstallLog
     .DESCRIPTION
     This will Write a message on the log file and on the verbose stream.
 
-    .PARAMETER LogDebug
-    Writes on the log the debug stream
+    .PARAMETER Name
+    The name on the log. Defaults to the function name if not specified.
+
+    .PARAMETER Message
+    Message to write on the log
 
     .EXAMPLE
     Write-OSInstallLog -Message 'My Message'
@@ -16,7 +19,11 @@ function Write-OSInstallLog
     #>
 
     [CmdletBinding()]
-    Param (
+    param (
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [string]$Name = $($MyInvocation.Mycommand),
+
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [string]$Message
@@ -29,7 +36,7 @@ function Write-OSInstallLog
 
     process
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $Message
+        LogMessage -Function $Name -Phase 1 -Stream 0 -Message $Message
     }
 
     end
