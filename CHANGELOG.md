@@ -1,5 +1,12 @@
 # Outsystems.SetupTools Release History
 
+## 2.6.0.0
+
+### Changes
+
+- New function Write-OSInstallLog. To write messages on the install log and the verbose stream
+- Install-OSServer. Added -FullPathInstallDir switch
+
 ## 2.5.3.0
 
 ### Changes
