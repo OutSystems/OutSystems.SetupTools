@@ -6,6 +6,7 @@
 
 - New function Write-OSInstallLog. To write messages on the install log and the verbose stream
 - Install-OSServer. Added -FullPathInstallDir switch
+- Changed FullPathInstallDir parameter on Install-OSServer and Install-OSServiceStudio to dynamic. Only available when InstallDir parameter is specified
 
 ## 2.5.3.0
 
