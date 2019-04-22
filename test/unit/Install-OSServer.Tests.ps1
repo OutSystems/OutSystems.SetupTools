@@ -116,6 +116,26 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When the platform server is not installed and -FullPathInstallDir is specified' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems" } }
+
+            $result = Install-OSServer -Version '10.0.0.1' -InstallDir 'C:\Program Files\Outsystems' -FullPathInstallDir -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When the platform installer returns an error' {
 
             Mock GetServerVersion { return $null }

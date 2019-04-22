@@ -125,7 +125,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems" } }
 
-            $result = Install-OSServiceStudio -Version '10.0.0.1' -FullPathInstallDir -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServiceStudio -Version '10.0.0.1' -InstallDir 'C:\Program Files\Outsystems' -FullPathInstallDir -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation' { Assert-MockCalled @assRunParams }
             It 'Should return the right result' {

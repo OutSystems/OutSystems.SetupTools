@@ -17,7 +17,7 @@ function Set-OSInstallLog
     The log filename.
 
     .PARAMETER LogDebug
-    Logs the debug stream
+    Writes on the log the debug stream
 
     .EXAMPLE
     Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
