@@ -47,7 +47,7 @@ Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\
 
 ### EXAMPLE 4
 ```
-Install-OSServer -Version "11.0.108.0" -InstallDir D:\Outsystems -SourcePath c:\temp -SkipRabbitMQ
+Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
 ```
 
 ### EXAMPLE 5

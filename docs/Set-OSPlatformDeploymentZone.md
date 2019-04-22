@@ -24,12 +24,12 @@ This will return set an OutSystems environment deployment zone
 
 ### EXAMPLE 1
 ```
-Get-OSPlatformDeploymentZones -ZoneAddress 8.8.8.8
+Set-OSPlatformDeploymentZone -ZoneAddress 8.8.8.8
 ```
 
 ### EXAMPLE 2
 ```
-Get-OSPlatformDeploymentZones -DeploymentZone 'myzone' -ZoneAddress 8.8.8.8 -EnableHTTPS:$true
+Set-OSPlatformDeploymentZone -DeploymentZone 'myzone' -ZoneAddress 8.8.8.8 -EnableHTTPS:$true
 ```
 
 ## PARAMETERS

@@ -43,6 +43,11 @@ Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
 Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 ```
 
+### EXAMPLE 4
+```
+Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp -FullPathInstallDir
+```
+
 ## PARAMETERS
 
 ### -InstallDir

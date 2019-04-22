@@ -5,51 +5,47 @@ online version:
 schema: 2.0.0
 ---
 
-# Set-OSInstallLog
+# Write-OSInstallLog
 
 ## SYNOPSIS
-Sets the module log file location.
+Writes a message on the log file and on the verbose stream.
 
 ## SYNTAX
 
 ```
-Set-OSInstallLog [-Path] <String> [-File] <String> [-LogDebug] [<CommonParameters>]
+Write-OSInstallLog [[-Name] <String>] [-Message] <String> [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will set the module log location.
-By default the module will log to %temp%\OutSystems.SetupTools\InstallLog-\<date\>.log
-
-The log will contain the PowerShell verbose stream.
-If you set the -LogDebug switch it will also contain the debug stream.
+This will Write a message on the log file and on the verbose stream.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-OSInstallLog -Path $ENV:Windir\temp -File Install.log -LogDebug
+Write-OSInstallLog -Message 'My Message'
 ```
 
 ## PARAMETERS
 
-### -Path
-The log file path.
-The cmdlet will try to create the path if not exists.
+### -Name
+The name on the log.
+Defaults to the function name if not specified.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: 1
-Default value: None
+Default value: $($MyInvocation.Mycommand)
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -File
-The log filename.
+### -Message
+Message to write on the log
 
 ```yaml
 Type: String
@@ -59,21 +55,6 @@ Aliases:
 Required: True
 Position: 2
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -LogDebug
-Writes on the log the debug stream
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
