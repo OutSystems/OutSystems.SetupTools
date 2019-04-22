@@ -23,6 +23,9 @@ function Install-OSServer
     .PARAMETER WithLifetime
     If specified, the cmdlet will install the platform server with lifetime.
 
+    .PARAMETER FullPathInstallDir
+    If specified, the InstallDir will not be appended with \Platform Server
+
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0"
 
@@ -33,7 +36,7 @@ function Install-OSServer
     Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     .EXAMPLE
-    Install-OSServer -Version "11.0.108.0" -InstallDir D:\Outsystems -SourcePath c:\temp -SkipRabbitMQ
+    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
 
     .EXAMPLE
     To install the latest 11.0 version
@@ -64,7 +67,10 @@ function Install-OSServer
         [switch]$SkipRabbitMQ,
 
         [Parameter()]
-        [switch]$WithLifetime
+        [switch]$WithLifetime,
+
+        [ValidateNotNullOrEmpty()]
+        [switch]$FullPathInstallDir
     )
 
     begin
@@ -112,7 +118,15 @@ function Install-OSServer
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
-            $InstallDir = "$InstallDir\Platform Server"
+
+            if (-not $FullPathInstallDir.IsPresent)
+            {
+                $InstallDir = "$InstallDir\Platform Server"
+            }
+            else
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "FullPathInstallDir specified. Not appending \Platform Server"
+            }
             $installPlatformServer = $true
         }
         elseif ([version]$osVersion -lt [version]$Version)
@@ -214,7 +228,7 @@ function Install-OSServer
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
-                $result = Start-Process -FilePath $installer -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
+                $result = Start-Process -FilePath $installer -ArgumentList "/S /D=$InstallDir" -Wait -PassThru -ErrorAction Stop
                 $exitCode = $result.ExitCode
             }
             catch
