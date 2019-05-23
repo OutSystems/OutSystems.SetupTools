@@ -1,4 +1,4 @@
-function Publish-OSPTool-Solution
+function Publish-OSPlatformSolutionPack
 {
     <#
     .SYNOPSIS
@@ -50,21 +50,12 @@ function Publish-OSPTool-Solution
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'PSCred')]
     [OutputType('Outsystems.SetupTools.PublishResult')]
     param (
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [Alias('Host', 'Environment','ServiceCenterHost')]
-        [string]$ServiceCenter = '127.0.0.1',
 
-        [Parameter(ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [string]$Solution,
-
-        [Parameter(ParameterSetName = 'UserAndPass')]
-        [Parameter(ParameterSetName = 'PSCred')]
-        [switch]$Force,
 
         [Parameter(ParameterSetName = 'UserAndPass')]
         [ValidateNotNullOrEmpty()]
@@ -74,16 +65,10 @@ function Publish-OSPTool-Solution
         [ValidateNotNullOrEmpty()]
         [string]$ServiceCenterPass = $OSSCPass,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'PSCred')]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
-        [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
-
-        [Parameter()]
-        [switch]$Wait,
-
-        [Parameter()]
-        [switch]$StopOnWarnings
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred
     )
 
     begin
@@ -99,7 +84,18 @@ function Publish-OSPTool-Solution
             Warnings   = 0
             Success    = $true
             ExitCode   = 0
-            Message    = ''
+            Message    = 'Solution successfully installed'
+        }
+        $osVersion = GetServerVersion
+        $osInstallDir = GetServerInstallDir
+
+        switch ($PsCmdlet.ParameterSetName)
+        {
+            "PSCred"
+            {
+                $ServiceCenterUser = $Credential.UserName
+                $ServiceCenterPass = $Credential.GetNetworkCredential().Password
+            }
         }
     }
 
@@ -111,11 +107,11 @@ function Publish-OSPTool-Solution
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
             WriteNonTerminalError -Message "Outsystems platform is not installed"
 
-            $installResult.Success = $false
-            $installResult.ExitCode = -1
-            $installResult.Message = 'Outsystems platform is not installed'
+            $publishResult.Success = $false
+            $publishResult.ExitCode = -1
+            $publishResult.Message = 'Outsystems platform is not installed'
 
-            return $installResult
+            return $publishResult
         }
 
         if ($(GetSCCompiledVersion) -ne $osVersion)
@@ -123,28 +119,14 @@ function Publish-OSPTool-Solution
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             WriteNonTerminalError -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
 
-            $installResult.Success = $false
-            $installResult.ExitCode = -1
-            $installResult.Message = 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first'
+            $publishResult.Success = $false
+            $publishResult.ExitCode = -1
+            $publishResult.Message = 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first'
 
-            return $installResult
+            return $publishResult
         }
 
-        if ( $(GetSysComponentsCompiledVersion) -ne $osVersion )
-        {
-            $doInstall = $true
-        }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "The solution were already compiled with this server version"
-        }
 
-        if ($doInstall -or $Force.IsPresent)
-        {
-            if ( $Force.IsPresent )
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. Will be reinstalled!!"
-            }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems solution. This can take a while..."
             try
@@ -156,11 +138,11 @@ function Publish-OSPTool-Solution
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error lauching the solution installion"
                 WriteNonTerminalError -Message "Error lauching the solution installion"
 
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error lauching the solution installion'
+                $publishResult.Success = $false
+                $publishResult.ExitCode = -1
+                $publishResult.Message = 'Error lauching the solution installion'
 
-                return $installResult
+                return $publishResult
             }
 
             $outputLog = $($result.Output) -Split ("`r`n")
@@ -175,31 +157,16 @@ function Publish-OSPTool-Solution
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing the solution. Return code: $($result.ExitCode)"
                 WriteNonTerminalError -Message "Error installing the solution. Return code: $($result.ExitCode)"
 
-                $installResult.Success = $false
-                $installResult.ExitCode = $result.ExitCode
-                $installResult.Message = 'Error installing the solution'
+                $publishResult.Success = $false
+                $publishResult.ExitCode = $result.ExitCode
+                $publishResult.Message = 'Error installing the solution'
 
-                return $installResult
+                return $publishResult
             }
 
-            try {
-                SetSysComponentsCompiledVersion -SysComponentsVersion $osVersion
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the solution version"
-                WriteNonTerminalError -Message "Error setting the solution version"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error setting the solution version'
-
-                return $installResult
-            }
-        }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully installed!!"
-        return $installResult
+        return $publishResult
     }
 
     end
