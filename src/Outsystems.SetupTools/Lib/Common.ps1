@@ -24,7 +24,8 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
     {
         0
         {
-            Write-Verbose  "$logLineTemplate $Message"
+            Write-Information -MessageData $Message
+            Write-Verbose -Message "$logLineTemplate $Message"
             if ($script:OSLogFile)
             {
                 Add-Content -Path $script:OSLogFile -Value "VERBOSE : $logLineTemplate $Message"
@@ -32,7 +33,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         }
         1
         {
-            Write-Warning  "$logLineTemplate $Message"
+            Write-Warning -Message "$logLineTemplate $Message"
             if ($script:OSLogFile)
             {
                 Add-Content -Path $script:OSLogFile -Value "WARNING : $logLineTemplate $Message"
@@ -40,7 +41,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         }
         2
         {
-            Write-Debug  "$logLineTemplate $Message"
+            Write-Debug -Message "$logLineTemplate $Message"
             if ($script:OSLogFile -and $script:OSLogDebug)
             {
                 Add-Content -Path $script:OSLogFile -Value "DEBUG   : $logLineTemplate $Message"
@@ -48,7 +49,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         }
         3
         {
-            Write-Verbose "$logLineTemplate $Message"
+            Write-Verbose -Message "$logLineTemplate $Message"
             if ($script:OSLogFile)
             {
                 Add-Content -Path $script:OSLogFile -Value "ERROR   : $logLineTemplate $Message"
@@ -58,7 +59,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
             if ($Exception)
             {
                 $E = $Exception
-                Write-Verbose "$logLineTemplate $($E.Message)"
+                Write-Verbose -Message "$logLineTemplate $($E.Message)"
                 if ($script:OSLogFile)
                 {
                     Add-Content -Path $script:OSLogFile -Value "InnerException:"
@@ -70,7 +71,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
                 while ($E.InnerException)
                 {
                     $E = $E.InnerException
-                    Write-Verbose "$logLineTemplate $($E.Message)"
+                    Write-Verbose -Message "$logLineTemplate $($E.Message)"
                     if ($script:OSLogFile)
                     {
                         Add-Content -Path $script:OSLogFile -Value $($E.Message)
