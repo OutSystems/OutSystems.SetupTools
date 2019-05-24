@@ -29,8 +29,6 @@ function Publish-OSPlatformSolutionPack
     The cmdlet will return an object with an ExitCode property that will match one of the following values:
     -1 = Error while trying to publish the solution
     0  = Success
-    1  = Solution published with warnings
-    2  = Solution published with errors
 
     This cmdlet does not check the integrity of the solution pack before starting.
     Trusts on the Service Center to make all the checks.
