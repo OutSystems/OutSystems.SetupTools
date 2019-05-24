@@ -9,7 +9,7 @@ install:
   - ps: |
       Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
       Install-Module Pester -MinimumVersion 3.4.0 -Scope CurrentUser -Force
-      Install-Module psake -Scope CurrentUser -Force
+      Install-Module psake -Scope CurrentUser -Force -RequiredVersion 4.7.4
       Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
       Install-Module platyPS -Scope CurrentUser -Force
 
