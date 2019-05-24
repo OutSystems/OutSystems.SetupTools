@@ -98,6 +98,7 @@ FunctionsToExport = @(
     'Publish-OSPlatformModule',
     'Publish-OSPlatformSolution',
     'Publish-OSPlatformSystemComponents',
+    'Publish-OSPlatformSolutionPack',
     'Restart-OSServerServices',
     'Set-OSInstallLog',
     'Set-OSServerConfig',
