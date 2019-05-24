@@ -5,7 +5,7 @@ function Publish-OSPlatformSolutionPack
     Deploys a solution pack
 
     .DESCRIPTION
-    This will deploy a solution pack to an OutSystems environment
+    This will deploy a solution pack to an OutSystems environment.
     It will not stop on any error. It proceeds till the end and outputs all errors found during the deployment.
 
     .PARAMETER Solution
