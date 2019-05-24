@@ -1,5 +1,12 @@
 # Outsystems.SetupTools Release History
 
+## 2.7.0.0
+
+### Changes
+
+- Added new function Publish-OSPlatformSolutionPack. Publish a solution using OSPTool
+- Changed logging. Now will output also to the Information stream if cmdLet is called using -InformationAction:Continue
+
 ## 2.6.0.0
 
 ### Changes
