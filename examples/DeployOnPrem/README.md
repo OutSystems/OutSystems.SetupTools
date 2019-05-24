@@ -4,7 +4,7 @@ This is a set of scripts to install OutSystems On-Prem using this module in a se
 
 The scripts will do all the hard work of installing the pre-requisites, the platform and post-configuration, and will let you configure the platform using the OutSystems configuration tool.
 
-In case you need a fully unattended setup, check [this](https://raw.githubusercontent.com/OutSystems/AzureARMTemplates/master/outsystemsSetup/outsystemsSetupScript.ps1) example script used on our Azure templates.
+In case you need a fully unattended setup, check [this](https://github.com/OutSystems/OutSystems.SetupTools/tree/dev/examples/FullUnattended) example script used on our Azure templates.
 
 ## Online machines
 
