@@ -8,33 +8,20 @@ function Publish-OSPlatformSolutionPack
     This will deploy a solution pack to an OutSystems environment
     The cmdlet checks for compilation errors and will stop the deployment on any if the Wait switch is specified
 
-    .PARAMETER ServiceCenter
-    Service Center hostname or IP. If not specified, defaults to localhost.
-
     .PARAMETER Solution
-    Solution file. This can be an OSP or an OAP file.
+    Solution path. This can be an OSP or an OAP file.
 
     .PARAMETER Credential
     Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
-    .PARAMETER Wait
-    Will waits for the deployment to finish and reports back the deployment result
-
-    .PARAMETER StopOnWarnings
-    Treat warnings as errors. Deployment will stop on compilation warnings and return success false
-
     .EXAMPLE
     $Credential = Get-Credential
-    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential
+    Publish-OSPlatformSolutionPack -Solution 'c:\solution.osp' -Credential $Credential
 
     .EXAMPLE
     $password = ConvertTo-SecureString "PlainTextPassword" -AsPlainText -Force
     $Credential = New-Object System.Management.Automation.PSCredential ("username", $password)
-    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -Wait
-
-    .EXAMPLE
-    $Credential = Get-Credential
-    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -StopOnWarnings
+    Publish-OSPlatformSolutionPack -Solution 'c:\solution.osp' -Credential $Credential
 
     .NOTES
     You can run this cmdlet on any machine with HTTP access to Service Center.
@@ -113,20 +100,6 @@ function Publish-OSPlatformSolutionPack
 
             return $publishResult
         }
-
-        if ($(GetSCCompiledVersion) -ne $osVersion)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-            WriteNonTerminalError -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
-
-            $publishResult.Success = $false
-            $publishResult.ExitCode = -1
-            $publishResult.Message = 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first'
-
-            return $publishResult
-        }
-
-
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems solution. This can take a while..."
             try
