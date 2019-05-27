@@ -71,30 +71,33 @@ function Get-OSRepoAvailableVersions
         {
             'PlatformServer'
             {
+                $files = $files | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
                 $versions = $files -replace 'PlatformServer-', '' -replace '.exe',''
             }
             'ServiceStudio'
             {
+                $files = $files | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
                 $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe',''
             }
             'Lifetime'
             {
+                $files = $files | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
                 $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe',''
             }
         }
 
         # Filter only major version and sort desc
-        [Array]$versions = $versions | Where-Object -FilterScript { $_ -like "$MajorVersion*" } | Sort-Object -Descending
+        $versions = [System.Version[]]($versions | Where-Object -FilterScript { $_ -like "$MajorVersion*" }) | Sort-Object -Descending
 
         if ($Latest.IsPresent)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning the latest version"
-            return $versions[0]
+            return $versions[0].ToString()
         }
         else
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($versions.Count) versions"
-            return $versions
+            return $versions | ForEach-Object -Process { $_.ToString() }
         }
     }
 
