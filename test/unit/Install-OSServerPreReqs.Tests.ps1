@@ -88,8 +88,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-
-
         Context 'When installing OS 11 on a clean machine and everything succeed' {
 
             $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
@@ -116,13 +114,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When installing OS 11 with all prereqs installed' {
 
             Mock IsMSIInstalled { return $true }
-            Mock GetDotNet4Version { return 461308 }
+            Mock GetDotNet4Version { return 461808 }
             Mock GetDotNetCoreVersion { return '2.0.7' }
 
             $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run not the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
-            It 'Should run not the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
+            It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
+            It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
