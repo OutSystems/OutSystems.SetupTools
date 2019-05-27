@@ -1,5 +1,12 @@
 # Outsystems.SetupTools Release History
 
+## 2.8.0.0
+
+### Changes
+
+- Fixed Get-OSRepoAvailableVersions. In some cases was not returning the latest version when -Latest was specified.
+- Changed Install-OSServerPreReqs. Upgraded .NET requirement to 4.7.2
+
 ## 2.7.0.0
 
 ### Changes
