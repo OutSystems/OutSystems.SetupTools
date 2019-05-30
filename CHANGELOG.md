@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.8.1.0
+
+### Changes
+
+- Fixed a bug introduced on the upgraded of the .NET requirement to 4.7.2
+
 ## 2.8.0.0
 
 ### Changes
