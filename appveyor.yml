@@ -1,4 +1,4 @@
-version: 2.8.0.{build}
+version: 2.8.1.{build}
 
 only_commits:
   files:
