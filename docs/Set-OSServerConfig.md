@@ -20,7 +20,7 @@ Set-OSServerConfig -SettingSection <String> -Setting <String> -Value <String> [<
 ### ApplyConfig
 ```
 Set-OSServerConfig [-PlatformDBCredential <PSCredential>] [-SessionDBCredential <PSCredential>] [-Apply]
- [<CommonParameters>]
+ [-SkipSessionRebuild] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -138,6 +138,22 @@ Accept wildcard characters: False
 
 ### -Apply
 This will switch the cmdLet to apply mode
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: ApplyConfig
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipSessionRebuild
+If specified, the configuration tool will not rebuild the session database.
+Usefull on frontends.
 
 ```yaml
 Type: SwitchParameter

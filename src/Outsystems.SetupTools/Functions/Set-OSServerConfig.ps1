@@ -39,6 +39,9 @@ function Set-OSServerConfig
     .PARAMETER ConfigureCacheInvalidationService
     If specified, the cmdLet will also configure RabbitMQ
 
+    .PARAMETER SkipSessionRebuild
+    If specified, the configuration tool will not rebuild the session database. Usefull on frontends.
+
     .EXAMPLE
     Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceUsername' -Value 'admin'
 
@@ -88,7 +91,10 @@ function Set-OSServerConfig
         [System.Management.Automation.PSCredential]$SessionDBCredential,
 
         [Parameter(ParameterSetName = 'ApplyConfig')]
-        [switch]$Apply
+        [switch]$Apply,
+
+        [Parameter(ParameterSetName = 'ApplyConfig')]
+        [switch]$SkipSessionRebuild
     )
 
     dynamicParam
@@ -301,7 +307,10 @@ function Set-OSServerConfig
                     }
                 }
 
-                $configToolArguments += "/rebuildsession "
+                if(-not $SkipSessionRebuild.IsPresent)
+                {
+                    $configToolArguments += "/rebuildsession "
+                }
 
                 if ($SessionDBCredential)
                 {
