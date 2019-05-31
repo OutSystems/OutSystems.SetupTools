@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.9.0.0
+
+### Changes
+
+- Changed Set-OSServerConfig. Added -SkipSessionRebuild parameter
+
 ## 2.8.1.0
 
 ### Changes
