@@ -8,7 +8,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock IsAdmin { return $true }
         Mock IsMSIInstalled { return $false }
         Mock GetDotNet4Version { return $null }
-        Mock GetDotNetCoreVersion { return $null }
+        Mock GetWindowsServerHostingVersion { return $null }
 
         Mock InstallDotNet { return 0 }
         Mock InstallBuildTools { return 0 }
@@ -115,7 +115,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock IsMSIInstalled { return $true }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetDotNetCoreVersion { return '2.0.7' }
+            Mock GetWindowsServerHostingVersion { return '2.1.11' }
 
             $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
 

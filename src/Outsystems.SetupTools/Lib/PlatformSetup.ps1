@@ -79,28 +79,32 @@ function GetDotNet4Version()
 
     return $output
 }
-
-function GetDotNetCoreVersion()
+function GetWindowsServerHostingVersion()
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost\Version"
-
-    try
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .NET Core 2.1.11 - Windows Server Hosting (x64)\PackageVersion"
+    $DotNETCoreUpdatesPath = "HKLM:SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core"
+    $version = '0.0.0.0'
+    $PathExists = Test-Path $DotNETCoreUpdatesPath
+    if (-not $PathExists)
     {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost" -Name "Version" -ErrorAction Stop).Version
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Registry key " + $DotNETCoreUpdatesPath + " does not exist"
+        return $version
     }
-    catch
+    $DotNetCoreItems = Get-Item -ErrorAction Stop -Path $DotNETCoreUpdatesPath
+    if (-not $DotNetCoreItems)
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot open " + $DotNETCoreUpdatesPath
+        return $version
     }
-
-    if (-not $output)
-    {
-        $output = '0.0.0.0'
+    $DotNetCoreItems.GetSubKeyNames() | Where-Object { $_ -Match "Microsoft .NET Core.*Windows Server Hosting" } | ForEach-Object {
+        $package = $(Get-ItemProperty -Path $($DotNETCoreUpdatesPath + $_) -Name "PackageVersion" -ErrorAction SilentlyContinue)
+        if (-not $package) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message ($DotNETCoreUpdatesPath + $_ + " does not have property PackageVersion")
+            return $version
+        }
+        $version = $package.PackageVersion
     }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
-
-    return $output
+    return $version
 }
 
 function InstallDotNet([string]$Sources)
@@ -166,12 +170,12 @@ function InstallDotNetCore([string]$Sources)
 {
     if($Sources)
     {
-        $installer = "$Sources\DotNetCore_2_WindowsHosting.exe"
+        $installer = "$Sources\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
+        $installer = "$ENV:TEMP\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
         DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
     }

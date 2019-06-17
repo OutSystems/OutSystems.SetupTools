@@ -42,7 +42,7 @@ $OS10ReqsMinDotNetVersion = "394254"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS11ReqsMinDotNetVersion = "461808"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OS11ReqsMinDotNetCoreVersion = "2.0.7"
+$OS11ReqsMinDotNetCoreVersion = "2.1.11"
 
 # Windows event log configs
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -76,7 +76,7 @@ $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURLDotNETCore = 'https://aka.ms/dotnetcore-2-windowshosting'
+$OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/0ad9d7d3-3cca-48e8-a5cc-07a5a6b8a020/820fd44b4eca9f31b11875d75068bb74/dotnet-hosting-2.1.11-win.exe'
 
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
