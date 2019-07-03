@@ -87,7 +87,7 @@ function GetDotNet4Version()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\<langid>\Release."
 
     <#
-        RPD-4212: For Windows installations with Japanese language, registry has two entries located at 
+        RPD-4212: For Windows installations with Japanese language, registry has two entries located at
         'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\'. Thus Installer fails later in Get-OSServerPreReqs.ps1
         because it is comparing two number against one in -ge operation, then in CreateResult it will always generate NOK message
         leading to a fail pre-requisites check and, as consequence, fail Platform installation.
@@ -156,29 +156,6 @@ function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
     }
 
     return $Result
-}
-
-function GetDotNetCoreVersion()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost\Version"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost" -Name "Version" -ErrorAction Stop).Version
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
-    if (-not $output)
-    {
-        $output = '0.0.0.0'
-    }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
-
-    return $output
 }
 
 function InstallDotNet([string]$Sources)

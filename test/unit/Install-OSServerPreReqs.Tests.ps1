@@ -8,7 +8,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock IsAdmin { return $true }
         Mock IsMSIInstalled { return $false }
         Mock GetDotNet4Version { return $null }
-        Mock GetDotNetCoreVersion { return $null }
+        Mock GetWindowsServerHostingVersion {return $null}
 
         Mock InstallDotNet { return 0 }
         Mock InstallBuildTools { return 0 }
@@ -115,7 +115,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock IsMSIInstalled { return $true }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetDotNetCoreVersion { return '2.0.7' }
+            Mock GetWindowsServerHostingVersion {return "2.0.7"}
 
             $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -236,9 +236,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 10
-                $result.Message | Should Be 'Error installing .NET 4.7.1'
+                $result.Message | Should Be 'Error installing .NET 4.6.1'
             }
-            It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 4.7.1. Exit code: 10' }
+            It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 4.6.1. Exit code: 10' }
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
