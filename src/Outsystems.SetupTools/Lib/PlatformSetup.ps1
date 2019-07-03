@@ -22,6 +22,13 @@ function GetWindowsFeatureState([string]$Features)
     return $($(Get-WindowsFeature -Name $Features -Verbose:$false).Installed)
 }
 
+function ServiceWindowsSearchIsDisabled()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking Windows Search Service status."
+    $WSearchService = $(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue)
+    return ($null -eq $WSearchService) -or ($($WSearchService.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Stopped) -and $($WSearchService.StartType -eq [System.ServiceProcess.ServiceStartMode]::Disabled))
+}
+
 function ConfigureServiceWindowsSearch()
 {
     if ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue))
@@ -38,10 +45,23 @@ function ConfigureServiceWindowsSearch()
     }
 }
 
+function ServiceWMIIsEnabled()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking WMI Service status."
+    $WSearchService = $(Get-Service -Name "Winmgmt" -ErrorAction SilentlyContinue)
+    return $($WSearchService.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Running) -and $($WSearchService.StartType -eq [System.ServiceProcess.ServiceStartMode]::Automatic)
+}
+
 function ConfigureServiceWMI()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the WMI windows service and changing the startup type to automatic."
     Set-Service -Name "Winmgmt" -StartupType "Automatic" -ErrorAction Stop | Start-Service -ErrorAction Stop
+}
+
+function IsFIPSDisabled
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting registry value for HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy\Enabled"
+    return $(RegRead -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled") -eq 0
 }
 
 function DisableFIPS
@@ -66,9 +86,16 @@ function GetDotNet4Version()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\<langid>\Release."
 
+    <#
+        RPD-4212: For Windows installations with Japanese language, registry has two entries located at 
+        'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\'. Thus Installer fails later in Get-OSServerPreReqs.ps1
+        because it is comparing two number against one in -ge operation, then in CreateResult it will always generate NOK message
+        leading to a fail pre-requisites check and, as consequence, fail Platform installation.
+        To prevent this, we need to sort, in descending order, the retrieved values and return the first element.
+    #>
     try
     {
-        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop).Release
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop |  Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
     }
     catch
     {
@@ -78,6 +105,57 @@ function GetDotNet4Version()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
 
     return $output
+}
+
+function GetWindowsServerHostingVersion()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .NET Core 2.1.11 - Windows Server Hosting (x64)\PackageVersion"
+    $DotNETCoreUpdatesPath = "HKLM:SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core"
+    $version = '0.0.0.0'
+    $PathExists = Test-Path $DotNETCoreUpdatesPath
+    if (-not $PathExists)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Registry key " + $DotNETCoreUpdatesPath + " does not exist"
+        return $version
+    }
+    $DotNetCoreItems = Get-Item -ErrorAction Stop -Path $DotNETCoreUpdatesPath
+    if (-not $DotNetCoreItems)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot open " + $DotNETCoreUpdatesPath
+        return $version
+    }
+    $DotNetCoreItems.GetSubKeyNames() | Where-Object { $_ -Match "Microsoft .NET Core.*Windows Server Hosting" } | ForEach-Object {
+        $package = $(Get-ItemProperty -Path $($DotNETCoreUpdatesPath + "\" + $_) -Name "PackageVersion" -ErrorAction SilentlyContinue)
+        if (-not $package) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message ($DotNETCoreUpdatesPath + $_ + " does not have property PackageVersion")
+        }
+        $version = $package.PackageVersion
+    }
+    return $version
+}
+
+function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
+{
+    $Result = @{}
+    $Result.Version = ""
+    $Result.Value = ""
+
+    switch ($PlatformMajorVersion)
+    {
+        '10.0'
+        {
+            $Result.Version = "4.6.1"
+            $Result.Value = $OS10ReqsMinDotNetVersion
+        }
+
+        '11.0'
+        {
+            $Result.Version = "4.7.2"
+            $Result.Value = $OS11ReqsMinDotNetVersion
+        }
+    }
+
+    return $Result
 }
 
 function GetDotNetCoreVersion()
@@ -125,15 +203,33 @@ function InstallDotNet([string]$Sources)
     return $($result.ExitCode)
 }
 
-function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
+function GetDotNetLimits
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Openning the config file"
+    $NETConfig = @{}
+    $NETConfig.SystemWeb = @{}
+    $NETConfig.SystemWeb.HttpRuntime = @{}
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
     $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET maximum request size (maxRequestLength = 131072)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting current .NET maximum request size"
+    $NETConfig.SystemWeb.HttpRuntime.maxRequestLength = $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting current .NET execution timeout"
+    $NETConfig.SystemWeb.HttpRuntime.executionTimeout = $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout
+
+    return $NETConfig
+}
+
+function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
+    $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET maximum request size (maxRequestLength = $UploadLimit)"
     $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength = $UploadLimit
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET execution timeout (executionTimeout = 110 seconds)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET execution timeout (executionTimeout = $($ExecutionTimeout.TotalSeconds) seconds)"
     $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout = $ExecutionTimeout
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Saving config"
@@ -157,7 +253,7 @@ function InstallBuildTools([string]$Sources)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
     $result = Start-Process -FilePath $installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
 
     return $($result.ExitCode)
 }
@@ -166,12 +262,12 @@ function InstallDotNetCore([string]$Sources)
 {
     if($Sources)
     {
-        $installer = "$Sources\DotNetCore_2_WindowsHosting.exe"
+        $installer = "$Sources\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
+        $installer = "$ENV:TEMP\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
         DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
     }
