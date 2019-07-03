@@ -17,18 +17,18 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
             $phaseMessage = ' [END    ]'
         }
     }
-    
+
     $logFileLineTemplate = $((get-date).TimeOfDay.ToString()) + " [" + $Function.PadRight(40) + "] $phaseMessage "
 
-    if ($script:OSEnableLogTemplate) 
+    if ($script:OSEnableLogTemplate)
     {
         $logLineTemplate = $logFileLineTemplate
-    } 
+    }
     else
     {
         $logLineTemplate = ""
     }
-    
+
     switch ($Stream)
     {
         0
@@ -63,8 +63,6 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
             {
                 Add-Content -Path $script:OSLogFile -Value "ERROR   : $($logFileLineTemplate)$($Message)"
             }
-
-            Write-Output "ERROR   : $($logLineTemplate)$($Message)"
 
             # Exception info
             if ($Exception)
