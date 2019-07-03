@@ -101,22 +101,24 @@ function Install-OSServerPreReqs
 
         # Version specific pre-reqs checks.
         switch ($MajorVersion)
-        '10.0'
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
-            $winFeatures += "MSMQ"
-        } 
-        '11.0'
-        {
-            # Check .NET Core Windows Server Hosting version
-            if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
+            '10.0'
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                $installDotNetCore = $true
-            }
-            else
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
+                $winFeatures += "MSMQ"
+            } 
+            '11.0'
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting for OutSystems $MajorVersion found"
+                # Check .NET Core Windows Server Hosting version
+                if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
+                    $installDotNetCore = $true
+                }
+                else
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting for OutSystems $MajorVersion found"
+                }
             }
         }
         #endregion

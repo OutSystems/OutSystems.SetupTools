@@ -113,22 +113,24 @@ function Get-OSServerPreReqs
         $winFeatures = $OSWindowsFeaturesBase
         
         switch ($MajorVersion)
-        '10.0'
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
-            $winFeatures += "MSMQ"
-        }
-        '11.0'
-        {
-            $RequirementStatuses += CreateRequirementStatus -Title ".NET Core Windows Server Hosting" `
-                                                            -ScriptBlock `
-                                                            {
-                                                                $Status = $([version]$(GetWindowsServerHostingVersion) -ge [version]$OS11ReqsMinDotNetCoreVersion)
-                                                                $OKMessages = @("Minimum .NET Core Windows Server Hosting found.")
-                                                                $NOKMessages = @("Minimum .NET Core Windows Server Hosting not found.")
+            '10.0'
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
+                $winFeatures += "MSMQ"
+            }
+            '11.0'
+            {
+                $RequirementStatuses += CreateRequirementStatus -Title ".NET Core Windows Server Hosting" `
+                                                                -ScriptBlock `
+                                                                {
+                                                                    $Status = $([version]$(GetWindowsServerHostingVersion) -ge [version]$OS11ReqsMinDotNetCoreVersion)
+                                                                    $OKMessages = @("Minimum .NET Core Windows Server Hosting found.")
+                                                                    $NOKMessages = @("Minimum .NET Core Windows Server Hosting not found.")
 
-                                                                return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                            }
+                                                                    return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                                }
+            }
         }
 
         $RequirementStatuses += CreateRequirementStatus -Title "Windows Features" `
