@@ -137,7 +137,7 @@ function Set-OSServerConfig
             $InstallServiceCenterAttrib.ParameterSetName = 'ApplyConfig'
             $InstallServiceCenterAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
             $InstallServiceCenterAttribCollection.Add($InstallServiceCenterAttrib)
-            $InstallServiceCenterParam = New-Object System.Management.Automation.RuntimeDefinedParameter('InstallServiceCenter', [switch], $ConfigureCacheInvalidationServiceAttribCollection)
+            $InstallServiceCenterParam = New-Object System.Management.Automation.RuntimeDefinedParameter('InstallServiceCenter', [switch], $InstallServiceCenterAttribCollection)
             $paramDictionary.Add('InstallServiceCenter', $InstallServiceCenterParam)
         }
         return $paramDictionary
@@ -358,6 +358,16 @@ function Set-OSServerConfig
                     WriteNonTerminalError -Message "Error launching the configuration tool. Exit code: $($result.ExitCode)"
 
                     return $null
+                }
+
+                try
+                {
+                    SetSCCompiledVersion -SCVersion $osVersion
+                }
+                catch
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the service center version"
+                    WriteNonTerminalError -Message "Error setting the service center version"
                 }
 
                 $confToolOutputLog = $($result.Output) -Split ("`r`n")
