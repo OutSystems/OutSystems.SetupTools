@@ -3,7 +3,7 @@ param(
     [Parameter()]
     [ValidateSet('DC', 'FE', 'LT')]
     [string]$OSRole,
-    
+
     [Parameter()]
     [string]$OSDBAuth = 'Database Authentication',
     [string]$OSController,
@@ -41,8 +41,8 @@ param(
 # -- Script variables
 $ErrorActionPreference = 'Stop'
 $OSDBSACred = New-Object System.Management.Automation.PSCredential ($OSDBSAUser, $(ConvertTo-SecureString $OSDBSAPass -AsPlainText -Force))
-$OSDBLogCred = New-Object System.Management.Automation.PSCredential ($OSDBSALogUser, $(ConvertTo-SecureString $OSDBSALogPass -AsPlainText -Force)) 
-$OSDBSessionCred = New-Object System.Management.Automation.PSCredential ($OSDBSASessionUser, $(ConvertTo-SecureString $OSDBSASessionPass -AsPlainText -Force)) 
+$OSDBLogCred = New-Object System.Management.Automation.PSCredential ($OSDBSALogUser, $(ConvertTo-SecureString $OSDBSALogPass -AsPlainText -Force))
+$OSDBSessionCred = New-Object System.Management.Automation.PSCredential ($OSDBSASessionUser, $(ConvertTo-SecureString $OSDBSASessionPass -AsPlainText -Force))
 
 # Start PS Logging
 Start-Transcript -Path "$Env:Windir\temp\PowerShellTranscript.log" -Append | Out-Null
@@ -54,7 +54,7 @@ Install-Module SqlServer -Force -RequiredVersion 21.1.18068 | Out-Null
 Import-Module -Name Outsystems.SetupTools -ArgumentList $true, 'AzureRM' | Out-Null
 
 # -- Script variables
-$majorVersion = "$(([System.Version]$OSServerVersion).Major).$(([System.Version]$OSServerVersion).Minor)"
+$majorVersion = "$(([System.Version]$OSServerVersion).Major)"
 
 # -- Change CDROM letter to F:
 Get-CimInstance -Class Win32_volume -Filter 'DriveType=5' | Select-Object -First 1 | Set-CimInstance -Arguments @{DriveLetter = 'F:'} | Out-Null
@@ -73,7 +73,7 @@ Test-OSServerHardwareReqs -MajorVersion $majorVersion -ErrorAction Stop | Out-Nu
 Test-OSServerSoftwareReqs -MajorVersion $majorVersion -ErrorAction Stop | Out-Null
 
 # -- Install PreReqs
-Install-OSServerPreReqs -MajorVersion "$(([System.Version]$OSServerVersion).Major).$(([System.Version]$OSServerVersion).Minor)" -ErrorAction Stop | Out-Null
+Install-OSServerPreReqs -MajorVersion "$(([System.Version]$OSServerVersion).Major)" -ErrorAction Stop | Out-Null
 
 # -- Download and install OS Server and Dev environment from repo
 switch ($OSRole)
@@ -86,11 +86,11 @@ switch ($OSRole)
     {
         switch ($majorVersion)
         {
-            '11.0'
+            '11'
             {
                 Install-OSServer -Version $OSServerVersion -InstallDir $OSInstallDir -ErrorAction Stop | Out-Null
             }
-            '10.0'
+            '10'
             {
                 Install-OSServer -Version $OSServerVersion -InstallDir $OSInstallDir -ErrorAction Stop | Out-Null
             }
@@ -141,7 +141,7 @@ Set-OSServerConfig -SettingSection 'OtherConfigurations' -Setting 'DBTimeout' -V
 # -- Configure platform according to major version
 switch ($majorVersion)
 {
-    '11.0'
+    '11'
     {
         # -- Configure version specific platform settings
         # **** Cache invalidation service config ****
@@ -174,7 +174,7 @@ switch ($majorVersion)
         # -- Configure windows firewall with rabbit
         Set-OSServerWindowsFirewall -IncludeRabbitMQ -ErrorAction Stop | Out-Null
     }
-    '10.0'
+    '10'
     {
         # -- Configure version specific platform settings
         # **** Logging database ****

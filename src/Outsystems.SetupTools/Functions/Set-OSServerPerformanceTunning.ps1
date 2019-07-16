@@ -173,13 +173,13 @@ function Set-OSServerPerformanceTunning
                 $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * 1MB * ($($Config.MemoryPercentage) / 100))
 
                 # Version specific config
-                switch ("$(([version]$osVersion).Major).$(([version]$osVersion).Minor)")
+                switch ("$(([version]$osVersion).Major)")
                 {
-                    '10.0'
+                    '10'
                     {
                         $AppPoolItem.managedPipelineMode = "Classic"
                     }
-                    '11.0'
+                    '11'
                     {
                         $AppPoolItem.managedPipelineMode = "Integrated"
                     }

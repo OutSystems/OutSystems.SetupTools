@@ -10,7 +10,7 @@ function Install-OSServerPreReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    Accepted values: 10.0 or 11.0.
+    Accepted values: 10 or 11.
 
     .PARAMETER InstallIISMgmtConsole
     Specifies if the IIS Managament Console will be installed.
@@ -20,13 +20,13 @@ function Install-OSServerPreReqs
     Specifies a local path having the pre-requisites binaries.
 
     .EXAMPLE
-    Install-OSServerPreReqs -MajorVersion "10.0"
+    Install-OSServerPreReqs -MajorVersion "10"
 
     .EXAMPLE
-    Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+    Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false
 
      .EXAMPLE
-    Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
+    Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
 
     #>
 
@@ -34,7 +34,7 @@ function Install-OSServerPreReqs
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0')]
+        [ValidatePattern('1[0-1]{1}(\.0)?')]
         [string]$MajorVersion,
 
         [Parameter()]
@@ -103,7 +103,7 @@ function Install-OSServerPreReqs
         # Version specific pre-reqs checks.
         switch ($MajorVersion)
         {
-            '10.0'
+            '10'
             {
                 # Check .NET version
                 if ($(GetDotNet4Version) -lt $OS10ReqsMinDotNetVersion)
@@ -120,7 +120,7 @@ function Install-OSServerPreReqs
                 $winFeatures += "MSMQ"
             }
 
-            '11.0'
+            '11'
             {
                 # Check .NET version
                 if ($(GetDotNet4Version) -lt $OS11ReqsMinDotNetVersion)
@@ -417,7 +417,7 @@ function Install-OSServerPreReqs
         # Version specific configuration.
         switch ($MajorVersion)
         {
-            '10.0'
+            '10'
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configure Message Queuing service to to always try to contact a message queue server when running on a server registered in a domain."
                 try
@@ -436,7 +436,7 @@ function Install-OSServerPreReqs
                     return $installResult
                 }
             }
-            '11.0'
+            '11'
             {
                 # Nothing to be done here
             }

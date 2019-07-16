@@ -9,7 +9,7 @@ $ErrorActionPreference = 'Stop'
 
 # -- Import configuration file
 $OfflineConfiguration = Import-Clixml "$PSScriptRoot\Configuration.xml"
-$majorVersion = "$($([version]$OfflineConfiguration.ServerVersion).Major).$($([version]$OfflineConfiguration.ServerVersion).Minor)"
+$majorVersion = "$($([version]$OfflineConfiguration.ServerVersion).Major)"
 
 # -- Import module from local folder
 Import-Module -Name "$PSScriptRoot\Modules\AzureRM.profile" | Out-Null

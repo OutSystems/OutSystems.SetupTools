@@ -9,10 +9,10 @@ function Test-OSServerSoftwareReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    Accepted values: 10.0 or 11.0
+    Accepted values: 10 or 11
 
     .EXAMPLE
-    Test-OSServerSoftwareReqs -MajorVersion "10.0"
+    Test-OSServerSoftwareReqs -MajorVersion "10"
 
     #>
 
@@ -20,7 +20,7 @@ function Test-OSServerSoftwareReqs
     [OutputType('Outsystems.SetupTools.TestResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0')]
+        [ValidatePattern('1[0-1]{1}(\.0)?')]
         [string]$MajorVersion
     )
 
@@ -52,7 +52,7 @@ function Test-OSServerSoftwareReqs
 
         switch ($MajorVersion)
         {
-            '10.0'
+            '10'
             {
                 if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS10ReqsMinOSVersion)
                 {
@@ -65,7 +65,7 @@ function Test-OSServerSoftwareReqs
                     return $testResult
                 }
             }
-            '11.0'
+            '11'
             {
                 if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS11ReqsMinOSVersion)
                 {

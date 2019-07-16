@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('10.0', '11.0')]
+    [ValidatePattern('1[0-1]{1}(\.0)?')]
     [string]$MajorVersion
 )
 Write-Verbose "Starting. Please wait..." -Verbose
@@ -45,7 +45,7 @@ Write-Verbose "Downloading .NET Core 2.0.8" -Verbose
 # -- Download outsystems
 $OSServerVersion = Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion $MajorVersion -Latest
 $OSServiceStudioVersion = Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion $MajorVersion -Latest
-$OSLifetimeVersion = Get-OSRepoAvailableVersions -Application 'Lifetime' -MajorVersion '11.0' -Latest
+$OSLifetimeVersion = Get-OSRepoAvailableVersions -Application 'Lifetime' -MajorVersion '11' -Latest
 
 Write-Verbose "Downloading OutSystems Platform Server $OSServerVersion" -Verbose
 (New-Object System.Net.WebClient).DownloadFile("$OSRepoURL\PlatformServer-$OSServerVersion.exe", "$env:Temp\OSOfflineBundle\Sources\PlatformServer-$OSServerVersion.exe")

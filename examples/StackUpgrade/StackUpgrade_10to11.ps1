@@ -15,10 +15,10 @@ Import-Module -Name Outsystems.SetupTools -MinimumVersion 2.2.0.0 -ArgumentList 
 # -- Get platform major version
 $OSServerVersion = Get-OSServerVersion
 if (-not $OSServerVersion) { throw "Platform not installed" }
-$OSServerMajorVersion = "$(([System.Version]$OSServerVersion).Major).$(([System.Version]$OSServerVersion).Minor)"
+$OSServerMajorVersion = "$(([System.Version]$OSServerVersion).Major)"
 
 # -- Check if update is needed
-if ($OSServerMajorVersion -ne '10.0') { throw 'Platform is not at the 10.0 version' }
+if ($OSServerMajorVersion -ne '10') { throw 'Platform is not at the 10 version' }
 
 # -- Before updating lets refresh outdated modules
 Get-OSPlatformModules -Credential $SCCreds -PassThru -Filter {$_.StatusMessages.Id -eq 6} -ErrorAction Stop | Publish-OSPlatformModule -Wait -Verbose -ErrorAction Stop | Out-Null
@@ -30,14 +30,14 @@ if (Get-OSPlatformModules -Credential $SCCreds -PassThru -Filter {$_.StatusMessa
 Stop-OSServerServices -Verbose -ErrorAction Stop
 
 # -- Install PreReqs for the new major
-Install-OSServerPreReqs -MajorVersion '11.0' -Verbose -ErrorAction Stop | Out-Null
+Install-OSServerPreReqs -MajorVersion '11' -Verbose -ErrorAction Stop | Out-Null
 
 # -- Download and install OS Server
-Install-OSServer -Version $(Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '11.0' -Latest) -Verbose -ErrorAction Stop | Out-Null
+Install-OSServer -Version $(Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '11' -Latest) -Verbose -ErrorAction Stop | Out-Null
 
 # -- Download and install Service Studio in the same path as the 10.0
-$OSServiceStudioInstallDir = $(Get-OSServiceStudioInstallDir -MajorVersion '10.0') -replace '\Development Environment 10.0', ''
-Install-OSServiceStudio -InstallDir $OSServiceStudioInstallDir -Version $(Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11.0' -Latest) -Verbose -ErrorAction Stop | Out-Null
+$OSServiceStudioInstallDir = $(Get-OSServiceStudioInstallDir -MajorVersion '10') -replace '\Development Environment 10.0', ''
+Install-OSServiceStudio -InstallDir $OSServiceStudioInstallDir -Version $(Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11' -Latest) -Verbose -ErrorAction Stop | Out-Null
 
 # -- Set RabbitMQ user and pass
 Set-OSServerConfig -Setting 'CacheInvalidationConfiguration/ServiceUsername' -Value $RabbitMQCreds.UserName -ErrorAction Stop -Verbose | Out-Null

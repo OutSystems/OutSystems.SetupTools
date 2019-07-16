@@ -10,16 +10,16 @@ function Get-OSServiceStudioVersion
     Since we can have multiple development environments installed, you need to specify the major version to get.
 
     .PARAMETER MajorVersion
-    Major version. 9.0, 9.1, 10.0, 11.0, ...
+    Major version. 9.0, 9.1, 10, 11, ...
 
     .EXAMPLE
-    Get-OSServiceStudioVersion -MajorVersion "10.0"
+    Get-OSServiceStudioVersion -MajorVersion "10"
 
     #>
     [CmdletBinding()]
     [OutputType('System.Version')]
     param (
-        [Parameter(Mandatory = $true, HelpMessage = "10.0")]
+        [Parameter(Mandatory = $true, HelpMessage = "10")]
         [string]$MajorVersion
     )
 

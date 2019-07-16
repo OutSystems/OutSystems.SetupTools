@@ -86,8 +86,8 @@ function Install-OSServiceStudio
             Message      = 'Outsystems service studio successfully installed'
         }
 
-        $osVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
-        $osInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+        $osVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major)"
+        $osInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major)"
     }
 
     process
@@ -112,7 +112,7 @@ function Install-OSServiceStudio
 
             if (-not $PSBoundParameters.FullPathInstallDir.IsPresent)
             {
-                $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+                $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major)"
             }
             else
             {

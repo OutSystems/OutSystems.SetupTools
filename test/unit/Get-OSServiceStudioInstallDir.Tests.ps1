@@ -11,15 +11,15 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetServiceStudioInstallDir { return $null }
 
-            Get-OSServiceStudioInstallDir -MajorVersion '10.0' -ErrorAction SilentlyContinue -ErrorVariable err
+            Get-OSServiceStudioInstallDir -MajorVersion '10' -ErrorAction SilentlyContinue -ErrorVariable err
 
-            It 'Should output an error' { $err[-1] | Should Be 'Outsystems development environment 10.0 is not installed' }
-            It 'Should not throw' { { Get-OSServiceStudioInstallDir -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems development environment 10 is not installed' }
+            It 'Should not throw' { { Get-OSServiceStudioInstallDir -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When service studio is installed' {
 
-            It 'Should return the install directory' { Get-OSServiceStudioInstallDir -MajorVersion '10.0' | Should Be 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio' }
+            It 'Should return the install directory' { Get-OSServiceStudioInstallDir -MajorVersion '10' | Should Be 'C:\Program Files\OutSystems\Development Environment 10.0\Service Studio' }
             It 'Should call the GetServiceStudioInstallDir only once' {
 
                 $assMParams = @{
@@ -27,7 +27,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                     'Times' = 1
                     'Exactly' = $true
                     'Scope' = 'Context'
-                    'ParameterFilter' = { $MajorVersion -eq '10.0' }
+                    'ParameterFilter' = { $MajorVersion -eq '10' }
                  }
                  Assert-MockCalled @assMParams
             }

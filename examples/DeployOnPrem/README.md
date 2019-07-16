@@ -31,11 +31,11 @@ Use this scripts if your machine is connected to Internet.
 
 4. Run the script ( .\\<scriptName.ps1> [parameters] )
     * The scripts takes two parameters. *-MajorVersion* and *-InstallDir*.
-    * *MajorVersion* is the major OutSystems version you want to install. This can be "10.0" or "11.0" and its a mandatory parameter.
+    * *MajorVersion* is the major OutSystems version you want to install. This can be "10" or "11" and its a mandatory parameter.
     * *InstallDir* is the place where you want to install OutSystems. If not specified, the installation will default to %ProgramFiles%\OutSystems.
     * Example:
     ```powershell
-    .\OnPrem-Online-DC.ps1 -MajorVersion 11.0 -InstallDir E:\OutSystems
+    .\OnPrem-Online-DC.ps1 -MajorVersion 11 -InstallDir E:\OutSystems
     ```
 
 5. Wait until the Configuration Tool pops on the screen. This can take 5 to 10 minutes depending on the machine speed.
@@ -66,7 +66,7 @@ To create the bundle:
 
 4. Run the script ( .\\CreateOfflineBundle.ps1> [parameters] ).
     * The scripts takes one parameters. *-MajorVersion*.
-    * *MajorVersion* is the major OutSystems version that will be downloaded to the bundle. This can be "10.0" or "11.0"and its a mandatory parameter.
+    * *MajorVersion* is the major OutSystems version that will be downloaded to the bundle. This can be "10" or "11"and its a mandatory parameter.
 
 5. When the script finish you will have a file named *OfflineBundle.zip* in the same path where you ran the script with everything inside needed to install OutSystems.
 

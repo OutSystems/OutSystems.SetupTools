@@ -25,14 +25,14 @@ Since we can have multiple development environments installed, you need to speci
 
 ### EXAMPLE 1
 ```
-Get-OSServiceStudioInstallDir -MajorVersion "10.0"
+Get-OSServiceStudioInstallDir -MajorVersion "10"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Major version.
-9.0, 9.1, 10.0, 11.0, ...
+9.0, 9.1, 10, 11, ...
 
 ```yaml
 Type: String
