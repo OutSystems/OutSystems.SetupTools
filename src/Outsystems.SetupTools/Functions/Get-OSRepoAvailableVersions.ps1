@@ -48,6 +48,9 @@ function Get-OSRepoAvailableVersions
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
+
+        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+        $MajorVersion = $MajorVersion.replace(".0", "")
     }
 
     process
@@ -72,17 +75,17 @@ function Get-OSRepoAvailableVersions
             'PlatformServer'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
-                $versions = $files -replace 'PlatformServer-', '' -replace '.exe',''
+                $versions = $files -replace 'PlatformServer-', '' -replace '.exe', ''
             }
             'ServiceStudio'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
-                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe',''
+                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe', ''
             }
             'Lifetime'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
-                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe',''
+                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe', ''
             }
         }
 

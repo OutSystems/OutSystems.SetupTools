@@ -35,10 +35,14 @@ function Test-OSServerSoftwareReqs
             Result     = $true
             Message    = "Operating system was validated for Outsystems $MajorVersion"
         }
+
+        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+        $MajorVersion = $MajorVersion.replace(".0", "")
     }
 
     process
     {
+
         if ($(GetOperatingSystemProductType) -lt $OSReqsMinOSProductType)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Operating system not supported. Only server editions are supported"

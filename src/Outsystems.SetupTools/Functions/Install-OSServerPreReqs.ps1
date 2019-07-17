@@ -59,6 +59,9 @@ function Install-OSServerPreReqs
             ExitCode = 0
             Message = 'OutSystems platform server pre-requisites successfully installed'
         }
+
+        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+        $MajorVersion = $MajorVersion.replace(".0","")
     }
 
     process

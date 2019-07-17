@@ -6,6 +6,9 @@ param(
 )
 Write-Verbose "Starting. Please wait..." -Verbose
 
+#The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+$MajorVersion = $MajorVersion.replace(".0","")
+
 # -- Settings and variables
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'

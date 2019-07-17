@@ -35,10 +35,14 @@ function Test-OSServerHardwareReqs
             Result     = $true
             Message    = "Hardware was validated for Outsystems $MajorVersion"
         }
+
+        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+        $MajorVersion = $MajorVersion.replace(".0", "")
     }
 
     process
     {
+
         switch ($MajorVersion)
         {
             '10'

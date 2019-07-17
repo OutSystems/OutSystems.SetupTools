@@ -8,6 +8,9 @@ param(
     [string]$InstallDir = $("$env:ProgramFiles\OutSystems")
 )
 
+#The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+$MajorVersion = $MajorVersion.replace(".0","")
+
 # -- Stop on any error
 $ErrorActionPreference = 'Stop'
 
