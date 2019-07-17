@@ -9,16 +9,16 @@ function Get-OSServerPreReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    Accepted values: 10.0 or 11.0
+    Accepted values: 10 or 11
 
     .EXAMPLE
-    Get-OSServerPreReqs -MajorVersion "10.0"
+    Get-OSServerPreReqs -MajorVersion "10"
     #>
 
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0')]
+        [ValidatePattern('1[0-1]{1}(\.0)?')]
         [string]$MajorVersion
     )
 
@@ -46,16 +46,16 @@ function Get-OSServerPreReqs
             if (-not $($Result.Status))
             {
                 $TextStatus = "NOT $TextStatus"
-            } 
+            }
 
             $RequirementStatus.Messages = @()
             $RequirementStatus.Messages += "$($Title): [$TextStatus]"
-            
-            foreach ($Message in $Result.Messages) 
+
+            foreach ($Message in $Result.Messages)
             {
                 $RequirementStatus.Messages += " > $Message"
             }
-            
+
 
             return $RequirementStatus
         }
@@ -73,15 +73,15 @@ function Get-OSServerPreReqs
                 [AllowEmptyCollection()]
                 [String[]]$NOKMessages
             )
-            
+
             $Result = @{}
             $Result.Status = $Status
 
-            if ($Result.Status) 
+            if ($Result.Status)
             {
                 $Result.Messages = $OKMessages
-            } 
-            else 
+            }
+            else
             {
                 $Result.Messages = $NOKMessages
             }
@@ -111,15 +111,15 @@ function Get-OSServerPreReqs
 
         # Base Windows Features
         $winFeatures = $OSWindowsFeaturesBase
-        
+
         switch ($MajorVersion)
         {
-            '10.0'
+            '10'
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
             }
-            '11.0'
+            '11'
             {
                 $RequirementStatuses += CreateRequirementStatus -Title ".NET Core Windows Server Hosting" `
                                                                 -ScriptBlock `
@@ -285,7 +285,7 @@ function Get-OSServerPreReqs
                                                             return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
 
-        foreach ($RequirementStatus in $RequirementStatuses) 
+        foreach ($RequirementStatus in $RequirementStatuses)
         {
             foreach ($Message in $RequirementStatus.Messages)
             {

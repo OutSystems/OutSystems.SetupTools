@@ -142,13 +142,13 @@ function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
 
     switch ($PlatformMajorVersion)
     {
-        '10.0'
+        '10'
         {
             $Result.Version = "4.6.1"
             $Result.Value = $OS10ReqsMinDotNetVersion
         }
 
-        '11.0'
+        '11'
         {
             $Result.Version = "4.7.2"
             $Result.Value = $OS11ReqsMinDotNetVersion
