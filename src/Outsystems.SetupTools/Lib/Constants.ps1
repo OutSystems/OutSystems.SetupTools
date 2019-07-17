@@ -8,9 +8,10 @@ $OSServices = @(
     "OutSystems SMS Connector Service"
 )
 
-# Outsystems base windows features
+# Outsystems base Windows Features
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWindowsFeaturesBase = @(
+    "Web-Server",
     "Web-Default-Doc", "Web-Dir-Browsing", "Web-Http-Errors", "Web-Static-Content",
     "Web-Http-Logging", "Web-Request-Monitor",
     "Web-Stat-Compression", "Web-Dyn-Compression",
@@ -37,12 +38,17 @@ $OS10ReqsMinOSVersion = "6.2.0.0"
 $OS11ReqsMinOSVersion = "10.0.14393"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
+# .NET Framework version numbering: https://docs.microsoft.com/en-us/dotnet/framework/migration-guide/release-keys-and-os-versions
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS10ReqsMinDotNetVersion = "394254"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS11ReqsMinDotNetVersion = "461808"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS11ReqsMinDotNetCoreVersion = "2.0.7"
+
+# Microsoft Build Tools 2015 MSI Product Code
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRequiredMSBuildProductCode = "{8C918E5B-E238-401F-9F6E-4FB84B024CA2}"
 
 # Windows event log configs
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -76,7 +82,7 @@ $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURLDotNETCore = 'https://aka.ms/dotnetcore-2-windowshosting'
+$OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/0ad9d7d3-3cca-48e8-a5cc-07a5a6b8a020/820fd44b4eca9f31b11875d75068bb74/dotnet-hosting-2.1.11-win.exe'
 
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -87,6 +93,8 @@ $OSDBTimeout = "60"
 $OSLogFile = ""
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSLogDebug = $false
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSEnableLogTemplate = $true
 
 # RabbitMQ related. installDir is set on the Install-RabbitMQ cmdLet cause it depends on where the plaform is installed
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -132,3 +140,13 @@ $OSIISConfig = @(
         'Match' = @('/LT*','/lifet*','/LifeT*','PerformanceMonitor')
     }
 )
+
+# Performance Tuning
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPerfTuningMaxRequestLength=131072
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+[TimeSpan]$OSPerfTuningExecutionTimeout='00:01:50'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPerfTuningMaxAllowedContentLength=134217728
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPerfTuningMaxConnections=4294967295

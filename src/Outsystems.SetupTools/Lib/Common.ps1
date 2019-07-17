@@ -18,48 +18,57 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         }
     }
 
-    $logLineTemplate = $((get-date).TimeOfDay.ToString()) + " [" + $Function.PadRight(40) + "] $phaseMessage "
+    $logFileLineTemplate = $((get-date).TimeOfDay.ToString()) + " [" + $Function.PadRight(40) + "] $phaseMessage "
+
+    if ($script:OSEnableLogTemplate)
+    {
+        $logLineTemplate = $logFileLineTemplate
+    }
+    else
+    {
+        $logLineTemplate = ""
+    }
 
     switch ($Stream)
     {
         0
         {
             Write-Information -MessageData $Message
-            Write-Verbose -Message "$logLineTemplate $Message"
+            Write-Verbose  -Message "$($logLineTemplate)$($Message)"
             if ($script:OSLogFile)
             {
-                Add-Content -Path $script:OSLogFile -Value "VERBOSE : $logLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "VERBOSE : $($logFileLineTemplate)$($Message)"
             }
         }
         1
         {
-            Write-Warning -Message "$logLineTemplate $Message"
+            Write-Warning -Message "$($logLineTemplate)$($Message)"
             if ($script:OSLogFile)
             {
-                Add-Content -Path $script:OSLogFile -Value "WARNING : $logLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "WARNING : $($logFileLineTemplate)$($Message)"
             }
         }
         2
         {
-            Write-Debug -Message "$logLineTemplate $Message"
+            Write-Debug -Message "$($logLineTemplate)$($Message)"
             if ($script:OSLogFile -and $script:OSLogDebug)
             {
-                Add-Content -Path $script:OSLogFile -Value "DEBUG   : $logLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "DEBUG   : $($logFileLineTemplate)$($Message)"
             }
         }
         3
         {
-            Write-Verbose -Message "$logLineTemplate $Message"
+            Write-Verbose -Message "$($logLineTemplate)$($Message)"
             if ($script:OSLogFile)
             {
-                Add-Content -Path $script:OSLogFile -Value "ERROR   : $logLineTemplate $Message"
+                Add-Content -Path $script:OSLogFile -Value "ERROR   : $($logFileLineTemplate)$($Message)"
             }
 
             # Exception info
             if ($Exception)
             {
                 $E = $Exception
-                Write-Verbose -Message "$logLineTemplate $($E.Message)"
+                Write-Verbose -Message "$($logLineTemplate)$($E.Message)"
                 if ($script:OSLogFile)
                 {
                     Add-Content -Path $script:OSLogFile -Value "InnerException:"
@@ -71,7 +80,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
                 while ($E.InnerException)
                 {
                     $E = $E.InnerException
-                    Write-Verbose -Message "$logLineTemplate $($E.Message)"
+                    Write-Verbose -Message "$($logLineTemplate)$($E.Message)"
                     if ($script:OSLogFile)
                     {
                         Add-Content -Path $script:OSLogFile -Value $($E.Message)
@@ -132,6 +141,26 @@ function RegRead([string]$Path, [string]$Name)
     return $output
 }
 
+function GetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $PSPath"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Filter: $Filter"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Name: $Name"
+
+    # Web adminstration cmdLets errors are statement-terminating errors. Try/catch should be used.
+    if ($Name)
+    {
+        $webProperty = Get-WebConfigurationProperty -PSPath $PSPath -Filter $Filter -Name $Name
+    }
+    else
+    {
+        # If name is empty is because its a collection.
+        $webProperty = Get-WebConfigurationProperty -PSPath $PSPath -Filter "$Filter/add[@name='$($Value.name)']" -Name .
+    }
+
+    return $webProperty
+}
+
 function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name, [PSObject]$Value)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $PSPath"
@@ -158,6 +187,7 @@ function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$
         }
     }
 }
+
 function AppInsightsSendEvent([string]$EventName, [psobject]$EventProperties)
 {
     try
