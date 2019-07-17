@@ -44,7 +44,7 @@ $OS10ReqsMinDotNetVersion = "394254"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS11ReqsMinDotNetVersion = "461808"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OS11ReqsMinDotNetCoreVersion = "2.0.7"
+$OS11ReqsMinDotNetCoreVersion = "2.1.11"
 
 # Microsoft Build Tools 2015 MSI Product Code
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
