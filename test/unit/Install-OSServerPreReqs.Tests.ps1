@@ -115,7 +115,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock IsMSIInstalled { return $true }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetWindowsServerHostingVersion {return "2.0.7"}
+            Mock GetWindowsServerHostingVersion {return "2.1.11"}
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
