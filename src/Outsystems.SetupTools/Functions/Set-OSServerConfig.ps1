@@ -13,6 +13,7 @@ function Set-OSServerConfig
     The Apply mode will run the OutSystems configuration tool with the configured settings
     For that you need to specify the -Apply parameter
     You can also specify the admin credentials for the platform, session and logging (only in OS11) databases
+    You may also add the -InstallServiceCenter to install Service Center
     In OS11 you may also add the -ConfigureCacheInvalidationService to configure RabbitMQ
 
     .PARAMETER SettingSection
@@ -39,6 +40,9 @@ function Set-OSServerConfig
     .PARAMETER ConfigureCacheInvalidationService
     If specified, the cmdLet will also configure RabbitMQ
 
+    .PARAMETER InstallServiceCenter
+    If specified, the cmdLet will also install Service Center
+
     .PARAMETER SkipSessionRebuild
     If specified, the configuration tool will not rebuild the session database. Usefull on frontends.
 
@@ -52,7 +56,7 @@ function Set-OSServerConfig
     Set-OSServerConfig -Apply -PlatformDBCredential sa
 
     .EXAMPLE
-    Set-OSServerConfig -Apply -PlatformDBCredential sa -SessionDBCredential sa -LogDBCredential sa -ConfigureCacheInvalidationService
+    Set-OSServerConfig -Apply -PlatformDBCredential sa -SessionDBCredential sa -LogDBCredential sa -ConfigureCacheInvalidationService -InstallServiceCenter
 
     .NOTES
     Check the server.hsconf file on the platform server installation folder to know which section settings and settings are available
@@ -129,6 +133,14 @@ function Set-OSServerConfig
                     $paramDictionary.Add('LogDBCredential', $LogDBCredentialParam)
                 }
             }
+
+            $InstallServiceCenterAttrib = New-Object System.Management.Automation.ParameterAttribute
+            $InstallServiceCenterAttrib.ParameterSetName = 'ApplyConfig'
+            $InstallServiceCenterAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+            $InstallServiceCenterAttribCollection.Add($InstallServiceCenterAttrib)
+            $InstallServiceCenterParam = New-Object System.Management.Automation.RuntimeDefinedParameter('InstallServiceCenter', [switch], $InstallServiceCenterAttribCollection)
+
+            $paramDictionary.Add('InstallServiceCenter', $InstallServiceCenterParam)
         }
         return $paramDictionary
     }
@@ -307,7 +319,7 @@ function Set-OSServerConfig
                     }
                 }
 
-                if(-not $SkipSessionRebuild.IsPresent)
+                if (-not $SkipSessionRebuild.IsPresent)
                 {
                     $configToolArguments += "/rebuildsession "
                 }
@@ -329,6 +341,12 @@ function Set-OSServerConfig
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration of the cache invalidation service will be performed"
                     $configToolArguments += "/createupgradecacheinvalidationservice "
+                }
+
+                if ($PSBoundParameters.InstallServiceCenter.IsPresent)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installation of Service Center will be performed"
+                    $configToolArguments += "/SCInstall "
                 }
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the platform. This can take a while..."
@@ -357,6 +375,20 @@ function Set-OSServerConfig
                     WriteNonTerminalError -Message "Error configuring the platform. Exit code: $($result.ExitCode)"
 
                     return $null
+                }
+
+                if ($PSBoundParameters.InstallServiceCenter.IsPresent)
+                {
+                    # Flag service center installation
+                    try
+                    {
+                        SetSCCompiledVersion -SCVersion $osVersion
+                    }
+                    catch
+                    {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the service center version"
+                        WriteNonTerminalError -Message "Error setting the service center version"
+                    }
                 }
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Platform successfully configured"
