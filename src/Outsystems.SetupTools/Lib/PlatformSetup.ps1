@@ -66,9 +66,16 @@ function GetDotNet4Version()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\<langid>\Release."
 
+    <#
+        RPD-4212: For Windows installations with Japanese language, registry has two entries located at
+        'HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\'. Thus Installer fails later in Get-OSServerPreReqs.ps1
+        because it is comparing two number against one in -ge operation, then in CreateResult it will always generate NOK message
+        leading to a fail pre-requisites check and, as consequence, fail Platform installation.
+        To prevent this, we need to sort, in descending order, the retrieved values and return the first element.
+    #>
     try
     {
-        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop).Release
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop |  Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
     }
     catch
     {
