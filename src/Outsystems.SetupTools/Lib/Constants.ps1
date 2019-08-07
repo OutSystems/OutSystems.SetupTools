@@ -44,6 +44,10 @@ $OS11ReqsMinDotNetVersion = "461808"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS11ReqsMinDotNetCoreVersion = "2.0.7"
 
+# Microsoft Build Tools 2015 MSI Product Code
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRequiredMSBuildProductCode = "{8C918E5B-E238-401F-9F6E-4FB84B024CA2}"
+
 # Windows event log configs
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWinEventLogSize = 20480KB
@@ -77,6 +81,19 @@ $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLDotNETCore = 'https://aka.ms/dotnetcore-2-windowshosting'
+
+# .NET related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSDotNetReqForMajor = @{
+    10 = @{
+        Version = '4.6.1'
+        Value = '394254'
+    }
+    11 = @{
+        Version = '4.7.2'
+        Value = '461808'
+    }
+}
 
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
