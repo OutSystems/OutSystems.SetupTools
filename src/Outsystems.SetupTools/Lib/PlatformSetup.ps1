@@ -80,6 +80,33 @@ function GetDotNet4Version()
     return $output
 }
 
+function GetWindowsServerHostingVersion()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .NET Core 2.1.11 - Windows Server Hosting (x64)\PackageVersion"
+    $DotNETCoreUpdatesPath = "HKLM:SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core"
+    $version = '0.0.0.0'
+    $PathExists = Test-Path $DotNETCoreUpdatesPath
+    if (-not $PathExists)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Registry key " + $DotNETCoreUpdatesPath + " does not exist"
+        return $version
+    }
+    $DotNetCoreItems = Get-Item -ErrorAction Stop -Path $DotNETCoreUpdatesPath
+    if (-not $DotNetCoreItems)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot open " + $DotNETCoreUpdatesPath
+        return $version
+    }
+    $DotNetCoreItems.GetSubKeyNames() | Where-Object { $_ -Match "Microsoft .NET Core.*Windows Server Hosting" } | ForEach-Object {
+        $package = $(Get-ItemProperty -Path $($DotNETCoreUpdatesPath + "\" + $_) -Name "PackageVersion" -ErrorAction SilentlyContinue)
+        if (-not $package) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message ($DotNETCoreUpdatesPath + $_ + " does not have property PackageVersion")
+        }
+        $version = $package.PackageVersion
+    }
+    return $version
+}
+
 function GetDotNetCoreVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost\Version"
