@@ -236,9 +236,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 10
-                $result.Message | Should Be 'Error installing .NET 4.7.1'
+                $result.Message | Should Be 'Error installing .NET 4.7.2'
             }
-            It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 4.7.1. Exit code: 10' }
+            It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 4.7.2. Exit code: 10' }
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
