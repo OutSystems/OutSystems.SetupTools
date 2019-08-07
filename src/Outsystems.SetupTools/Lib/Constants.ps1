@@ -39,10 +39,6 @@ $OS11ReqsMinOSVersion = "10.0.14393"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OS10ReqsMinDotNetVersion = "394254"
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OS11ReqsMinDotNetVersion = "461808"
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OS11ReqsMinDotNetCoreVersion = "2.1.11"
 
 # Microsoft Build Tools 2015 MSI Product Code
@@ -95,6 +91,8 @@ $OSDotNetReqForMajor = @{
 }
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSDotNETVersionToInstall = '4.7.2'
 
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
