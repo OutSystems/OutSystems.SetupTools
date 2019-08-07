@@ -155,6 +155,24 @@ function InstallDotNet([string]$Sources)
     return $($result.ExitCode)
 }
 
+function GetDotNetLimits
+{
+    $NETConfig = @{}
+    $NETConfig.SystemWeb = @{}
+    $NETConfig.SystemWeb.HttpRuntime = @{}
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
+    $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting current .NET maximum request size"
+    $NETConfig.SystemWeb.HttpRuntime.maxRequestLength = $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting current .NET execution timeout"
+    $NETConfig.SystemWeb.HttpRuntime.executionTimeout = $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout
+
+    return $NETConfig
+}
+
 function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
