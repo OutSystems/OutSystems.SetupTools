@@ -152,3 +152,14 @@ $OSIISConfig = @(
         'Match' = @('/LT*','/lifet*','/LifeT*','PerformanceMonitor')
     }
 )
+
+# Performance Tuning
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPerfTuningMaxRequestLength=131072
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+[TimeSpan]$OSPerfTuningExecutionTimeout='00:01:50'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPerfTuningMaxAllowedContentLength=134217728
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPerfTuningMaxConnections=4294967295
+
