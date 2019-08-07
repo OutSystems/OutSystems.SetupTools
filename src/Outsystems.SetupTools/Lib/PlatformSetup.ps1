@@ -45,6 +45,13 @@ function ConfigureServiceWindowsSearch()
     }
 }
 
+function ServiceWMIIsEnabled()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking WMI Service status."
+    $WSearchService = $(Get-Service -Name "Winmgmt" -ErrorAction SilentlyContinue)
+    return $($WSearchService.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Running) -and $($WSearchService.StartType -eq [System.ServiceProcess.ServiceStartMode]::Automatic)
+}
+
 function ConfigureServiceWMI()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the WMI windows service and changing the startup type to automatic."
