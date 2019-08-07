@@ -184,7 +184,7 @@ function InstallBuildTools([string]$Sources)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
     $result = Start-Process -FilePath $installer -ArgumentList "-quiet" -Wait -PassThru -ErrorAction Stop
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
 
     return $($result.ExitCode)
 }
