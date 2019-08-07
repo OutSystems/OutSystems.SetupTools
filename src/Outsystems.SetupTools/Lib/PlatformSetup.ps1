@@ -117,12 +117,12 @@ function InstallDotNet([string]$Sources)
 {
     if ($Sources)
     {
-        $installer = "$Sources\$($($OSRepoURLDotNET -split '/')[-1])"
+        $installer = "$Sources\DotNet.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\$($($OSRepoURLDotNET -split '/')[-1])"
+        $installer = "$ENV:TEMP\DotNet.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
         DownloadOSSources -URL $OSRepoURLDotNET -SavePath $installer
     }
@@ -176,12 +176,12 @@ function InstallDotNetCore([string]$Sources)
 {
     if ($Sources)
     {
-        $installer = "$Sources\DotNetCore_2_WindowsHosting.exe"
+        $installer = "$Sources\DotNetCoreWindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCore_2_WindowsHosting.exe"
+        $installer = "$ENV:TEMP\DotNetCoreWindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
         DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
     }
