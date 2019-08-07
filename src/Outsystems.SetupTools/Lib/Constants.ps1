@@ -80,11 +80,11 @@ $OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/
 # .NET related
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDotNetReqForMajor = @{
-    '10' = @{
+    '10.0' = @{
         Version = '4.6.1'
         Value   = '394254'
     }
-    '11' = @{
+    '11.0' = @{
         Version = '4.7.2'
         Value   = '461808'
     }
