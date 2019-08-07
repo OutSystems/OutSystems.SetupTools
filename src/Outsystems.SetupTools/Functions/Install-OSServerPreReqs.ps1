@@ -53,11 +53,11 @@ function Install-OSServerPreReqs
 
         # Initialize the results object
         $installResult = [pscustomobject]@{
-            PSTypeName = 'Outsystems.SetupTools.InstallResult'
-            Success = $true
+            PSTypeName   = 'Outsystems.SetupTools.InstallResult'
+            Success      = $true
             RebootNeeded = $false
-            ExitCode = 0
-            Message = 'OutSystems platform server pre-requisites successfully installed'
+            ExitCode     = 0
+            Message      = 'OutSystems platform server pre-requisites successfully installed'
         }
     }
 
@@ -105,34 +105,12 @@ function Install-OSServerPreReqs
         {
             '10.0'
             {
-                # Check .NET version
-                if ($(GetDotNet4Version) -lt $OS10ReqsMinDotNetVersion)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET 4.7.1"
-                    $installDotNet = $true
-                }
-                else
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion found"
-                }
-
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the windows features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
             }
 
             '11.0'
             {
-                # Check .NET version
-                if ($(GetDotNet4Version) -lt $OS11ReqsMinDotNetVersion)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET 4.7.1"
-                    $installDotNet = $true
-                }
-                else
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion found"
-                }
-
                 # Check .NET Core Windows Server Hosting version
                 if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
                 {
@@ -143,8 +121,18 @@ function Install-OSServerPreReqs
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting for OutSystems $MajorVersion found"
                 }
-
             }
+        }
+
+        # Check .NET version
+        if ($(GetDotNet4Version) -lt $script:OSDotNetReqForMajor[$MajorVersion]['Value'])
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $script:OSDotNETVersionToInstall"
+            $installDotNet = $true
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion found"
         }
         #endregion
 
@@ -221,7 +209,7 @@ function Install-OSServerPreReqs
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 successfully installed"
                 }
 
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -268,7 +256,7 @@ function Install-OSServerPreReqs
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed."
                 }
 
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -293,7 +281,7 @@ function Install-OSServerPreReqs
         {
             try
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 4.7.1"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $script:OSDotNETVersionToInstall"
                 $exitCode = InstallDotNet -Sources $SourcePath
             }
             catch
@@ -312,23 +300,23 @@ function Install-OSServerPreReqs
             {
                 0
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $script:OSDotNETVersionToInstall successfully installed"
                 }
 
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 4.7.1 successfully installed but a reboot is needed!!!!! Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $script:OSDotNETVersionToInstall successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
                 default
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET 4.7.1. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET $script:OSDotNETVersionToInstall. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET $script:OSDotNETVersionToInstall. Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing .NET 4.7.1'
+                    $installResult.Message = "Error installing .NET $script:OSDotNETVersionToInstall"
 
                     return $installResult
                 }
