@@ -10,7 +10,7 @@ Write-Verbose "Starting. Please wait..." -Verbose
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
-$OSRepoURLDotNETCore = 'https://aka.ms/dotnetcore-2-windowshosting'
+$OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/0ad9d7d3-3cca-48e8-a5cc-07a5a6b8a020/820fd44b4eca9f31b11875d75068bb74/dotnet-hosting-2.1.11-win.exe'
 $OSRepoURL = 'https://myfilerepo.blob.core.windows.net/sources'
 $OSServerVersion = ""
 $OSServiceStudioVersion = ""
@@ -35,12 +35,12 @@ Write-Verbose "Downloading needed powershell modules" -Verbose
 Save-Module -Name OutSystems.SetupTools -Path "$env:Temp\OSOfflineBundle\Modules" -ErrorAction Stop
 
 # -- Download prereqs to the prereqs folder
-Write-Verbose "Downloading .NET 4.7.1" -Verbose
-(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNET, "$env:Temp\OSOfflineBundle\PreReqs\NDP471-KB4033342-x86-x64-AllOS-ENU.exe")
+Write-Verbose "Downloading .NET 4.7.2" -Verbose
+(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNET, "$env:Temp\OSOfflineBundle\PreReqs\DotNet.exe")
 Write-Verbose "Downloading BuildTools 2015" -Verbose
 (New-Object System.Net.WebClient).DownloadFile($OSRepoURLBuildTools, "$env:Temp\OSOfflineBundle\PreReqs\BuildTools_Full.exe")
 Write-Verbose "Downloading .NET Core 2.0.8" -Verbose
-(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCore_2_WindowsHosting.exe")
+(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCoreWindowsHosting.exe")
 
 # -- Download outsystems
 $OSServerVersion = Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion $MajorVersion -Latest
