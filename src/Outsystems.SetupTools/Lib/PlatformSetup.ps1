@@ -109,28 +109,27 @@ function GetDotNet4Version()
 
 function GetWindowsServerHostingVersion()
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .NET Core 2.1.11 - Windows Server Hosting (x64)\PackageVersion"
-    $DotNETCoreUpdatesPath = "HKLM:SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core"
-    $version = '0.0.0.0'
-    $PathExists = Test-Path $DotNETCoreUpdatesPath
-    if (-not $PathExists)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .Net Core<*>Windows Server Hosting<*>\PackageVersion"
+
+    $rootPath = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core'
+    $filter = 'Microsoft .Net Core*Windows Server Hosting*'
+
+    try
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Registry key " + $DotNETCoreUpdatesPath + " does not exist"
-        return $version
+        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending | Select-Object -First 1
     }
-    $DotNetCoreItems = Get-Item -ErrorAction Stop -Path $DotNETCoreUpdatesPath
-    if (-not $DotNetCoreItems)
+    catch
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot open " + $DotNETCoreUpdatesPath
-        return $version
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
-    $DotNetCoreItems.GetSubKeyNames() | Where-Object { $_ -Match "Microsoft .NET Core.*Windows Server Hosting" } | ForEach-Object {
-        $package = $(Get-ItemProperty -Path $($DotNETCoreUpdatesPath + "\" + $_) -Name "PackageVersion" -ErrorAction SilentlyContinue)
-        if (-not $package) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message ($DotNETCoreUpdatesPath + $_ + " does not have property PackageVersion")
-        }
-        $version = $package.PackageVersion
+
+    if (-not $version)
+    {
+        $version = '0.0.0.0'
     }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $version"
+
     return $version
 }
 
