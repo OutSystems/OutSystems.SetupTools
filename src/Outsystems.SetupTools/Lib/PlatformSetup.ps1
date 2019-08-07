@@ -154,13 +154,13 @@ function InstallDotNet([string]$Sources)
 
 function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Openning the config file"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
     $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET maximum request size (maxRequestLength = 131072)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET maximum request size (maxRequestLength = $UploadLimit)"
     $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.maxRequestLength = $UploadLimit
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET execution timeout (executionTimeout = 110 seconds)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting .NET execution timeout (executionTimeout = $($ExecutionTimeout.TotalSeconds) seconds)"
     $NETMachineConfig.GetSectionGroup("system.web").HttpRuntime.executionTimeout = $ExecutionTimeout
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Saving config"
