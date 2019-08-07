@@ -134,7 +134,7 @@ function Install-OSServerPreReqs
                 }
 
                 # Check .NET Core Windows Server Hosting version
-                if ([version]$(GetDotNetCoreVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
+                if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
                     $installDotNetCore = $true
