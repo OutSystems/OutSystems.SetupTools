@@ -8,9 +8,10 @@ $OSServices = @(
     "OutSystems SMS Connector Service"
 )
 
-# Outsystems base windows features
+# Outsystems base Windows Features
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSWindowsFeaturesBase = @(
+    "Web-Server",
     "Web-Default-Doc", "Web-Dir-Browsing", "Web-Http-Errors", "Web-Static-Content",
     "Web-Http-Logging", "Web-Request-Monitor",
     "Web-Stat-Compression", "Web-Dyn-Compression",
