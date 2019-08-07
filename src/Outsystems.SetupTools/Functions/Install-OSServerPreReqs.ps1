@@ -90,7 +90,7 @@ function Install-OSServerPreReqs
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Checking pre-requisites for OutSystems major version $MajorVersion"
 
         # Check build tools 2015. Its required for all OS versions
-        if (-not $(IsMSIInstalled -ProductCode '{8C918E5B-E238-401F-9F6E-4FB84B024CA2}'))
+        if (-not $(IsMSIInstalled -ProductCode $OSRequiredMSBuildProductCode))
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 not found but is required for OutSystems. We will try to download and install"
             $installBuildTools = $true
