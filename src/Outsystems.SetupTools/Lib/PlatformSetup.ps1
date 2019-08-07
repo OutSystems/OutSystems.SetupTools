@@ -12,7 +12,7 @@
 function InstallWindowsFeatures([string[]]$Features)
 {
     $ProgressPreference = "SilentlyContinue"
-    $installResult =  Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
+    $installResult = Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
 
     return $installResult
 }
@@ -75,7 +75,7 @@ function GetDotNet4Version()
     #>
     try
     {
-        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop |  Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
     }
     catch
     {
@@ -89,28 +89,27 @@ function GetDotNet4Version()
 
 function GetWindowsServerHostingVersion()
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .NET Core 2.1.11 - Windows Server Hosting (x64)\PackageVersion"
-    $DotNETCoreUpdatesPath = "HKLM:SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core"
-    $version = '0.0.0.0'
-    $PathExists = Test-Path $DotNETCoreUpdatesPath
-    if (-not $PathExists)
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .Net Core<*>Windows Server Hosting<*>\PackageVersion"
+
+    $rootPath = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core'
+    $filter = 'Microsoft .Net Core*Windows Server Hosting*'
+
+    try
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Registry key " + $DotNETCoreUpdatesPath + " does not exist"
-        return $version
+        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending | Select-Object -First 1
     }
-    $DotNetCoreItems = Get-Item -ErrorAction Stop -Path $DotNETCoreUpdatesPath
-    if (-not $DotNetCoreItems)
+    catch
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot open " + $DotNETCoreUpdatesPath
-        return $version
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
     }
-    $DotNetCoreItems.GetSubKeyNames() | Where-Object { $_ -Match "Microsoft .NET Core.*Windows Server Hosting" } | ForEach-Object {
-        $package = $(Get-ItemProperty -Path $($DotNETCoreUpdatesPath + "\" + $_) -Name "PackageVersion" -ErrorAction SilentlyContinue)
-        if (-not $package) {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message ($DotNETCoreUpdatesPath + $_ + " does not have property PackageVersion")
-        }
-        $version = $package.PackageVersion
+
+    if (-not $version)
+    {
+        $version = '0.0.0.0'
     }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $version"
+
     return $version
 }
 
@@ -139,7 +138,7 @@ function GetDotNetCoreVersion()
 
 function InstallDotNet([string]$Sources)
 {
-    if($Sources)
+    if ($Sources)
     {
         $installer = "$Sources\$($($OSRepoURLDotNET -split '/')[-1])"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -176,7 +175,7 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
 
 function InstallBuildTools([string]$Sources)
 {
-    if($Sources)
+    if ($Sources)
     {
         $installer = "$Sources\BuildTools_Full.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -198,7 +197,7 @@ function InstallBuildTools([string]$Sources)
 
 function InstallDotNetCore([string]$Sources)
 {
-    if($Sources)
+    if ($Sources)
     {
         $installer = "$Sources\DotNetCore_2_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -299,8 +298,8 @@ function IsMSIInstalled([string]$ProductCode)
     try
     {
         $objInstaller = New-Object -ComObject WindowsInstaller.Installer
-	    $objType = $objInstaller.GetType()
-	    $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
+        $objType = $objInstaller.GetType()
+        $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
     }
     catch
     {
@@ -370,7 +369,8 @@ Function RunConfigTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Check if the file machine.config is locked before running the tool."
     $MachineConfigFile = "$ENV:windir\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config"
 
-    While(TestFileLock($MachineConfigFile)){
+    While (TestFileLock($MachineConfigFile))
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!! Retrying is 10s."
         Start-Sleep -Seconds 10
     }
@@ -505,7 +505,8 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
 
-    Try {
+    Try
+    {
         $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
         $ProcessInfo.FileName = $CommandPath
         $ProcessInfo.RedirectStandardError = $true
@@ -523,11 +524,12 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process.WaitForExit()
 
         Return [PSCustomObject]@{
-            Output = $Output
+            Output   = $Output
             ExitCode = $Process.ExitCode
         }
     }
-    Catch {
+    Catch
+    {
         Throw "Error launching the process $CommandPath $CommandArguments"
     }
 }
