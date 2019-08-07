@@ -1,5 +1,18 @@
 # Outsystems.SetupTools Release History
 
+## 2.11.0.0
+
+### Changes
+
+- Updated installed DotNetCore to version 2.1.11. New pre-requirement of the platform
+- First code refactoring to be able to merge the OutSystems installer version of the module
+
+## 2.10.0.0
+
+### Changes
+
+- Added parameter -InstallServiceCenter to Set-OSServerConfig to enable the installation of service center during the configuration tool execution
+
 ## 2.9.0.0
 
 ### Changes
