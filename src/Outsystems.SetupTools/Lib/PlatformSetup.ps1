@@ -22,6 +22,13 @@ function GetWindowsFeatureState([string]$Features)
     return $($(Get-WindowsFeature -Name $Features -Verbose:$false).Installed)
 }
 
+function ServiceWindowsSearchIsDisabled()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking Windows Search Service status."
+    $WSearchService = $(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue)
+    return ($null -eq $WSearchService) -or ($($WSearchService.Status -eq [System.ServiceProcess.ServiceControllerStatus]::Stopped) -and $($WSearchService.StartType -eq [System.ServiceProcess.ServiceStartMode]::Disabled))
+}
+
 function ConfigureServiceWindowsSearch()
 {
     if ($(Get-Service -Name "WSearch" -ErrorAction SilentlyContinue))
