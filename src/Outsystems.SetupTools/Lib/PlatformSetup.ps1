@@ -113,29 +113,6 @@ function GetWindowsServerHostingVersion()
     return $version
 }
 
-function GetDotNetCoreVersion()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost\Version"
-
-    try
-    {
-        $output = $(Get-ItemProperty -Path "HKLM:SOFTWARE\dotnet\Setup\InstalledVersions\x64\sharedhost" -Name "Version" -ErrorAction Stop).Version
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
-    if (-not $output)
-    {
-        $output = '0.0.0.0'
-    }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
-
-    return $output
-}
-
 function InstallDotNet([string]$Sources)
 {
     if ($Sources)
