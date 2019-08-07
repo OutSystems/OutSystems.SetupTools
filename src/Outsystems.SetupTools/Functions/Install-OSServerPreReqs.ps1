@@ -76,13 +76,13 @@ function Install-OSServerPreReqs
             return $installResult
         }
 
-        # Base Windows features
+        # Base Windows Features
         $winFeatures = $OSWindowsFeaturesBase
 
         # Check if IISMgmtConsole is needed. In a server without GUI, the management console is not available
         if ($InstallIISMgmtConsole)
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding IIS Management console feature to the windows features list"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding IIS Management console feature to the Windows Features list"
             $winFeatures += "Web-Mgmt-Console"
         }
 
@@ -92,7 +92,7 @@ function Install-OSServerPreReqs
         # Check build tools 2015. Its required for all OS versions
         if (-not $(IsMSIInstalled -ProductCode '{8C918E5B-E238-401F-9F6E-4FB84B024CA2}'))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 not found but its required for OutSystems. We will try to download and install"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 not found but is required for OutSystems. We will try to download and install"
             $installBuildTools = $true
         }
         else
@@ -151,21 +151,21 @@ function Install-OSServerPreReqs
         #region install
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing pre-requisites for OutSystems major version $MajorVersion"
 
-        # Windows features
+        # Windows Features
         # Exit codes available at: https://docs.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-R2-and-2008/cc733119(v=ws.11)
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing windows features"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Windows Features"
         try
         {
             $result = InstallWindowsFeatures -Features $winFeatures
         }
         catch
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the windows features installation"
-            WriteNonTerminalError -Message "Error starting the windows features installation"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the Windows Features installation"
+            WriteNonTerminalError -Message "Error starting the Windows Features installation"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
-            $installResult.Message = "Error starting the windows features installation"
+            $installResult.Message = "Error starting the Windows Features installation"
 
             return $installResult
         }
@@ -174,22 +174,22 @@ function Install-OSServerPreReqs
         {
             if ($result.RestartNeeded.value__ -ne 1)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed but a reboot is needed!!!!!"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows Features successfully installed but a reboot is needed."
                 $installResult.RebootNeeded = $true
             }
             else
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows features successfully installed"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Windows Features successfully installed"
             }
         }
         else
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
-            WriteNonTerminalError -Message "Error installing windows features. Exit code: $($result.ExitCode.value__)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Windows Features. Exit code: $($result.ExitCode.value__)"
+            WriteNonTerminalError -Message "Error installing Windows Features. Exit code: $($result.ExitCode.value__)"
 
             $installResult.Success = $false
             $installResult.ExitCode = $result.ExitCode.value__
-            $installResult.Message = 'Error installing windows features'
+            $installResult.Message = 'Error installing Windows Features'
 
             return $installResult
         }
@@ -223,7 +223,7 @@ function Install-OSServerPreReqs
 
                 {$_ -in 3010, 3011}
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 successfully installed but a reboot is needed!!!!! Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
@@ -270,7 +270,7 @@ function Install-OSServerPreReqs
 
                 {$_ -in 3010, 3011}
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed but a reboot is needed!!!!! Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
