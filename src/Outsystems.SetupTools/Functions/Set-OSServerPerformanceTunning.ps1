@@ -1,4 +1,5 @@
-function Set-OSServerPerformanceTunning {
+function Set-OSServerPerformanceTunning
+{
     <#
     .SYNOPSIS
     Configures Windows and IIS with the recommended performance settings for OutSystems.
@@ -19,7 +20,7 @@ function Set-OSServerPerformanceTunning {
     This parameter is represent by an object with the following structure type (semi-JSONfied with the expected types enclosed in <>):
 
     {
-        
+
         "SkipPlatformCheck" :  <BOOL>,
         "Sections" :
         {
@@ -64,7 +65,7 @@ function Set-OSServerPerformanceTunning {
     > NETConfig
         > ShouldBeSkipped
         If true, skips the section where .NET upload size limits and execution timeout are configured.
-        
+
         > NewMaxRequestLength
         The value in KBytes that applied to the .NET Framework "MaxRequestLength" property.
 
@@ -85,12 +86,12 @@ function Set-OSServerPerformanceTunning {
     > AppPoolsConfig
         > ShouldBeSkipped
         If true, skips the section where OutSystems apps are moved to the respective OutSystems app pool.
-        
+
         > SkipMoveAppsToOSAppPools
         If true, will not move OutSytems apps to the corresponding IIS app pools created by OutSystems (e.g. 'ServiceCenter' to 'ServiceCenterAppPool').
 
         > AppPoolsToForciblyCreateAndConfig
-        If this list is not empty and has valid app pool names, will force the creation and configuration of the app pools. 
+        If this list is not empty and has valid app pool names, will force the creation and configuration of the app pools.
         Valid app pool names: "OutSystemsApplications", "ServiceCenterAppPool", "LifeTimeAppPool".
 
     .EXAMPLE
@@ -119,15 +120,18 @@ function Set-OSServerPerformanceTunning {
         [object]$AdvancedConfigurations
     )
 
-    begin {
+    begin
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
         $osVersion = GetServerVersion
     }
 
-    process {
-        if (-not $(IsAdmin)) {
+    process
+    {
+        if (-not $(IsAdmin))
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "The current user is not Administrator or not running this script in an elevated session"
             WriteNonTerminalError -Message "The current user is not Administrator or not running this script in an elevated session"
 
@@ -142,20 +146,24 @@ function Set-OSServerPerformanceTunning {
         $SkipAppPoolsConfig = $($AdvancedConfigurations.Sections.AppPoolsConfig.ShouldBeSkipped)
         $SkipMoveAppsToOSAppPools = $($AdvancedConfigurations.Sections.AppPoolsConfig.SkipMoveAppsToOSAppPools)
 
-        if ($(-not $SkipPlatformCheck) -and ($(-not $osVersion) -or $(-not $(GetServerInstallDir)))) {
+        if ($(-not $SkipPlatformCheck) -and ($(-not $osVersion) -or $(-not $(GetServerInstallDir))))
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
             WriteNonTerminalError -Message "Outsystems platform is not installed"
 
             return
         }
 
-        if (-not $SkipProcessSchedulingConfig) {
+        if (-not $SkipProcessSchedulingConfig)
+        {
             # Configure process scheduling -- http://technet.microsoft.com/library/Cc976120
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring Windows processor scheduling priority to background services"
-            try {
+            try
+            {
                 RegWrite -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Type "Dword" -Value 24
             }
-            catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring processor scheduling priority"
                 WriteNonTerminalError -Message "Error configuring processor scheduling priority"
 
@@ -163,19 +171,23 @@ function Set-OSServerPerformanceTunning {
             }
         }
 
-        if (-not $SkipNETConfig) {
+        if (-not $SkipNETConfig)
+        {
             $MaxRequestLength = $AdvancedConfigurations.Sections.NETConfig.NewMaxRequestLength
 
-            if (-not $MaxRequestLength) {
+            if (-not $MaxRequestLength)
+            {
                 $MaxRequestLength = $OSPerfTuningMaxRequestLength
             }
 
             # Configure .NET
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring .NET upload size limits and execution timeout (maxRequestLength = $MaxRequestLength, executionTimeout = $($OSPerfTuningExecutionTimeout.TotalSeconds) seconds)"
-            try {
+            try
+            {
                 SetDotNetLimits -UploadLimit $MaxRequestLength -ExecutionTimeout $OSPerfTuningExecutionTimeout
             }
-            catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring .NET settings"
                 WriteNonTerminalError -Message "Error configuring .NET settings"
 
@@ -183,19 +195,23 @@ function Set-OSServerPerformanceTunning {
             }
         }
 
-        if (-not $SkipIISUploadSizeLimitsConfig) {
+        if (-not $SkipIISUploadSizeLimitsConfig)
+        {
             $MaxAllowedContentLength = $AdvancedConfigurations.Sections.IISUploadSizeLimitsConfig.NewMaxAllowedContentLength
 
-            if (-not $MaxAllowedContentLength) {
+            if (-not $MaxAllowedContentLength)
+            {
                 $MaxAllowedContentLength = $OSPerfTuningMaxAllowedContentLength
             }
 
             # Configure IIS requests limits (Server Level)
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring IIS upload size limits (maxAllowedContentLength = $MaxAllowedContentLength)"
-            try {
+            try
+            {
                 SetWebConfigurationProperty -PSPath "MACHINE/WEBROOT/APPHOST" -Filter "system.webServer/security/requestFiltering/requestLimits" -Name "maxAllowedContentLength" -Value $MaxAllowedContentLength
             }
-            catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring IIS upload size limits"
                 WriteNonTerminalError -Message "Error configuring IIS upload size limits"
 
@@ -203,15 +219,18 @@ function Set-OSServerPerformanceTunning {
             }
         }
 
-        if (-not $SkipIISConnectionsConfig) {
+        if (-not $SkipIISConnectionsConfig)
+        {
             # Configure IIS for unlimited connections. (Default Web Site) - This should not be needed cause IIS defaults to maximum.
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring IIS for unlimited connections (MaxConnections = $OSPerfTuningMaxConnections)"
-            try {
+            try
+            {
                 SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost" -Name "sections['webLimits'].OverrideModeDefault" -Value "Allow"
                 SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost" -Name "sections['webLimits'].allowDefinition" -Value "Everywhere"
                 SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost/sites/site[@name='Default Web Site']" -Name "Limits" -Value @{MaxConnections = $OSPerfTuningMaxConnections }
             }
-            catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring IIS for unlimited connections"
                 WriteNonTerminalError -Message "Error configuring IIS for unlimited connections"
 
@@ -219,17 +238,21 @@ function Set-OSServerPerformanceTunning {
             }
         }
 
-        if (-not $SkipAppPoolsConfig) {
+        if (-not $SkipAppPoolsConfig)
+        {
             # Configure IIS Application Pools
             $DefaultWebSiteApps = $(Get-WebApplication -Site "Default Web Site").Path
 
-            foreach ($Config in $OSIISConfig) {
+            foreach ($Config in $OSIISConfig)
+            {
                 # Reset array at each loop
                 $interestingApps = @()
 
-                if (-not $SkipMoveAppsToOSAppPools) {
+                if (-not $SkipMoveAppsToOSAppPools)
+                {
                     # Build an array with all matching Apps.
-                    foreach ($appMatchPattern in $($Config.Match)) {
+                    foreach ($appMatchPattern in $($Config.Match))
+                    {
                         $interestingApps += $DefaultWebSiteApps | Where-Object -FilterScript { $_ -like $appMatchPattern }
                     }
                 }
@@ -242,14 +265,18 @@ function Set-OSServerPerformanceTunning {
                 $ForceCreateAndConfigAppPool = ($AppPoolsToForciblyCreateAndConfig -and $AppPoolsToForciblyCreateAndConfig.Contains($Config.PoolName))
 
                 # if we should try to configure app pool
-                if ($HasAppsToMove -or $ForceCreateAndConfigAppPool) {
+                if ($HasAppsToMove -or $ForceCreateAndConfigAppPool)
+                {
                     # Check if AppPool exists. if not, create a new one.
-                    if (-not $(Get-ChildItem -Path "IIS:\AppPools\$($Config.PoolName)" -ErrorAction SilentlyContinue)) {
+                    if (-not $(Get-ChildItem -Path "IIS:\AppPools\$($Config.PoolName)" -ErrorAction SilentlyContinue))
+                    {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Creating IIS Application Pool $($Config.PoolName)"
-                        try {
+                        try
+                        {
                             New-Item -Path "IIS:\AppPools\$($Config.PoolName)" -ErrorAction Stop | Out-Null
                         }
-                        catch {
+                        catch
+                        {
                             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating Application Pool $($Config.PoolName)"
                             WriteNonTerminalError -Message "Error creating AppPool $($Config.PoolName)"
 
@@ -277,11 +304,14 @@ function Set-OSServerPerformanceTunning {
                     $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * 1MB * ($($Config.MemoryPercentage) / 100))
 
                     # Version specific config
-                    switch ("$(([version]$osVersion).Major)") {
-                        '10' {
+                    switch ("$(([version]$osVersion).Major)")
+                    {
+                        '10'
+                        {
                             $AppPoolItem.managedPipelineMode = "Classic"
                         }
-                        '11' {
+                        '11'
+                        {
                             $AppPoolItem.managedPipelineMode = "Integrated"
                         }
                     }
@@ -292,19 +322,23 @@ function Set-OSServerPerformanceTunning {
                     $AppPoolItem | Clear-ItemProperty -Name recycling.periodicRestart.schedule
 
                     # Explicit cher here for clarity, the foreach implicity ensures this
-                    if ($HasAppsToMove) {
+                    if ($HasAppsToMove)
+                    {
                         # Move the InterestingApp to the AppPool
-                        foreach ($InterestingApp In $interestingApps) {
+                        foreach ($InterestingApp In $interestingApps)
+                        {
                             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Moving Application $InterestingApp to Application Pool $($Config.PoolName)"
                             Set-ItemProperty -Path "IIS:\Sites\Default Web Site$InterestingApp" -Name applicationPool -Value $($Config.PoolName)
                         }
                     }
 
                     # Commit everything in one shot
-                    try {
+                    try
+                    {
                         Stop-WebCommitDelay
                     }
-                    catch {
+                    catch
+                    {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error applying setting to Application Pool $($Config.PoolName)"
                         WriteNonTerminalError -Message "Error applying setting to Application Pool $($Config.PoolName)"
 
@@ -317,13 +351,17 @@ function Set-OSServerPerformanceTunning {
         }
 
         # Configure .NET compilation folder (Server Level)
-        if ($IISNetCompilationPath) {
+        if ($IISNetCompilationPath)
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "IISNetCompilationPath specified on the command line"
-            if (-not (Test-Path -Path $IISNetCompilationPath)) {
-                try {
+            if (-not (Test-Path -Path $IISNetCompilationPath))
+            {
+                try
+                {
                     New-Item -Path $IISNetCompilationPath -ItemType directory -Force -ErrorAction Stop | Out-Null
                 }
-                catch {
+                catch
+                {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating the IIS Net compilation folder"
                     WriteNonTerminalError -Message "Error creating the IIS Net compilation folder"
 
@@ -331,10 +369,12 @@ function Set-OSServerPerformanceTunning {
                 }
             }
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Changing IIS compilation folder to $IISNetCompilationPath"
-            try {
+            try
+            {
                 SetWebConfigurationProperty -PSPath "MACHINE/WEBROOT" -Filter "system.web/compilation" -Name 'tempDirectory' -Value $IISNetCompilationPath
             }
-            catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the IIS compilation folder"
                 WriteNonTerminalError -Message "Error setting the IIS compilation folder"
 
@@ -343,13 +383,17 @@ function Set-OSServerPerformanceTunning {
         }
 
         # Configure HTTP Compression folder (Server Level)
-        if ($IISHttpCompressionPath) {
+        if ($IISHttpCompressionPath)
+        {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "IISHttpCompressionPath specified on the command line"
-            if (-not (Test-Path -Path $IISHttpCompressionPath)) {
-                try {
+            if (-not (Test-Path -Path $IISHttpCompressionPath))
+            {
+                try
+                {
                     New-Item -Path $IISHttpCompressionPath -ItemType directory -Force -ErrorAction Stop | Out-Null
                 }
-                catch {
+                catch
+                {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error creating the IIS HTTP compression folder"
                     WriteNonTerminalError -Message "Error creating the IIS HTTP compression folder"
 
@@ -357,10 +401,12 @@ function Set-OSServerPerformanceTunning {
                 }
             }
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Changing IIS HTTP compression folder to $IISHttpCompressionPath"
-            try {
+            try
+            {
                 SetWebConfigurationProperty -PSPath "MACHINE/WEBROOT/APPHOST"  -Filter "system.webServer/httpCompression" -Name "directory" -Value $IISHttpCompressionPath
             }
-            catch {
+            catch
+            {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the IIS HTTP compression folder"
                 WriteNonTerminalError -Message "Error setting the IIS HTTP compression folder"
 
@@ -369,7 +415,8 @@ function Set-OSServerPerformanceTunning {
         }
     }
 
-    end {
+    end
+    {
         SendFunctionEndEvent -InvocationInfo $MyInvocation
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 2 -Stream 0 -Message "Ending"
     }
