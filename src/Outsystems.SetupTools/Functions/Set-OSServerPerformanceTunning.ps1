@@ -108,7 +108,7 @@ function Set-OSServerPerformanceTunning
         {
             SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost" -Name "sections['webLimits'].OverrideModeDefault" -Value "Allow"
             SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost" -Name "sections['webLimits'].allowDefinition" -Value "Everywhere"
-            SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost/sites/site[@name='Default Web Site']" -Name "Limits" -Value @{MaxConnections = 4294967295}
+            SetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost/sites/site[@name='Default Web Site']" -Name "Limits" -Value @{MaxConnections = 4294967295 }
         }
         catch
         {
@@ -129,7 +129,7 @@ function Set-OSServerPerformanceTunning
             # Build an array with all matching Apps.
             foreach ($appMatchPattern in $($Config.Match))
             {
-                $interestingApps += $DefaultWebSiteApps | Where-Object -FilterScript {$_ -like $appMatchPattern}
+                $interestingApps += $DefaultWebSiteApps | Where-Object -FilterScript { $_ -like $appMatchPattern }
             }
 
             # if an app was found
