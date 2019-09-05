@@ -3,41 +3,41 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force -ArgumentList
 
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Install-OSServerPreReqs Tests' {
-#TODO installed / not installed console
+        #TODO installed / not installed console
         # Global mocks
         Mock IsAdmin { return $true }
         Mock IsMSIInstalled { return $false }
         Mock GetDotNet4Version { return $null }
-        Mock GetWindowsServerHostingVersion {return $null}
+        Mock GetWindowsServerHostingVersion { return $null }
 
         Mock InstallDotNet { return 0 }
         Mock InstallBuildTools { return 0 }
         Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $true } }
         Mock InstallDotNetCore { return 0 }
-        Mock ConfigureServiceWMI {}
-        Mock ConfigureServiceWindowsSearch {}
-        Mock DisableFIPS {}
-        Mock ConfigureWindowsEventLog {}
-        Mock ConfigureMSMQDomainServer {}
+        Mock ConfigureServiceWMI { }
+        Mock ConfigureServiceWindowsSearch { }
+        Mock DisableFIPS { }
+        Mock ConfigureWindowsEventLog { }
+        Mock ConfigureMSMQDomainServer { }
 
-        $assRunInstallDotNet = @{ 'CommandName' = 'InstallDotNet'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunInstallDotNet = @{ 'CommandName' = 'InstallDotNet'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCore'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCore'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunDisableFIPS = @{ 'CommandName' = 'DisableFIPS'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunDisableFIPS = @{ 'CommandName' = 'DisableFIPS'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunConfigureMSMQDomainServer = @{ 'CommandName' = 'ConfigureMSMQDomainServer'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunConfigureMSMQDomainServer = @{ 'CommandName' = 'ConfigureMSMQDomainServer'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
+        $assRunInstallDotNet = @{ 'CommandName' = 'InstallDotNet'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunInstallDotNet = @{ 'CommandName' = 'InstallDotNet'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCore'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCore'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunDisableFIPS = @{ 'CommandName' = 'DisableFIPS'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunDisableFIPS = @{ 'CommandName' = 'DisableFIPS'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assRunConfigureMSMQDomainServer = @{ 'CommandName' = 'ConfigureMSMQDomainServer'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+        $assNotRunConfigureMSMQDomainServer = @{ 'CommandName' = 'ConfigureMSMQDomainServer'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
 
         Context 'When installing OS 10 on a clean machine and everything succeed' {
 
@@ -115,7 +115,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock IsMSIInstalled { return $true }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetWindowsServerHostingVersion {return "2.1.11"}
+            Mock GetWindowsServerHostingVersion { return "2.1.12" }
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -348,7 +348,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When windows features reports a reboot' {
 
-            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 2 }; 'Success' = $true} }
+            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 2 }; 'Success' = $true } }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
@@ -374,7 +374,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When windows features reports an error' {
 
-            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 10 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $false} }
+            Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 10 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $false } }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -557,7 +557,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When configure Event Log reports an error' {
 
             Mock ConfigureWindowsEventLog { throw 'Big Error' }
-            $assRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
+            $assRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
