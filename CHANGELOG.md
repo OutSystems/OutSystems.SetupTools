@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.11.1.0
+
+### Changes
+
+- Raise .NET Core 2.1 Hosting Bundle requirement to 2.1.12 due to security patch
+
 ## 2.11.0.0
 
 ### Changes
