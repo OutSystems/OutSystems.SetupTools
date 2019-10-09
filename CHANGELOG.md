@@ -1,5 +1,11 @@
 # Outsystems.SetupTools Release History
 
+## 2.11.2.0
+
+### Changes
+
+- Added "_" as valid char in the Set-OSServerConfig, Setting parameter
+
 ## 2.11.1.0
 
 ### Changes
