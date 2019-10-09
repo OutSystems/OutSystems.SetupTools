@@ -39,7 +39,7 @@ $OS11ReqsMinOSVersion = "10.0.14393"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OS11ReqsMinDotNetCoreVersion = "2.1.12"
+$OS11ReqsMinDotNetCoreVersion = "2.1.11"
 
 # Microsoft Build Tools 2015 MSI Product Code
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
