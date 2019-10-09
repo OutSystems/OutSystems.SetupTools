@@ -74,7 +74,7 @@ function Set-OSServerConfig
 
         [Parameter(ParameterSetName = 'ChangeSettings', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^[a-zA-Z]+$')]
+        [ValidatePattern('^[a-zA-Z_]+$')]
         [string]$Setting,
 
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'ChangeSettings', Mandatory = $true)]
