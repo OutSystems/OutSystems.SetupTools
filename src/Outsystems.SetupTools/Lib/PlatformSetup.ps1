@@ -212,6 +212,122 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
+function GetMSBuildToolsInstallInfo([string]$MajorVersion) {
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
+
+    $InstallInfo = @{}
+
+    $InstallInfo.HasMSBuild2015  = $False
+    $InstallInfo.HasMSBuild2015u3 = $False
+    $InstallInfo.HasMSBuild2017 = $False
+
+    $InstallInfo.HasRequiredVersion = $False
+
+    $InstallInfo.LatestVersionInstalled = $Null
+
+    $InstallInfo.RebootNeeded = $False
+
+    # We need to check each version.
+
+    # Note that, while not brilliant, the checks should be ordered
+    # by ascending MS Build Tools version
+
+    if (IsMSIInstalled -ProductCode $OSReqsMSBuild2015ProductCode)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2015"
+
+        $InstallInfo.HasMSBuild2015  = $True
+
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    if (IsMSIInstalled -ProductCode $OSReqsMSBuild2015u3ProductCode)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 3"
+
+        $InstallInfo.HasMSBuild2015u3 = $True
+
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    $isRebootRequired = GetMSBuildToolsInstallInfoWithVSWhere -MinVersion 15.0 -MaxVersion 17.0 -PropertyFilter "isRebootRequired"
+
+    # If something other than $null is returned, we know vswhere found a valid version
+    if ($null -ne $isRebootRequired)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2017"
+
+        $InstallInfo.HasMSBuild2017 = $True
+
+        $InstallInfo.RebootNeeded = ($isRebootRequired -eq '1')
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    # Determines if we have a required version for the Major Version.
+    switch ($MajorVersion)
+    {
+        '10'
+        {
+            # Has either MSBuildTools 2015 or 2015 Update 3
+            # But _DOES NOT HAVE_ MSBuildTools 2017
+            $InstallInfo.HasRequiredVersion = ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3) -and (-not $InstallInfo.HasMSBuild2017)
+        }
+
+        '11'
+        {
+            # Has either MSBuildTools 2015 or 2015 Update 3 or MSBuildTools 2017
+            $InstallInfo.HasRequiredVersion = ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3 -or $InstallInfo.HasMSBuild2017)
+        }
+    }
+
+    return $InstallInfo
+}
+
+function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
+    $VSWherePath = ".\Lib\Executables\vswhere.exe"
+
+    if (-not (Test-Path $VSWherePath))
+    {
+        return $null
+    }
+
+    if ([version]$MinVersion -ge [version]$MaxVersion) {
+        return $null
+    }
+
+    $Requirements = @("Microsoft.Net.Component.4.6.1.SDK", "Microsoft.Net.Component.4.6.1.TargetingPack", "Microsoft.Component.MSBuild")
+    $Versions = "[$MinVersion,$MaxVersion)"
+
+    $Arguments = "-latest -products * -requires $($Requirements -join ' ') -version $Versions "
+
+    if ($PropertyFilter)
+    {
+        $Arguments += "-property $PropertyFilter"
+    }
+
+    $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $ProcessInfo.FileName = $VSWherePath
+    $ProcessInfo.RedirectStandardError = $true
+    $ProcessInfo.RedirectStandardOutput = $true
+    $ProcessInfo.UseShellExecute = $false
+    $ProcessInfo.Arguments = "$Arguments"
+    $Process = New-Object System.Diagnostics.Process
+    $Process.StartInfo = $ProcessInfo
+    $Process.Start() | Out-Null
+    $Process.WaitForExit()
+    $output = $Process.StandardOutput.ReadToEnd()
+
+    if ($output -eq "")
+    {
+        $output = $null
+    }
+
+    return $output.Trim()
+}
+
 function InstallBuildTools([string]$Sources)
 {
     if($Sources)

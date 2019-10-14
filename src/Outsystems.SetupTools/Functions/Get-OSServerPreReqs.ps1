@@ -204,9 +204,11 @@ function Get-OSServerPreReqs
         $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
                                                         -ScriptBlock `
                                                         {
-                                                            $Status = $(IsMSIInstalled -ProductCode $OSRequiredMSBuildProductCode)
-                                                            $OKMessages = @("Build Tools 2015 is installed.")
-                                                            $NOKMessages = @("Build Tools 2015 not found but is required for OutSystems.")
+                                                            $MSBuildInstallInfo = GetMSBuildToolsInstallInfo($MajorVersion)
+
+                                                            $Status = $MSBuildInstallInfo.HasRequiredVersion
+                                                            $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
+                                                            $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
 
                                                             return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
