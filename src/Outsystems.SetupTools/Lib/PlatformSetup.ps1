@@ -287,14 +287,20 @@ function GetMSBuildToolsInstallInfo([string]$MajorVersion) {
 }
 
 function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
-    $VSWherePath = ".\Lib\Executables\vswhere.exe"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using VSWhere to check if a MS Build Tools is installed version (between min. version $MinVersion and max. version $MaxVersion)."
+
+    $VSWherePath = "$PSScriptRoot\Executables\vswhere.exe"
 
     if (-not (Test-Path $VSWherePath))
     {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "VWhere executable not found."
+
         return $null
     }
 
     if ([version]$MinVersion -ge [version]$MaxVersion) {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot pass to VSWhere a minimum version ($MinVersion) equal or greater than the maximum version ($MaxVersion)."
+
         return $null
     }
 
@@ -305,6 +311,8 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
 
     if ($PropertyFilter)
     {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "VSWhere will filter by property ($PropertyFilter)."
+
         $Arguments += "-property $PropertyFilter"
     }
 
@@ -322,6 +330,8 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
 
     if ($output -eq "")
     {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Output from VSWhere is empty."
+
         $output = $null
     }
 
