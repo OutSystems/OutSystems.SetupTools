@@ -95,9 +95,9 @@ function Install-OSServerPreReqs
         # MS Buld Tools minimum version is different depending on the Platform Major Version
         # 10 : 2015 and 2015 Update 3 are allowed but 2017 is not
         # 11 : All the above three are allowed
-        $MSBuildInstallInfo = GetMSBuildToolsInstallInfo($MajorVersion)
+        $MSBuildInstallInfo = GetMSBuildToolsInstallInfo
 
-        if (-not $MSBuildInstallInfo.HasRequiredVersion)
+        if (-not (IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo))
         {
             if ($MSBuildInstallInfo.LatestVersionInstalled)
             {

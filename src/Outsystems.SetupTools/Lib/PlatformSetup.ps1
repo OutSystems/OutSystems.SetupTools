@@ -212,7 +212,7 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
-function GetMSBuildToolsInstallInfo([string]$MajorVersion) {
+function GetMSBuildToolsInstallInfo {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
 
     $InstallInfo = @{}
@@ -220,8 +220,6 @@ function GetMSBuildToolsInstallInfo([string]$MajorVersion) {
     $InstallInfo.HasMSBuild2015  = $False
     $InstallInfo.HasMSBuild2015u3 = $False
     $InstallInfo.HasMSBuild2017 = $False
-
-    $InstallInfo.HasRequiredVersion = $False
 
     $InstallInfo.LatestVersionInstalled = $Null
 
@@ -266,6 +264,10 @@ function GetMSBuildToolsInstallInfo([string]$MajorVersion) {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
 
+    return $InstallInfo
+}
+
+function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo) {
     # Determines if we have a required version for the Major Version.
     switch ($MajorVersion)
     {
@@ -273,17 +275,20 @@ function GetMSBuildToolsInstallInfo([string]$MajorVersion) {
         {
             # Has either MSBuildTools 2015 or 2015 Update 3
             # But _DOES NOT HAVE_ MSBuildTools 2017
-            $InstallInfo.HasRequiredVersion = ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3) -and (-not $InstallInfo.HasMSBuild2017)
+            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3) -and (-not $InstallInfo.HasMSBuild2017)
         }
 
         '11'
         {
             # Has either MSBuildTools 2015 or 2015 Update 3 or MSBuildTools 2017
-            $InstallInfo.HasRequiredVersion = ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3 -or $InstallInfo.HasMSBuild2017)
+            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3 -or $InstallInfo.HasMSBuild2017)
+        }
+
+        default
+        {
+            return $False
         }
     }
-
-    return $InstallInfo
 }
 
 function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
