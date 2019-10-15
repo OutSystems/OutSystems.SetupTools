@@ -212,6 +212,137 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
+function GetMSBuildToolsInstallInfo {
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
+
+    $InstallInfo = @{}
+
+    $InstallInfo.HasMSBuild2015  = $False
+    $InstallInfo.HasMSBuild2015u3 = $False
+    $InstallInfo.HasMSBuild2017 = $False
+
+    $InstallInfo.LatestVersionInstalled = $Null
+
+    $InstallInfo.RebootNeeded = $False
+
+    # We need to check each version.
+
+    # Note that, while not brilliant, the checks should be ordered
+    # by ascending MS Build Tools version
+
+    if (IsMSIInstalled -ProductCode $OSReqsMSBuild2015ProductCode)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2015"
+
+        $InstallInfo.HasMSBuild2015  = $True
+
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    if (IsMSIInstalled -ProductCode $OSReqsMSBuild2015u3ProductCode)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 3"
+
+        $InstallInfo.HasMSBuild2015u3 = $True
+
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    $isRebootRequired = GetMSBuildToolsInstallInfoWithVSWhere -MinVersion 15.0 -MaxVersion 17.0 -PropertyFilter "isRebootRequired"
+
+    # If something other than $null is returned, we know vswhere found a valid version
+    if ($null -ne $isRebootRequired)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2017"
+
+        $InstallInfo.HasMSBuild2017 = $True
+
+        $InstallInfo.RebootNeeded = ($isRebootRequired -eq '1')
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    return $InstallInfo
+}
+
+function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo) {
+    # Determines if we have a required version for the Major Version.
+    switch ($MajorVersion)
+    {
+        '10'
+        {
+            # Has either MSBuildTools 2015 or 2015 Update 3
+            # But _DOES NOT HAVE_ MSBuildTools 2017
+            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3) -and (-not $InstallInfo.HasMSBuild2017)
+        }
+
+        '11'
+        {
+            # Has either MSBuildTools 2015 or 2015 Update 3 or MSBuildTools 2017
+            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3 -or $InstallInfo.HasMSBuild2017)
+        }
+
+        default
+        {
+            return $False
+        }
+    }
+}
+
+function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using VSWhere to check if a MS Build Tools is installed version (between min. version $MinVersion and max. version $MaxVersion)."
+
+    $VSWherePath = "$PSScriptRoot\Executables\vswhere.exe"
+
+    if (-not (Test-Path $VSWherePath))
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "VWhere executable not found."
+
+        return $null
+    }
+
+    if ([version]$MinVersion -ge [version]$MaxVersion) {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot pass to VSWhere a minimum version ($MinVersion) equal or greater than the maximum version ($MaxVersion)."
+
+        return $null
+    }
+
+    $Requirements = @("Microsoft.Net.Component.4.6.1.SDK", "Microsoft.Net.Component.4.6.1.TargetingPack", "Microsoft.Component.MSBuild")
+    $Versions = "[$MinVersion,$MaxVersion)"
+
+    $Arguments = "-latest -products * -requires $($Requirements -join ' ') -version $Versions "
+
+    if ($PropertyFilter)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "VSWhere will filter by property ($PropertyFilter)."
+
+        $Arguments += "-property $PropertyFilter"
+    }
+
+    $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
+    $ProcessInfo.FileName = $VSWherePath
+    $ProcessInfo.RedirectStandardError = $true
+    $ProcessInfo.RedirectStandardOutput = $true
+    $ProcessInfo.UseShellExecute = $false
+    $ProcessInfo.Arguments = "$Arguments"
+    $Process = New-Object System.Diagnostics.Process
+    $Process.StartInfo = $ProcessInfo
+    $Process.Start() | Out-Null
+    $Process.WaitForExit()
+    $output = $Process.StandardOutput.ReadToEnd()
+
+    if ($output -eq "")
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Output from VSWhere is empty."
+
+        $output = $null
+    }
+
+    return $output.Trim()
+}
+
 function InstallBuildTools([string]$Sources)
 {
     if($Sources)
