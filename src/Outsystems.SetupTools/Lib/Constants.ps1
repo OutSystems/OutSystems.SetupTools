@@ -47,9 +47,12 @@ $OS11ReqsMinDotNetVersion = "461808"
 $OS11ReqsMinDotNetCoreVersion = "2.1.11"
 
 # Microsoft Build Tools 2015 MSI Product Codes
+
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 # [version 14.0.23107]    ->  2015
 $OSReqsMSBuild2015ProductCode = "{8C918E5B-E238-401F-9F6E-4FB84B024CA2}"
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 # [version 14.0.25420.1]  ->  2015 Update 3
 $OSReqsMSBuild2015u3ProductCode = "{79750C81-714E-45F2-B5DE-42DEF00687B8}"
 
