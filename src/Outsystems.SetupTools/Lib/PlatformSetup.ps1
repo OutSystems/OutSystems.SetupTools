@@ -339,8 +339,12 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
 
         $output = $null
     }
+    else
+    {
+        $output = $output.Trim()
+    }
 
-    return $output.Trim()
+    return $output
 }
 
 function InstallBuildTools([string]$Sources)

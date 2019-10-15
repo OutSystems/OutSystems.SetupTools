@@ -204,7 +204,7 @@ function Get-OSServerPreReqs
         $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
                                                         -ScriptBlock `
                                                         {
-                                                            $MSBuildInstallInfo = GetMSBuildToolsInstallInfo
+                                                            $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
 
                                                             $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
                                                             $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
