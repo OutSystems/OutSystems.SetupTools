@@ -53,6 +53,14 @@ $OS11ReqsMinDotNetCoreVersion = "2.1.11"
 $OSReqsMSBuild2015ProductCode = "{8C918E5B-E238-401F-9F6E-4FB84B024CA2}"
 
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+# [version 14.0.24720]    ->  2015 Update 1
+$OSReqsMSBuild2015u1ProductCode = "{477F7BAD-67AD-4E4F-B704-4AF4F44CB9BD}"
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+# [version 14.0.25123]    ->  2015 Update 2
+$OSReqsMSBuild2015u2ProductCode = "{DF27D91D-516E-4DA1-92AC-7D7D59B2D99E}"
+
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 # [version 14.0.25420.1]  ->  2015 Update 3
 $OSReqsMSBuild2015u3ProductCode = "{79750C81-714E-45F2-B5DE-42DEF00687B8}"
 

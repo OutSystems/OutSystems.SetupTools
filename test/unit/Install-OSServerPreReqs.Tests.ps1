@@ -6,7 +6,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         #TODO installed / not installed console
         # Global mocks
         Mock IsAdmin { return $true }
-        Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2015u3' = $False ; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = $Null; 'RebootNeeded' = $False } }
+        Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = $Null; 'RebootNeeded' = $False } }
         Mock GetDotNet4Version { return $null }
         Mock GetWindowsServerHostingVersion { return $null }
 
@@ -64,7 +64,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When installing OS 10 on a machine with all prereqs installed' {
 
-            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2015u3' = $False ; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461308 }
 
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
@@ -113,7 +113,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When installing OS 11 with all prereqs installed' {
 
-            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2015u3' = $False ; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
             Mock GetWindowsServerHostingVersion { return "2.1.12" }
 
@@ -244,7 +244,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'Build tools versions are correctly validated' {
 
-            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2015u3' = $False ; 'HasMSBuild2017' = $True; 'LatestVersionInstalled' = 'Build Tools 2017'; 'RebootNeeded' = $False } }
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2017' = $True; 'LatestVersionInstalled' = 'Build Tools 2017'; 'RebootNeeded' = $False } }
 
             $Major10 = '10'
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major10 -InstallInfo (GetMSBuildToolsInstallInfo)
@@ -253,29 +253,29 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result | Should Be $False
             }
 
-            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2015u3' = $True ; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'Build Tools 2015 Update 3'; 'RebootNeeded' = $False } }
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'Build Tools 2015 Update 3'; 'RebootNeeded' = $False } }
 
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major10 -InstallInfo (GetMSBuildToolsInstallInfo)
 
-            It "MS Build 2015 Update 3 is supported in major version '$Major10'" {
+            It "All MS Build versions are supported in major version '$Major10'" {
                 $result | Should Be $True
             }
 
             $Major11 = '11'
 
-            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2015u3' = $True ; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'Build Tools Update 3'; 'RebootNeeded' = $False } }
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'Build Tools Update 3'; 'RebootNeeded' = $False } }
 
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major11 -InstallInfo (GetMSBuildToolsInstallInfo)
 
-            It "All 2015 version MS Build are supported in major version '$Major11'" {
+            It "All 2015 versions of MS Build are supported in major version '$Major11'" {
                 $result | Should Be $True
             }
 
-            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2015u3' = $True ; 'HasMSBuild2017' = $True; 'LatestVersionInstalled' = 'Build Tools 2017'; 'RebootNeeded' = $False } }
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $True; 'LatestVersionInstalled' = 'Build Tools 2017'; 'RebootNeeded' = $False } }
 
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major11 -InstallInfo (GetMSBuildToolsInstallInfo)
 
-            It "All MS Build version are supported in major version '$Major11'" {
+            It "All MS Build versions 2015 and 2017 are supported in major version '$Major11'" {
                 $result | Should Be $True
             }
         }

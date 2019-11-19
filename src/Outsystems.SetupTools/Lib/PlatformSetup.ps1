@@ -218,7 +218,6 @@ function GetMSBuildToolsInstallInfo {
     $InstallInfo = @{}
 
     $InstallInfo.HasMSBuild2015  = $False
-    $InstallInfo.HasMSBuild2015u3 = $False
     $InstallInfo.HasMSBuild2017 = $False
 
     $InstallInfo.LatestVersionInstalled = $Null
@@ -236,6 +235,23 @@ function GetMSBuildToolsInstallInfo {
 
         $InstallInfo.HasMSBuild2015  = $True
 
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    if (IsMSIInstalled -ProductCode $OSReqsMSBuild2015u1ProductCode)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 1"
+
+        $InstallInfo.HasMSBuild2015  = $True
+
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
+    }
+
+    if (IsMSIInstalled -ProductCode $OSReqsMSBuild2015u2ProductCode)
+    {
+        $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 2"
+
+        $InstallInfo.HasMSBuild2015  = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -244,8 +260,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 3"
 
-        $InstallInfo.HasMSBuild2015u3 = $True
-
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -264,6 +279,15 @@ function GetMSBuildToolsInstallInfo {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
 
+    if ($null -eq $InstallInfo.LatestVersionInstalled)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Unable to detect a MSBuild Tools 2015 installation or current installation product code does not match the expected product codes:
+        $OSReqsMSBuild2015ProductCode for MS Build Tools 2015,
+        $OSReqsMSBuild2015u1ProductCode for MS Build Tools 2015 update 1,
+        $OSReqsMSBuild2015u2ProductCode for MS Build Tools 2015 update 2,
+        $OSReqsMSBuild2015u3ProductCode for MS Build Tools 2015 update 3."
+    }
+
     return $InstallInfo
 }
 
@@ -275,13 +299,13 @@ function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
         {
             # Has either MSBuildTools 2015 or 2015 Update 3
             # But _DOES NOT HAVE_ MSBuildTools 2017
-            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3) -and (-not $InstallInfo.HasMSBuild2017)
+            return ($InstallInfo.HasMSBuild2015) -and (-not $InstallInfo.HasMSBuild2017)
         }
 
         '11'
         {
             # Has either MSBuildTools 2015 or 2015 Update 3 or MSBuildTools 2017
-            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2015u3 -or $InstallInfo.HasMSBuild2017)
+            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2017)
         }
 
         default
