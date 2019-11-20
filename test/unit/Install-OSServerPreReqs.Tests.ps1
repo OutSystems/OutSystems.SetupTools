@@ -257,7 +257,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major10 -InstallInfo (GetMSBuildToolsInstallInfo)
 
-            It "All MS Build versions are supported in major version '$Major10'" {
+            It "All 2015 MS Build versions are supported in major version '$Major10'" {
                 $result | Should Be $True
             }
 
