@@ -37,7 +37,7 @@ function Get-OSRepoAvailableVersions
         [string]$Application,
 
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('1[0-1]{1}(\.0)?')]
+        [ValidateSet('10.0', '11.0', '10', '11')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion,
 
         [Parameter()]
@@ -49,8 +49,8 @@ function Get-OSRepoAvailableVersions
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
-        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
-        $MajorVersion = $MajorVersion.replace(".0", "")
+        # Fix to support the old versioning
+        $MajorVersion = $MajorVersion.Split('.')[0]
     }
 
     process
@@ -90,7 +90,7 @@ function Get-OSRepoAvailableVersions
         }
 
         # Filter only major version and sort desc
-        $versions = [System.Version[]]($versions | Where-Object -FilterScript { $_ -like "$MajorVersion*" }) | Sort-Object -Descending
+        $versions = [System.Version[]]($versions | Where-Object -FilterScript { $_ -like "$MajorVersion.*" }) | Sort-Object -Descending
 
         if ($Latest.IsPresent)
         {
