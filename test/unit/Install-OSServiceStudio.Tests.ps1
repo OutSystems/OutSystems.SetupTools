@@ -78,6 +78,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
+        Context 'When service studio is already installed with the right version (new versioning)' {
+
+            Mock GetServiceStudioVersion { return '11.7.0.0' }
+            $result = Install-OSServiceStudio -Version '11.7.0.0' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems service studio successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServiceStudio -Version '11.7.0.0' -ErrorAction SilentlyContinue } | Should Not throw }
+
+        }
+
         Context 'When theres an error downloading the sources from the repo' {
 
             Mock GetServiceStudioVersion { return $null }
