@@ -82,13 +82,13 @@ function Install-OSPlatformServiceCenter
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
             }
 
-            switch ("$(([version]$osVersion).Major).$(([version]$osVersion).Minor)")
+            switch ("$(([version]$osVersion).Major)")
             {
-                '10.0'
+                '10'
                 {
                     $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif'
                 }
-                '11.0'
+                '11'
                 {
                     $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif'
                 }
