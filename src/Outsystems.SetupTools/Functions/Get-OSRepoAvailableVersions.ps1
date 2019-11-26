@@ -14,18 +14,18 @@ function Get-OSRepoAvailableVersions
 
     .PARAMETER MajorVersion
     Specifies the platform major version
-    Accepted values: 10.0 or 11.0
+    Accepted values: 10 or 11
 
     .PARAMETER Latest
     If specified, will only return the latest version
 
     .EXAMPLE
     Get all available versions of the OutSystems 10 platform server
-    Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10.0'
+    Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10'
 
     .EXAMPLE
     Get the latest available version of the OutSystems 11 development environment
-    Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11.0' -Latest
+    Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11' -Latest
 
     #>
 
@@ -37,7 +37,7 @@ function Get-OSRepoAvailableVersions
         [string]$Application,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0')]
+        [ValidateSet('10.0', '11.0', '10', '11')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion,
 
         [Parameter()]
@@ -48,6 +48,9 @@ function Get-OSRepoAvailableVersions
     {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
+
+        # Fix to support the old versioning
+        $MajorVersion = $MajorVersion.Split('.')[0]
     }
 
     process
@@ -87,7 +90,7 @@ function Get-OSRepoAvailableVersions
         }
 
         # Filter only major version and sort desc
-        $versions = [System.Version[]]($versions | Where-Object -FilterScript { $_ -like "$MajorVersion*" }) | Sort-Object -Descending
+        $versions = [System.Version[]]($versions | Where-Object -FilterScript { $_ -like "$MajorVersion.*" }) | Sort-Object -Descending
 
         if ($Latest.IsPresent)
         {
