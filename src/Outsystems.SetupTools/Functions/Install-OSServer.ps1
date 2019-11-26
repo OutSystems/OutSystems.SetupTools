@@ -6,7 +6,7 @@ function Install-OSServer
 
     .DESCRIPTION
     This will install or update the OutSystems platform server
-    It will also install RabbitMQ on version 11.0 and later
+    It will also install RabbitMQ on version 11 and later
     If the platform is already installed, the cmdLet will check if version to be installed is higher than the current one and update it
 
     .PARAMETER InstallDir
@@ -39,9 +39,9 @@ function Install-OSServer
     Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
 
     .EXAMPLE
-    To install the latest 11.0 version
+    To install the latest 11 version
 
-    Install-OSServer -Verbose -Version $(Get-OSRepoAvailableVersions -MajorVersion 11.0 -Latest -Application 'PlatformServer')
+    Install-OSServer -Verbose -Version $(Get-OSRepoAvailableVersions -MajorVersion 11 -Latest -Application 'PlatformServer')
 
     #>
 
