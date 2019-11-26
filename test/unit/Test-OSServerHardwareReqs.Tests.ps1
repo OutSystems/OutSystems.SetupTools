@@ -24,11 +24,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Result | Should Be $false
                 $result.Message | Should Be 'Hardware not supported for Outsystems 10. Number of CPU cores is less than 2'
             }
-<<<<<<< HEAD
             It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 10. Number of CPU cores is less than 2' }
-=======
-            It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 10.0. Number of CPU cores is less than 2' }
->>>>>>> 7c5ac182ef965edd26325c48defdb80db35ee93e
             It 'Should not throw' { { Test-OSServerHardwareReqs -MajorVersion 10 -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -44,11 +40,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Result | Should Be $false
                 $result.Message | Should Be 'Hardware not supported for Outsystems 10. Server has less than 4 GB'
             }
-<<<<<<< HEAD
             It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 10. Server has less than 4 GB' }
-=======
-            It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 10.0. Server has less than 4 GB' }
->>>>>>> 7c5ac182ef965edd26325c48defdb80db35ee93e
             It 'Should not throw' { { Test-OSServerHardwareReqs -MajorVersion 10 -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -78,11 +70,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Result | Should Be $false
                 $result.Message | Should Be 'Hardware not supported for Outsystems 11. Number of CPU cores is less than 2'
             }
-<<<<<<< HEAD
             It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 11. Number of CPU cores is less than 2' }
-=======
-            It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 11.0. Number of CPU cores is less than 2' }
->>>>>>> 7c5ac182ef965edd26325c48defdb80db35ee93e
             It 'Should not throw' { { Test-OSServerHardwareReqs -MajorVersion 11 -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -98,11 +86,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Result | Should Be $false
                 $result.Message | Should Be 'Hardware not supported for Outsystems 11. Server has less than 4 GB'
             }
-<<<<<<< HEAD
             It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 11. Server has less than 4 GB' }
-=======
-            It 'Should output an error' { $err[-1] | Should Be 'Hardware not supported for Outsystems 11.0. Server has less than 4 GB' }
->>>>>>> 7c5ac182ef965edd26325c48defdb80db35ee93e
             It 'Should not throw' { { Test-OSServerHardwareReqs -MajorVersion 11 -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
