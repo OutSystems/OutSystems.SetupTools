@@ -20,7 +20,7 @@ function Test-OSServerSoftwareReqs
     [OutputType('Outsystems.SetupTools.TestResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('1[0-1]{1}(\.0)?')]
+        [ValidateSet('10.0', '11.0', '10', '11')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion
     )
 
@@ -29,20 +29,19 @@ function Test-OSServerSoftwareReqs
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
+        # Fix to support the old versioning
+        $MajorVersion = $MajorVersion.Split('.')[0]
+
         # Initialize the results object
         $testResult = [pscustomobject]@{
             PSTypeName = 'Outsystems.SetupTools.TestResult'
             Result     = $true
             Message    = "Operating system was validated for Outsystems $MajorVersion"
         }
-
-        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
-        $MajorVersion = $MajorVersion.replace(".0", "")
     }
 
     process
     {
-
         if ($(GetOperatingSystemProductType) -lt $OSReqsMinOSProductType)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Operating system not supported. Only server editions are supported"
