@@ -608,9 +608,18 @@ function RunOSPTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server install directory"
     $installDir = GetServerInstallDir
 
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server major version"
     $version = [System.Version]$(GetServerVersion)
-    $majorVersion = "$($version.Major).$($version.Minor)"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server major version is $majorVersion"
+    if ($version.Minor -eq 0)
+    {
+        $majorVersion = "$($version.Major).$($version.Minor)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Found old versioning. Server major version is $majorVersion"
+    }
+    else
+    {
+        $majorVersion = "$($version.Major)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server major version is $majorVersion"
+    }
 
     $ospToolPath = "$ENV:CommonProgramFiles\OutSystems\$majorVersion"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "OSPTool path is $ospToolPath"

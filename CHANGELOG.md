@@ -1,5 +1,23 @@
 # Outsystems.SetupTools Release History
 
+## 3.0.1-apha
+
+### Changes
+
+- Fixed Install-OSPlatformSystemComponents. Now supports the old and the new versioning
+
+## 3.0.0-apha
+
+### Changes
+
+- First release to support the platform server new versioning system
+
+## 2.10.0.0 (not released)
+
+### Changes
+
+- Added support for MSBuild 2017 and more MSBuild 2015 versions
+
 ## 2.9.0.0
 
 ### Changes

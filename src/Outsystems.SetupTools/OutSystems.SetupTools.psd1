@@ -12,7 +12,7 @@
 RootModule = 'OutSystems.SetupTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.10.0.0'
+ModuleVersion = '3.0.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -154,7 +154,7 @@ PrivateData = @{
         # ReleaseNotes of this module
         # ReleaseNotes = ''
 
-        # Prerelease = '-beta1'
+        Prerelease = '-alpha'
 
     } # End of PSData hashtable
 
