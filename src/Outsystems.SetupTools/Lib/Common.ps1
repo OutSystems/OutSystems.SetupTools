@@ -18,7 +18,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         }
     }
 
-    $logFileLineTemplate = $(Get-Date -Format "yyyy-MM-dd HH:mm:ss.ffff") + " [" + $Function.PadRight(40) + "] $phaseMessage "
+    $logLineTemplate  = $(Get-Date -Format "yyyy-MM-dd HH:mm:ss.ffff") + " [" + $Function.PadRight(40) + "] $phaseMessage "
 
     switch ($Stream)
     {
