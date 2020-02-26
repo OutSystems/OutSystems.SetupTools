@@ -46,6 +46,9 @@ function Set-OSServerConfig
     .PARAMETER SkipSessionRebuild
     If specified, the configuration tool will not rebuild the session database. Usefull on frontends.
 
+    .PARAMETER UpgradeEnvironment
+    If specified, the configuration tool will upgrade all applications in the environment to the new version
+
     .EXAMPLE
     Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceUsername' -Value 'admin'
 
@@ -343,7 +346,14 @@ function Set-OSServerConfig
                     $configToolArguments += "/createupgradecacheinvalidationservice "
                 }
 
-                if ($PSBoundParameters.InstallServiceCenter.IsPresent)
+
+                if ($PSBoundParameters.UpgradeEnvironment)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
+                    $configToolArguments += "/UpgradeEnvironment "
+                }
+
+                if ($PSBoundParameters.InstallServiceCenter.IsPresent )
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installation of Service Center will be performed"
                     $configToolArguments += "/SCInstall "
