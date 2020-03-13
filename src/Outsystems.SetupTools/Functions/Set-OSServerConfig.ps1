@@ -131,9 +131,16 @@ function Set-OSServerConfig
                     $LogDBCredentialAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                     $LogDBCredentialAttribCollection.Add($LogDBCredentialAttrib)
                     $LogDBCredentialParam = New-Object System.Management.Automation.RuntimeDefinedParameter('LogDBCredential', [System.Management.Automation.PSCredential], $LogDBCredentialAttribCollection)
+                    
+                    $UpgradeEnvironmentAttrib =  New-Object System.Management.Automation.ParameterAttribute
+                    $UpgradeEnvironmentAttrib.ParameterSetName = 'ApplyConfig'
+                    $UpgradeEnvironmentAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+                    $UpgradeEnvironmentAttribCollection.Add($UpgradeEnvironmentAttrib)
+                    $UpgradeEnvironmentParam = New-Object System.Management.Automation.RuntimeDefinedParameter('UpgradeEnvironment', [switch], $UpgradeEnvironmentAttribCollection)
 
                     $paramDictionary.Add('ConfigureCacheInvalidationService', $ConfigureCacheInvalidationServiceParam)
                     $paramDictionary.Add('LogDBCredential', $LogDBCredentialParam)
+                    $paramDictionary.Add('UpgradeEnvironment', $UpgradeEnvironmentParam)
                 }
             }
 
@@ -347,7 +354,7 @@ function Set-OSServerConfig
                 }
 
 
-                if ($PSBoundParameters.UpgradeEnvironment)
+                if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
                     $configToolArguments += "/UpgradeEnvironment "
