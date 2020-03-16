@@ -15,7 +15,7 @@ $OSWindowsFeaturesBase = @(
     "Web-Default-Doc", "Web-Dir-Browsing", "Web-Http-Errors", "Web-Static-Content",
     "Web-Http-Logging", "Web-Request-Monitor",
     "Web-Stat-Compression", "Web-Dyn-Compression",
-    "Web-Filtering", "Web-Windows-Auth", `
+    "Web-Filtering", "Web-Windows-Auth",
     "Web-Net-Ext45", "Web-Asp-Net45", "Web-ISAPI-Ext", "Web-ISAPI-Filter",
     "Web-Metabase",
     "WAS-Config-APIs", "WAS-Process-Model"
@@ -139,28 +139,28 @@ $OSAzStorageContainer = 'sources'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSIISConfig = @(
     @{
-        'PoolName' = 'OutSystemsApplications';
+        'PoolName'         = 'OutSystemsApplications';
         'MemoryPercentage' = 60;
-        'Match' = @('*')
+        'Match'            = @('*')
     },
     @{
-        'PoolName' = 'ServiceCenterAppPool';
+        'PoolName'         = 'ServiceCenterAppPool';
         'MemoryPercentage' = 100;
-        'Match' = @('/ServiceCenter')
+        'Match'            = @('/ServiceCenter')
     },
     @{
-        'PoolName' = 'LifeTimeAppPool';
+        'PoolName'         = 'LifeTimeAppPool';
         'MemoryPercentage' = 60;
-        'Match' = @('/LT*','/lifet*','/LifeT*','PerformanceMonitor')
+        'Match'            = @('/LT*', '/lifet*', '/LifeT*', 'PerformanceMonitor')
     }
 )
 
 # Performance Tuning
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSPerfTuningMaxRequestLength=131072
+$OSPerfTuningMaxRequestLength = 131072
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-[TimeSpan]$OSPerfTuningExecutionTimeout='00:01:50'
+[TimeSpan]$OSPerfTuningExecutionTimeout = '00:01:50'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSPerfTuningMaxAllowedContentLength=134217728
+$OSPerfTuningMaxAllowedContentLength = 134217728
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSPerfTuningMaxConnections=4294967295
+$OSPerfTuningMaxConnections = 4294967295
