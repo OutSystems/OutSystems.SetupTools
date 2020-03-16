@@ -46,6 +46,9 @@ function Set-OSServerConfig
     .PARAMETER SkipSessionRebuild
     If specified, the configuration tool will not rebuild the session database. Usefull on frontends.
 
+    .PARAMETER UpgradeEnvironment
+    If specified, the configuration tool will upgrade all applications in the environment to the new version
+
     .EXAMPLE
     Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceUsername' -Value 'admin'
 
@@ -129,8 +132,15 @@ function Set-OSServerConfig
                     $LogDBCredentialAttribCollection.Add($LogDBCredentialAttrib)
                     $LogDBCredentialParam = New-Object System.Management.Automation.RuntimeDefinedParameter('LogDBCredential', [System.Management.Automation.PSCredential], $LogDBCredentialAttribCollection)
 
+                    $UpgradeEnvironmentAttrib =  New-Object System.Management.Automation.ParameterAttribute
+                    $UpgradeEnvironmentAttrib.ParameterSetName = 'ApplyConfig'
+                    $UpgradeEnvironmentAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+                    $UpgradeEnvironmentAttribCollection.Add($UpgradeEnvironmentAttrib)
+                    $UpgradeEnvironmentParam = New-Object System.Management.Automation.RuntimeDefinedParameter('UpgradeEnvironment', [switch], $UpgradeEnvironmentAttribCollection)
+
                     $paramDictionary.Add('ConfigureCacheInvalidationService', $ConfigureCacheInvalidationServiceParam)
                     $paramDictionary.Add('LogDBCredential', $LogDBCredentialParam)
+                    $paramDictionary.Add('UpgradeEnvironment', $UpgradeEnvironmentParam)
                 }
             }
 
@@ -341,6 +351,12 @@ function Set-OSServerConfig
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration of the cache invalidation service will be performed"
                     $configToolArguments += "/createupgradecacheinvalidationservice "
+                }
+
+                if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
+                    $configToolArguments += "/UpgradeEnvironment "
                 }
 
                 if ($PSBoundParameters.InstallServiceCenter.IsPresent)
