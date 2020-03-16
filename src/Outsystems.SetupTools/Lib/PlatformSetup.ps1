@@ -133,7 +133,7 @@ function GetWindowsServerHostingVersion()
     return $version
 }
 
-function InstallDotNet([string]$Sources)
+function InstallDotNet([string]$Sources, [string]$URL)
 {
     if ($Sources)
     {
@@ -143,8 +143,8 @@ function InstallDotNet([string]$Sources)
     else
     {
         $installer = "$ENV:TEMP\DotNet.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
-        DownloadOSSources -URL $OSRepoURLDotNET -SavePath $installer
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $URL"
+        DownloadOSSources -URL $URL -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"

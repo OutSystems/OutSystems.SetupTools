@@ -295,8 +295,8 @@ function Install-OSServerPreReqs
         {
             try
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $script:OSDotNETVersionToInstall"
-                $exitCode = InstallDotNet -Sources $SourcePath
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']"
+                $exitCode = InstallDotNet -Sources $SourcePath -URL $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL']
             }
             catch
             {
@@ -314,23 +314,23 @@ function Install-OSServerPreReqs
             {
                 0
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $script:OSDotNETVersionToInstall successfully installed"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'] successfully installed"
                 }
 
                 { $_ -in 3010, 3011 }
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $script:OSDotNETVersionToInstall successfully installed but a reboot is needed. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'] successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
                 default
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET $script:OSDotNETVersionToInstall. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET $script:OSDotNETVersionToInstall. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']. Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = "Error installing .NET $script:OSDotNETVersionToInstall"
+                    $installResult.Message = "Error installing .NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']"
 
                     return $installResult
                 }
