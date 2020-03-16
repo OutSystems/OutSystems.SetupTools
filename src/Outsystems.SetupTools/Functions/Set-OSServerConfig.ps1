@@ -131,8 +131,8 @@ function Set-OSServerConfig
                     $LogDBCredentialAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                     $LogDBCredentialAttribCollection.Add($LogDBCredentialAttrib)
                     $LogDBCredentialParam = New-Object System.Management.Automation.RuntimeDefinedParameter('LogDBCredential', [System.Management.Automation.PSCredential], $LogDBCredentialAttribCollection)
-                    
-                    $UpgradeEnvironmentAttrib =  New-Object System.Management.Automation.ParameterAttribute
+
+                    $UpgradeEnvironmentAttrib = New-Object System.Management.Automation.ParameterAttribute
                     $UpgradeEnvironmentAttrib.ParameterSetName = 'ApplyConfig'
                     $UpgradeEnvironmentAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                     $UpgradeEnvironmentAttribCollection.Add($UpgradeEnvironmentAttrib)
@@ -353,14 +353,13 @@ function Set-OSServerConfig
                     $configToolArguments += "/createupgradecacheinvalidationservice "
                 }
 
-
                 if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
                     $configToolArguments += "/UpgradeEnvironment "
                 }
 
-                if ($PSBoundParameters.InstallServiceCenter.IsPresent )
+                if ($PSBoundParameters.InstallServiceCenter.IsPresent)
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installation of Service Center will be performed"
                     $configToolArguments += "/SCInstall "
