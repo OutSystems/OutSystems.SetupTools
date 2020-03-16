@@ -1,5 +1,14 @@
 # Outsystems.SetupTools Release History
 
+## 3.1.0-apha
+
+- Added a new parameter -UpgradeEnvironment to the Set-OSServerConfig
+- Fixed date/time format in logs.
+
+### Changes
+
+- Fixed Install-OSPlatformSystemComponents. Now supports the old and the new versioning
+
 ## 3.0.1-apha
 
 ### Changes
