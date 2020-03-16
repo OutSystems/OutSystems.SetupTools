@@ -94,13 +94,13 @@ $OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/
 # .NET related
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDotNetReqForMajor = @{
-    '10.0' = @{
+    '10' = @{
         Version              = '4.6.1'
         Value                = '394254'
         ToInstallVersion     = '4.7.2'
         ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
     }
-    '11.0' = @{
+    '11' = @{
         Version              = '4.7.2'
         Value                = '461808'
         ToInstallVersion     = '4.7.2'

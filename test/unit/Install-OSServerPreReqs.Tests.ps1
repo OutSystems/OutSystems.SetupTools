@@ -41,7 +41,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When installing OS 10 on a clean machine and everything succeed' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -59,7 +59,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When installing OS 10 on a machine with all prereqs installed' {
@@ -67,7 +67,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461308 }
 
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
@@ -85,12 +85,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When installing OS 11 on a clean machine and everything succeed' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -108,7 +108,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When installing OS 11 with all prereqs installed' {
@@ -117,7 +117,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetDotNet4Version { return 461808 }
             Mock GetWindowsServerHostingVersion { return '2.1.12' }
 
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
@@ -135,13 +135,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When user is not admin' {
 
             Mock IsAdmin { return $false }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run anything' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -161,13 +161,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'The current user is not Administrator or not running this script in an elevated session'
             }
             It 'Should output an error' { $err[-1] | Should Be 'The current user is not Administrator or not running this script in an elevated session' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET installation fails to start' {
 
             Mock InstallDotNet { throw 'Big error' }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -187,13 +187,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error downloading or starting the .NET installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the .NET installation' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET reports a reboot' {
 
             Mock InstallDotNet { return 3010 }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -213,13 +213,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET reports an error' {
 
             Mock InstallDotNet { return 10 }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -239,14 +239,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error installing .NET 4.7.2'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 4.7.2. Exit code: 10' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'Build tools versions are correctly validated' {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2017' = $True; 'LatestVersionInstalled' = 'Build Tools 2017'; 'RebootNeeded' = $False } }
 
-            $Major10 = '10.0'
+            $Major10 = '10'
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major10 -InstallInfo (GetMSBuildToolsInstallInfo)
 
             It "MS Build 2017 is not supported in major version '$Major10'" {
@@ -261,7 +261,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result | Should Be $True
             }
 
-            $Major11 = '11.0'
+            $Major11 = '11'
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'Build Tools Update 3'; 'RebootNeeded' = $False } }
 
@@ -283,7 +283,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When build tools installation fails to start' {
 
             Mock InstallBuildTools { throw 'Big error' }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -303,13 +303,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error downloading or starting the Build Tools installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the Build Tools installation' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When build tools a reboot' {
 
             Mock InstallBuildTools { return 3010 }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -329,13 +329,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When build tools reports an error' {
 
             Mock InstallBuildTools { return 10 }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -355,13 +355,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error installing Build Tools 2015'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing Build Tools 2015. Exit code: 10' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When windows features installation fails to start' {
 
             Mock InstallWindowsFeatures { throw 'Some error' }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -381,13 +381,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error starting the windows features installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error starting the windows features installation' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When windows features reports a reboot' {
 
             Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 2 }; 'Success' = $true} }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -407,13 +407,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When windows features reports an error' {
 
             Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 10 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $false} }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -433,13 +433,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error installing windows features'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing windows features. Exit code: 10' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET core installation fails to start' {
 
             Mock InstallDotNetCore { throw 'Big error' }
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -459,13 +459,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error downloading or starting the .NET Core installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the .NET Core installation' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET core reports a reboot' {
 
             Mock InstallDotNetCore { return 3010 }
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -485,13 +485,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET core reports an error' {
 
             Mock InstallDotNetCore { return 10 }
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
@@ -511,13 +511,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error installing .NET Core Windows Server Hosting bundle'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET Core Windows Server Hosting bundle. Exit code: 10' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When configure WMI reports an error' {
 
             Mock ConfigureServiceWMI { throw 'Big Error' }
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -537,13 +537,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error configuring the WMI service'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error configuring the WMI service' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When configure windows search reports an error' {
 
             Mock ConfigureServiceWindowsSearch { throw 'Big Error' }
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -563,13 +563,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error configuring the Windows search service'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error configuring the Windows search service' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When configure FIPS reports an error' {
 
             Mock DisableFIPS { throw 'Big Error' }
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -589,14 +589,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error disabling FIPS compliant algorithms checks'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error disabling FIPS compliant algorithms checks' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When configure Event Log reports an error' {
 
             Mock ConfigureWindowsEventLog { throw 'Big Error' }
             $assRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-            $result = Install-OSServerPreReqs -MajorVersion '11.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -616,13 +616,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error configuring Security Event Log'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error configuring Security Event Log' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When configure MSMQ reports an error' {
 
             Mock ConfigureMSMQDomainServer { throw 'Big Error' }
-            $result = Install-OSServerPreReqs -MajorVersion '10.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -642,7 +642,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error configuring the Message Queuing service'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error configuring the Message Queuing service' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
     }
 }
