@@ -12,7 +12,7 @@
 function InstallWindowsFeatures([string[]]$Features)
 {
     $ProgressPreference = "SilentlyContinue"
-    $installResult =  Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
+    $installResult = Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
 
     return $installResult
 }
@@ -95,7 +95,7 @@ function GetDotNet4Version()
     #>
     try
     {
-        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop |  Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
     }
     catch
     {
@@ -135,7 +135,7 @@ function GetWindowsServerHostingVersion()
 
 function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
 {
-    $Result = @{}
+    $Result = @{ }
     $Result.Version = ""
     $Result.Value = ""
 
@@ -159,7 +159,7 @@ function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
 
 function InstallDotNet([string]$Sources)
 {
-    if($Sources)
+    if ($Sources)
     {
         $installer = "$Sources\NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -181,9 +181,9 @@ function InstallDotNet([string]$Sources)
 
 function GetDotNetLimits
 {
-    $NETConfig = @{}
-    $NETConfig.SystemWeb = @{}
-    $NETConfig.SystemWeb.HttpRuntime = @{}
+    $NETConfig = @{ }
+    $NETConfig.SystemWeb = @{ }
+    $NETConfig.SystemWeb.HttpRuntime = @{ }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
     $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
@@ -212,12 +212,13 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
-function GetMSBuildToolsInstallInfo {
+function GetMSBuildToolsInstallInfo
+{
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
 
-    $InstallInfo = @{}
+    $InstallInfo = @{ }
 
-    $InstallInfo.HasMSBuild2015  = $False
+    $InstallInfo.HasMSBuild2015 = $False
     $InstallInfo.HasMSBuild2017 = $False
 
     $InstallInfo.LatestVersionInstalled = $Null
@@ -233,7 +234,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015"
 
-        $InstallInfo.HasMSBuild2015  = $True
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -242,7 +243,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 1"
 
-        $InstallInfo.HasMSBuild2015  = $True
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -251,7 +252,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 2"
 
-        $InstallInfo.HasMSBuild2015  = $True
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -291,7 +292,8 @@ function GetMSBuildToolsInstallInfo {
     return $InstallInfo
 }
 
-function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo) {
+function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
+{
     # Determines if we have a required version for the Major Version.
     switch ($MajorVersion)
     {
@@ -315,7 +317,8 @@ function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
     }
 }
 
-function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
+function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter)
+{
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using VSWhere to check if a MS Build Tools is installed version (between min. version $MinVersion and max. version $MaxVersion)."
 
     $VSWherePath = "$PSScriptRoot\Executables\vswhere.exe"
@@ -327,7 +330,8 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
         return $null
     }
 
-    if ([version]$MinVersion -ge [version]$MaxVersion) {
+    if ([version]$MinVersion -ge [version]$MaxVersion)
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot pass to VSWhere a minimum version ($MinVersion) equal or greater than the maximum version ($MaxVersion)."
 
         return $null
@@ -373,7 +377,7 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
 
 function InstallBuildTools([string]$Sources)
 {
-    if($Sources)
+    if ($Sources)
     {
         $installer = "$Sources\BuildTools_Full.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -395,7 +399,7 @@ function InstallBuildTools([string]$Sources)
 
 function InstallDotNetCore([string]$Sources)
 {
-    if($Sources)
+    if ($Sources)
     {
         $installer = "$Sources\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -496,8 +500,8 @@ function IsMSIInstalled([string]$ProductCode)
     try
     {
         $objInstaller = New-Object -ComObject WindowsInstaller.Installer
-	    $objType = $objInstaller.GetType()
-	    $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
+        $objType = $objInstaller.GetType()
+        $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
     }
     catch
     {
@@ -567,7 +571,8 @@ Function RunConfigTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Check if the file machine.config is locked before running the tool."
     $MachineConfigFile = "$ENV:windir\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config"
 
-    While(TestFileLock($MachineConfigFile)){
+    While (TestFileLock($MachineConfigFile))
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!! Retrying is 10s."
         Start-Sleep -Seconds 10
     }
@@ -711,7 +716,8 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
 
-    Try {
+    Try
+    {
         $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
         $ProcessInfo.FileName = $CommandPath
         $ProcessInfo.RedirectStandardError = $true
@@ -729,11 +735,12 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process.WaitForExit()
 
         Return [PSCustomObject]@{
-            Output = $Output
+            Output   = $Output
             ExitCode = $Process.ExitCode
         }
     }
-    Catch {
+    Catch
+    {
         Throw "Error launching the process $CommandPath $CommandArguments"
     }
 }
