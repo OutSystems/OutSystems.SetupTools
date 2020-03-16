@@ -132,7 +132,7 @@ function Set-OSServerConfig
                     $LogDBCredentialAttribCollection.Add($LogDBCredentialAttrib)
                     $LogDBCredentialParam = New-Object System.Management.Automation.RuntimeDefinedParameter('LogDBCredential', [System.Management.Automation.PSCredential], $LogDBCredentialAttribCollection)
 
-                    $UpgradeEnvironmentAttrib =  New-Object System.Management.Automation.ParameterAttribute
+                    $UpgradeEnvironmentAttrib = New-Object System.Management.Automation.ParameterAttribute
                     $UpgradeEnvironmentAttrib.ParameterSetName = 'ApplyConfig'
                     $UpgradeEnvironmentAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                     $UpgradeEnvironmentAttribCollection.Add($UpgradeEnvironmentAttrib)
