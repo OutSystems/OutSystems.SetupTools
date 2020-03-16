@@ -157,9 +157,9 @@ function InstallDotNet([string]$Sources)
 
 function GetDotNetLimits
 {
-    $NETConfig = @{}
-    $NETConfig.SystemWeb = @{}
-    $NETConfig.SystemWeb.HttpRuntime = @{}
+    $NETConfig = @{ }
+    $NETConfig.SystemWeb = @{ }
+    $NETConfig.SystemWeb.HttpRuntime = @{ }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
     $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
@@ -188,12 +188,13 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
-function GetMSBuildToolsInstallInfo {
+function GetMSBuildToolsInstallInfo
+{
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
 
-    $InstallInfo = @{}
+    $InstallInfo = @{ }
 
-    $InstallInfo.HasMSBuild2015  = $False
+    $InstallInfo.HasMSBuild2015 = $False
     $InstallInfo.HasMSBuild2017 = $False
 
     $InstallInfo.LatestVersionInstalled = $Null
@@ -209,7 +210,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015"
 
-        $InstallInfo.HasMSBuild2015  = $True
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -218,7 +219,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 1"
 
-        $InstallInfo.HasMSBuild2015  = $True
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -227,7 +228,7 @@ function GetMSBuildToolsInstallInfo {
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 2"
 
-        $InstallInfo.HasMSBuild2015  = $True
+        $InstallInfo.HasMSBuild2015 = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -267,7 +268,8 @@ function GetMSBuildToolsInstallInfo {
     return $InstallInfo
 }
 
-function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo) {
+function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
+{
     # Determines if we have a required version for the Major Version.
     switch ($MajorVersion)
     {
@@ -291,7 +293,8 @@ function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
     }
 }
 
-function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
+function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter)
+{
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using VSWhere to check if a MS Build Tools is installed version (between min. version $MinVersion and max. version $MaxVersion)."
 
     $VSWherePath = "$PSScriptRoot\Executables\vswhere.exe"
@@ -303,7 +306,8 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
         return $null
     }
 
-    if ([version]$MinVersion -ge [version]$MaxVersion) {
+    if ([version]$MinVersion -ge [version]$MaxVersion)
+    {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot pass to VSWhere a minimum version ($MinVersion) equal or greater than the maximum version ($MaxVersion)."
 
         return $null
