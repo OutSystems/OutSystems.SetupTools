@@ -12,7 +12,7 @@
 function InstallWindowsFeatures([string[]]$Features)
 {
     $ProgressPreference = "SilentlyContinue"
-    $installResult = Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
+    $installResult =  Install-WindowsFeature -Name $Features -ErrorAction SilentlyContinue -Verbose:$false -WarningAction SilentlyContinue
 
     return $installResult
 }
@@ -95,7 +95,7 @@ function GetDotNet4Version()
     #>
     try
     {
-        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
+        $output = $(Get-ChildItem "HKLM:SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\" -ErrorAction Stop |  Get-ItemProperty -ErrorAction Stop).Release | Sort-Object -Descending | Select-Object -First 1
     }
     catch
     {
@@ -133,16 +133,40 @@ function GetWindowsServerHostingVersion()
     return $version
 }
 
+function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
+{
+    $Result = @{}
+    $Result.Version = ""
+    $Result.Value = ""
+
+    switch ($PlatformMajorVersion)
+    {
+        '10'
+        {
+            $Result.Version = "4.6.1"
+            $Result.Value = $OS10ReqsMinDotNetVersion
+        }
+
+        '11'
+        {
+            $Result.Version = "4.7.2"
+            $Result.Value = $OS11ReqsMinDotNetVersion
+        }
+    }
+
+    return $Result
+}
+
 function InstallDotNet([string]$Sources)
 {
-    if ($Sources)
+    if($Sources)
     {
-        $installer = "$Sources\DotNet.exe"
+        $installer = "$Sources\NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNet.exe"
+        $installer = "$ENV:TEMP\NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNET"
         DownloadOSSources -URL $OSRepoURLDotNET -SavePath $installer
     }
@@ -157,9 +181,9 @@ function InstallDotNet([string]$Sources)
 
 function GetDotNetLimits
 {
-    $NETConfig = @{ }
-    $NETConfig.SystemWeb = @{ }
-    $NETConfig.SystemWeb.HttpRuntime = @{ }
+    $NETConfig = @{}
+    $NETConfig.SystemWeb = @{}
+    $NETConfig.SystemWeb.HttpRuntime = @{}
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
     $NETMachineConfig = [System.Configuration.ConfigurationManager]::OpenMachineConfiguration()
@@ -188,13 +212,12 @@ function SetDotNetLimits([int]$UploadLimit, [TimeSpan]$ExecutionTimeout)
     $NETMachineConfig.Save()
 }
 
-function GetMSBuildToolsInstallInfo
-{
+function GetMSBuildToolsInstallInfo {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Opening the config file"
 
-    $InstallInfo = @{ }
+    $InstallInfo = @{}
 
-    $InstallInfo.HasMSBuild2015 = $False
+    $InstallInfo.HasMSBuild2015  = $False
     $InstallInfo.HasMSBuild2017 = $False
 
     $InstallInfo.LatestVersionInstalled = $Null
@@ -210,7 +233,7 @@ function GetMSBuildToolsInstallInfo
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015"
 
-        $InstallInfo.HasMSBuild2015 = $True
+        $InstallInfo.HasMSBuild2015  = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -219,7 +242,7 @@ function GetMSBuildToolsInstallInfo
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 1"
 
-        $InstallInfo.HasMSBuild2015 = $True
+        $InstallInfo.HasMSBuild2015  = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -228,7 +251,7 @@ function GetMSBuildToolsInstallInfo
     {
         $InstallInfo.LatestVersionInstalled = "Build Tools 2015 Update 2"
 
-        $InstallInfo.HasMSBuild2015 = $True
+        $InstallInfo.HasMSBuild2015  = $True
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
@@ -242,7 +265,7 @@ function GetMSBuildToolsInstallInfo
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
 
-    $isRebootRequired = $(GetMSBuildToolsInstallInfoWithVSWhere -MinVersion 15.0 -MaxVersion 17.0 -PropertyFilter "isRebootRequired")
+    $isRebootRequired = GetMSBuildToolsInstallInfoWithVSWhere -MinVersion 15.0 -MaxVersion 17.0 -PropertyFilter "isRebootRequired"
 
     # If something other than $null is returned, we know vswhere found a valid version
     if ($null -ne $isRebootRequired)
@@ -268,19 +291,18 @@ function GetMSBuildToolsInstallInfo
     return $InstallInfo
 }
 
-function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
-{
+function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo) {
     # Determines if we have a required version for the Major Version.
     switch ($MajorVersion)
     {
-        '10.0'
+        '10'
         {
             # Has either MSBuildTools 2015
             # But _DOES NOT HAVE_ MSBuildTools 2017
             return ($InstallInfo.HasMSBuild2015) -and (-not $InstallInfo.HasMSBuild2017)
         }
 
-        '11.0'
+        '11'
         {
             # Has either MSBuildTools 2015 or MSBuildTools 2017
             return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2017)
@@ -293,8 +315,7 @@ function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
     }
 }
 
-function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter)
-{
+function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter) {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using VSWhere to check if a MS Build Tools is installed version (between min. version $MinVersion and max. version $MaxVersion)."
 
     $VSWherePath = "$PSScriptRoot\Executables\vswhere.exe"
@@ -306,8 +327,7 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
         return $null
     }
 
-    if ([version]$MinVersion -ge [version]$MaxVersion)
-    {
+    if ([version]$MinVersion -ge [version]$MaxVersion) {
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Cannot pass to VSWhere a minimum version ($MinVersion) equal or greater than the maximum version ($MaxVersion)."
 
         return $null
@@ -353,7 +373,7 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
 
 function InstallBuildTools([string]$Sources)
 {
-    if ($Sources)
+    if($Sources)
     {
         $installer = "$Sources\BuildTools_Full.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
@@ -375,14 +395,14 @@ function InstallBuildTools([string]$Sources)
 
 function InstallDotNetCore([string]$Sources)
 {
-    if ($Sources)
+    if($Sources)
     {
-        $installer = "$Sources\DotNetCoreWindowsHosting.exe"
+        $installer = "$Sources\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCoreWindowsHosting.exe"
+        $installer = "$ENV:TEMP\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
         DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
     }
@@ -476,8 +496,8 @@ function IsMSIInstalled([string]$ProductCode)
     try
     {
         $objInstaller = New-Object -ComObject WindowsInstaller.Installer
-        $objType = $objInstaller.GetType()
-        $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
+	    $objType = $objInstaller.GetType()
+	    $Products = $objType.InvokeMember('Products', [System.Reflection.BindingFlags]::GetProperty, $null, $objInstaller, $null)
     }
     catch
     {
@@ -547,8 +567,7 @@ Function RunConfigTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Check if the file machine.config is locked before running the tool."
     $MachineConfigFile = "$ENV:windir\Microsoft.NET\Framework64\v4.0.30319\Config\machine.config"
 
-    While (TestFileLock($MachineConfigFile))
-    {
+    While(TestFileLock($MachineConfigFile)){
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!! Retrying is 10s."
         Start-Sleep -Seconds 10
     }
@@ -589,9 +608,18 @@ function RunOSPTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server install directory"
     $installDir = GetServerInstallDir
 
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server major version"
     $version = [System.Version]$(GetServerVersion)
-    $majorVersion = "$($version.Major).$($version.Minor)"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server major version is $majorVersion"
+    if ($version.Minor -eq 0)
+    {
+        $majorVersion = "$($version.Major).$($version.Minor)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Found old versioning. Server major version is $majorVersion"
+    }
+    else
+    {
+        $majorVersion = "$($version.Major)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Server major version is $majorVersion"
+    }
 
     $ospToolPath = "$ENV:CommonProgramFiles\OutSystems\$majorVersion"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "OSPTool path is $ospToolPath"
@@ -637,7 +665,7 @@ function GetServerSerialNumber()
 function GetServiceStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\(default)"
-    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "(default)" #TODO: Add .0 here
 
     if ($output)
     {
@@ -683,8 +711,7 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
 
-    Try
-    {
+    Try {
         $ProcessInfo = New-Object System.Diagnostics.ProcessStartInfo
         $ProcessInfo.FileName = $CommandPath
         $ProcessInfo.RedirectStandardError = $true
@@ -702,12 +729,11 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process.WaitForExit()
 
         Return [PSCustomObject]@{
-            Output   = $Output
+            Output = $Output
             ExitCode = $Process.ExitCode
         }
     }
-    Catch
-    {
+    Catch {
         Throw "Error launching the process $CommandPath $CommandArguments"
     }
 }
@@ -768,32 +794,6 @@ function GenerateEncryptKey()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $key"
 
     return $key
-}
-
-function GetPlatformVersion([string]$SCHost)
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform version from $SCHost"
-
-    $result = SCWS_GetPlatformInfo -SCHost $SCHost
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
-
-    return $result
-}
-
-function GetAzStorageFileList()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting file list from storage account $OSAzStorageAccountName"
-
-    # This function never throws anything
-    $stoCtx = New-AzureStorageContext -StorageAccountName $OSAzStorageAccountName -SasToken $OSAzStorageSASToken -ErrorAction 'Stop'
-
-    $ProgressPreference = "SilentlyContinue"
-    $sources = $(Get-AzureStorageBlob -Container $OSAzStorageContainer -Context $stoCtx -ErrorAction 'Stop').Name
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($sources.Count)"
-
-    return $sources
 }
 
 function GetPlatformVersion([string]$SCHost)
