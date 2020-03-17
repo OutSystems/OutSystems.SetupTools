@@ -53,15 +53,15 @@ function Install-OSServerPreReqs
 
         # Initialize the results object
         $installResult = [pscustomobject]@{
-            PSTypeName = 'Outsystems.SetupTools.InstallResult'
-            Success = $true
+            PSTypeName   = 'Outsystems.SetupTools.InstallResult'
+            Success      = $true
             RebootNeeded = $false
-            ExitCode = 0
-            Message = 'OutSystems platform server pre-requisites successfully installed'
+            ExitCode     = 0
+            Message      = 'OutSystems platform server pre-requisites successfully installed'
         }
 
         #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
-        $MajorVersion = $MajorVersion.replace(".0","")
+        $MajorVersion = $MajorVersion.replace(".0", "")
     }
 
     process
@@ -140,7 +140,6 @@ function Install-OSServerPreReqs
                 }
             }
         }
-        #endregion
 
         # Check .NET version
         $MinDotNet4Version = $(GetMinDotNet4VersionForMajor -PlatformMajorVersion $MajorVersion)
@@ -228,7 +227,7 @@ function Install-OSServerPreReqs
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 successfully installed"
                 }
 
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Build Tools 2015 successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -275,7 +274,7 @@ function Install-OSServerPreReqs
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed."
                 }
 
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -322,7 +321,7 @@ function Install-OSServerPreReqs
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $($MinDotNet4Version.Version) successfully installed"
                 }
 
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $($MinDotNet4Version.Version) successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
