@@ -49,6 +49,7 @@ function LogMessage([string]$Function, [int]$Phase, [int]$Stream, [string]$Messa
         }
         3
         {
+            Write-Information -MessageData $Message
             Write-Verbose -Message "$logLineTemplate $Message"
             if ($script:OSLogFile)
             {
