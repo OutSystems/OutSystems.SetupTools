@@ -103,6 +103,7 @@ FunctionsToExport = @(
     'Set-OSInstallLog',
     'Set-OSServerConfig',
     'Set-OSServerPerformanceTunning',
+    'Set-OSServerPerformanceTunning2',
     'Set-OSServerSecuritySettings',
     'Set-OSServerWindowsFirewall',
     'Start-OSServerServices',
