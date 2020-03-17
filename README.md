@@ -39,14 +39,14 @@ Install-Module -Name OutSystems.SetupTools
 * Test if your system is compliant for installing OutSystems
 
 ```powershell
-Test-OSServerHardwareReqs -MajorVersion 11.0
-Test-OSServerSoftwareReqs -MajorVersion 11.0
+Test-OSServerHardwareReqs -MajorVersion 11
+Test-OSServerSoftwareReqs -MajorVersion 11
 ```
 
 * Install the platform pre-requisites:
 
 ```powershell
-Install-OSServerPreReqs -MajorVersion 11.0
+Install-OSServerPreReqs -MajorVersion 11
 ```
 
 * Install the platform server and development environment:
