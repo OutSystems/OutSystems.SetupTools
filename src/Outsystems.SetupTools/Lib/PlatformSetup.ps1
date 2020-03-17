@@ -242,7 +242,7 @@ function GetMSBuildToolsInstallInfo
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "$($InstallInfo.LatestVersionInstalled) is installed."
     }
 
-    $isRebootRequired = $(GetMSBuildToolsInstallInfoWithVSWhere -MinVersion 15.0 -MaxVersion 17.0 -PropertyFilter "isRebootRequired")
+    $isRebootRequired = GetMSBuildToolsInstallInfoWithVSWhere -MinVersion 15.0 -MaxVersion 17.0 -PropertyFilter "isRebootRequired"
 
     # If something other than $null is returned, we know vswhere found a valid version
     if ($null -ne $isRebootRequired)
