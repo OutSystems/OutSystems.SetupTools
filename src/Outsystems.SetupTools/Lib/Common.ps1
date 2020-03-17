@@ -133,6 +133,26 @@ function RegRead([string]$Path, [string]$Name)
     return $output
 }
 
+function GetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $PSPath"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Filter: $Filter"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Name: $Name"
+
+    # Web adminstration cmdLets errors are statement-terminating errors. Try/catch should be used.
+    if ($Name)
+    {
+        $webProperty = Get-WebConfigurationProperty -PSPath $PSPath -Filter $Filter -Name $Name
+    }
+    else
+    {
+        # If name is empty is because its a collection.
+        $webProperty = Get-WebConfigurationProperty -PSPath $PSPath -Filter "$Filter/add[@name='$($Value.name)']" -Name .
+    }
+
+    return $webProperty
+}
+
 function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$Name, [PSObject]$Value)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $PSPath"
