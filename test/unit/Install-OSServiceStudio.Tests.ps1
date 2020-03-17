@@ -7,7 +7,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         # Global mocks
         Mock IsAdmin { return $true }
         Mock GetServiceStudioVersion { return '10.0.0.1' }
-        Mock GetServiceStudioInstallDir { return 'C:\Program Files\OutSystems\Development Environment 10.0' }
+        Mock GetServiceStudioInstallDir { return 'C:\Program Files\OutSystems\Development Environment 10' }
         Mock DownloadOSSources {}
         Mock Start-Process { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
 
