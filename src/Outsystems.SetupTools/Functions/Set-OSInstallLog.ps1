@@ -35,10 +35,7 @@ function Set-OSInstallLog
         [string]$File,
 
         [Parameter()]
-        [switch]$LogDebug,
-
-        [Parameter()]
-        [switch]$DisableStandardStreamLogTemplate
+        [switch]$LogDebug
     )
     begin
     {
@@ -63,7 +60,6 @@ function Set-OSInstallLog
 
         $Script:OSLogFile = "$Path\$File"
         $Script:OSLogDebug = $LogDebug
-        $Script:OSEnableLogTemplate = (-not $DisableStandardStreamLogTemplate.IsPresent)
     }
 
     end
