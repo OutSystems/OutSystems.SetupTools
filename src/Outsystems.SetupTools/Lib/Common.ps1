@@ -179,6 +179,7 @@ function SetWebConfigurationProperty([string]$PSPath, [string]$Filter, [string]$
         }
     }
 }
+
 function AppInsightsSendEvent([string]$EventName, [psobject]$EventProperties)
 {
     try
