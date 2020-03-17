@@ -142,10 +142,9 @@ function Install-OSServerPreReqs
         }
 
         # Check .NET version
-        $MinDotNet4Version = $(GetMinDotNet4VersionForMajor -PlatformMajorVersion $MajorVersion)
-        if ($(GetDotNet4Version) -lt $MinDotNet4Version.Value)
+        if ($(GetDotNet4Version) -lt $script:OSDotNetReqForMajor[$MajorVersion]['Value'])
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $($MinDotNet4Version.Version)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
             $installDotNet = $true
         }
         else
@@ -299,8 +298,8 @@ function Install-OSServerPreReqs
         {
             try
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $($MinDotNet4Version.Version)"
-                $exitCode = InstallDotNet -Sources $SourcePath -MinDotNet4Version $($MinDotNet4Version.Version)
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
+                $exitCode = InstallDotNet -Sources $SourcePath -MinDotNet4Version $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])
             }
             catch
             {
@@ -318,23 +317,23 @@ function Install-OSServerPreReqs
             {
                 0
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $($MinDotNet4Version.Version) successfully installed"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']) successfully installed"
                 }
 
                 { $_ -in 3010, 3011 }
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $($MinDotNet4Version.Version) successfully installed but a reboot is needed. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']) successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
                 default
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET $($MinDotNet4Version.Version). Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET $($MinDotNet4Version.Version). Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']). Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']). Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = "Error installing .NET $($MinDotNet4Version.Version)"
+                    $installResult.Message = "Error installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
 
                     return $installResult
                 }
