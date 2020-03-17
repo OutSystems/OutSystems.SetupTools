@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -25,24 +25,24 @@ You should run first the Test-OSServerSoftwareReqs and the Test-OSServerHardware
 
 ### EXAMPLE 1
 ```
-Install-OSServerPreReqs -MajorVersion "10.0"
+Install-OSServerPreReqs -MajorVersion "10"
 ```
 
 ### EXAMPLE 2
 ```
-Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false
+Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false
 ```
 
 ### EXAMPLE 3
 ```
-Install-OSServerPreReqs -MajorVersion "11.0" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
+Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Specifies the platform major version.
-Accepted values: 10.0 or 11.0.
+Accepted values: 10 or 11.
 
 ```yaml
 Type: String
@@ -88,8 +88,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

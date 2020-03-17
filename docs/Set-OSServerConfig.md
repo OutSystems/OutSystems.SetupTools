@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -34,6 +34,7 @@ You need to know what you are doing here
 The Apply mode will run the OutSystems configuration tool with the configured settings
 For that you need to specify the -Apply parameter
 You can also specify the admin credentials for the platform, session and logging (only in OS11) databases
+You may also add the -InstallServiceCenter to install Service Center
 In OS11 you may also add the -ConfigureCacheInvalidationService to configure RabbitMQ
 
 ## EXAMPLES
@@ -55,7 +56,7 @@ Set-OSServerConfig -Apply -PlatformDBCredential sa
 
 ### EXAMPLE 4
 ```
-Set-OSServerConfig -Apply -PlatformDBCredential sa -SessionDBCredential sa -LogDBCredential sa -ConfigureCacheInvalidationService
+Set-OSServerConfig -Apply -PlatformDBCredential sa -SessionDBCredential sa -LogDBCredential sa -ConfigureCacheInvalidationService -InstallServiceCenter
 ```
 
 ## PARAMETERS
@@ -168,8 +169,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 

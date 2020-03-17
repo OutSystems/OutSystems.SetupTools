@@ -5,26 +5,25 @@ online version:
 schema: 2.0.0
 ---
 
-# Get-OSServerVersion
+# Get-OSPerfTuningStatus
 
 ## SYNOPSIS
-DEPRECATED - Use Get-OSServerInfo
-Returns the OutSystems platform server version
+Check the status of each of the performance tuning items for the OutSystems platform server.
 
 ## SYNTAX
 
 ```
-Get-OSServerVersion [<CommonParameters>]
+Get-OSPerfTuningStatus [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-This will returns the OutSystems platform server version.
+Gives a detailed description of the status of item of the performance tuning section for the OutSystems platform server.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-OSServerVersion
+Get-OSPerfTuningStatus
 ```
 
 ## PARAMETERS
@@ -36,7 +35,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### System.Version
 ## NOTES
 
 ## RELATED LINKS

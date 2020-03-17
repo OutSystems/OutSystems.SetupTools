@@ -1,6 +1,6 @@
 ---
 external help file: OutSystems.SetupTools-help.xml
-Module Name: Outsystems.SetupTools
+Module Name: OutSystems.SetupTools
 online version:
 schema: 2.0.0
 ---
@@ -24,14 +24,14 @@ Since we can have multiple development environments installed, you need to speci
 
 ### EXAMPLE 1
 ```
-Get-OSServiceStudioInfo -MajorVersion "10.0"
+Get-OSServiceStudioInfo -MajorVersion "10"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Major version.
-9.0, 9.1, 10.0, 11.0, ...
+9.0, 9.1, 10, 11, ...
 
 ```yaml
 Type: String
@@ -46,8 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### CommonParameters
-This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable.
-For more information, see about_CommonParameters (http://go.microsoft.com/fwlink/?LinkID=113216).
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
