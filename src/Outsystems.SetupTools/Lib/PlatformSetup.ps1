@@ -273,14 +273,14 @@ function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
     # Determines if we have a required version for the Major Version.
     switch ($MajorVersion)
     {
-        '10.0'
+        '10'
         {
             # Has either MSBuildTools 2015
             # But _DOES NOT HAVE_ MSBuildTools 2017
             return ($InstallInfo.HasMSBuild2015) -and (-not $InstallInfo.HasMSBuild2017)
         }
 
-        '11.0'
+        '11'
         {
             # Has either MSBuildTools 2015 or MSBuildTools 2017
             return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2017)

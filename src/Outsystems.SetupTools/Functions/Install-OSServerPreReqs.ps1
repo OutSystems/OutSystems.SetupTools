@@ -422,7 +422,7 @@ function Install-OSServerPreReqs
         # Version specific configuration.
         switch ($MajorVersion)
         {
-            '10.0'
+            '10'
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configure Message Queuing service to to always try to contact a message queue server when running on a server registered in a domain."
                 try
@@ -441,7 +441,7 @@ function Install-OSServerPreReqs
                     return $installResult
                 }
             }
-            '11.0'
+            '11'
             {
                 # Nothing to be done here
             }
