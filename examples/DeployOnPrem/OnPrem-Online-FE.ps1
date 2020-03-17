@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('10.0', '11.0')]
+    [ValidateSet('10.0', '11')]
     [string]$MajorVersion,
 
     [Parameter()]
@@ -14,7 +14,6 @@ $ErrorActionPreference = 'Stop'
 # -- Import module from Powershell Gallery
 Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force  | Out-Null
 Install-Module -Name Outsystems.SetupTools -Force | Out-Null
-Import-Module -Name Outsystems.SetupTools | Out-Null
 
 # -- Check HW and OS for compability
 Test-OSServerHardwareReqs -MajorVersion $MajorVersion -Verbose -ErrorAction Stop | Out-Null

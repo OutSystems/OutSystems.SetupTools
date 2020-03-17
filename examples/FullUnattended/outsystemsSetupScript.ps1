@@ -1,9 +1,13 @@
-﻿[CmdletBinding()]
+﻿# THIS IS AN EXAMPLE, NOT SUPORTED AND FROZEN IN TIME EXAMPLE
+# This script was build for a specific OutSystems.SetupTools module version and was not updated since.
+# Probably will not work with newer versions
+
+[CmdletBinding()]
 param(
     [Parameter()]
     [ValidateSet('DC', 'FE', 'LT')]
     [string]$OSRole,
-    
+
     [Parameter()]
     [string]$OSDBAuth = 'Database Authentication',
     [string]$OSController,
@@ -41,8 +45,8 @@ param(
 # -- Script variables
 $ErrorActionPreference = 'Stop'
 $OSDBSACred = New-Object System.Management.Automation.PSCredential ($OSDBSAUser, $(ConvertTo-SecureString $OSDBSAPass -AsPlainText -Force))
-$OSDBLogCred = New-Object System.Management.Automation.PSCredential ($OSDBSALogUser, $(ConvertTo-SecureString $OSDBSALogPass -AsPlainText -Force)) 
-$OSDBSessionCred = New-Object System.Management.Automation.PSCredential ($OSDBSASessionUser, $(ConvertTo-SecureString $OSDBSASessionPass -AsPlainText -Force)) 
+$OSDBLogCred = New-Object System.Management.Automation.PSCredential ($OSDBSALogUser, $(ConvertTo-SecureString $OSDBSALogPass -AsPlainText -Force))
+$OSDBSessionCred = New-Object System.Management.Automation.PSCredential ($OSDBSASessionUser, $(ConvertTo-SecureString $OSDBSASessionPass -AsPlainText -Force))
 
 # Start PS Logging
 Start-Transcript -Path "$Env:Windir\temp\PowerShellTranscript.log" -Append | Out-Null

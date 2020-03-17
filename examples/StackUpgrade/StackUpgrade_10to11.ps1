@@ -1,3 +1,7 @@
+# THIS IS AN EXAMPLE, NOT SUPORTED AND FROZEN IN TIME EXAMPLE
+# This script was build for a specific OutSystems.SetupTools module version and was not updated since.
+# Probably will not work with newer versions
+
 param(
     [Parameter(Mandatory = $true)][ValidateSet('DC', 'FE')][string]$OSRole
 )
