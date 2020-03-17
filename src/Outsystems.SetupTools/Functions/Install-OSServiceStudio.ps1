@@ -112,7 +112,7 @@ function Install-OSServiceStudio
 
             if (-not $PSBoundParameters.FullPathInstallDir.IsPresent)
             {
-                $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major).$(([System.Version]$Version).Minor)"
+                $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major)"
             }
             else
             {
@@ -212,7 +212,7 @@ function Install-OSServiceStudio
 
                 {$_ -in 3010, 3011}
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio successfully installed but a reboot is needed!!!!! Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
