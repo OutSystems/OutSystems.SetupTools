@@ -120,7 +120,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServiceStudioVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems\Development Environment 10.0" } }
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems\Development Environment 10" } }
 
             $result = Install-OSServiceStudio -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
