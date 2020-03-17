@@ -299,7 +299,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
-                $exitCode = InstallDotNet -Sources $SourcePath -MinDotNet4Version $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])
+                $exitCode = InstallDotNet -Sources $SourcePath -URL $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL']
             }
             catch
             {
