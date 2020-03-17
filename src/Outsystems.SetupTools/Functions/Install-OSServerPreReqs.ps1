@@ -61,7 +61,7 @@ function Install-OSServerPreReqs
         }
 
         #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
-        $MajorVersion = $MajorVersion.replace(".0","")
+        $MajorVersion = $MajorVersion.replace(".0", "")
     }
 
     process
@@ -122,7 +122,7 @@ function Install-OSServerPreReqs
         {
             '10'
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the windows features list since its required for OutSystems $MajorVersion"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
             }
 
@@ -144,7 +144,7 @@ function Install-OSServerPreReqs
         # Check .NET version
         if ($(GetDotNet4Version) -lt $script:OSDotNetReqForMajor[$MajorVersion]['Value'])
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $script:OSDotNETVersionToInstall"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']"
             $installDotNet = $true
         }
         else
