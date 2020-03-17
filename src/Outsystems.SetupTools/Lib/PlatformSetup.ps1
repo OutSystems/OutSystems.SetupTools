@@ -133,30 +133,6 @@ function GetWindowsServerHostingVersion()
     return $version
 }
 
-function GetMinDotNet4VersionForMajor($PlatformMajorVersion)
-{
-    $Result = @{ }
-    $Result.Version = ""
-    $Result.Value = ""
-
-    switch ($PlatformMajorVersion)
-    {
-        '10'
-        {
-            $Result.Version = "4.6.1"
-            $Result.Value = $OS10ReqsMinDotNetVersion
-        }
-
-        '11'
-        {
-            $Result.Version = "4.7.2"
-            $Result.Value = $OS11ReqsMinDotNetVersion
-        }
-    }
-
-    return $Result
-}
-
 function InstallDotNet([string]$Sources)
 {
     if ($Sources)
