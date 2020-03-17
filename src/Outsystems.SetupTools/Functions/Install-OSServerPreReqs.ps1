@@ -144,7 +144,7 @@ function Install-OSServerPreReqs
         # Check .NET version
         if ($(GetDotNet4Version) -lt $script:OSDotNetReqForMajor[$MajorVersion]['Value'])
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion']"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET version for OutSystems $MajorVersion not found. We will try to download and install NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
             $installDotNet = $true
         }
         else
