@@ -20,7 +20,8 @@ function Get-OSPerfTuningStatus
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
-        Function GetCompareText {
+        Function GetCompareText
+        {
             param(
                 [bool]$IsGreaterOrEqual
             )
@@ -37,7 +38,8 @@ function Get-OSPerfTuningStatus
             return $CompText
         }
 
-        Function GetIsOrIsntText {
+        Function GetIsOrIsntText
+        {
             param(
                 [bool]$Is
             )
@@ -54,7 +56,8 @@ function Get-OSPerfTuningStatus
             return $CompText
         }
 
-        Function CreatePerfTuningStatus {
+        Function CreatePerfTuningStatus
+        {
             param(
                 [Parameter(Mandatory = $true)]
                 [String]$Title,
@@ -71,7 +74,8 @@ function Get-OSPerfTuningStatus
             if (-not $PerfTuningStatus.ShouldBeSkipped)
             {
                 $TextStatus = "$TextStatus DO"
-            } else
+            }
+            else
             {
                 $TextStatus = "$TextStatus SKIP"
             }
@@ -86,7 +90,8 @@ function Get-OSPerfTuningStatus
             return $PerfTuningStatus
         }
 
-        Function CreateResult {
+        Function CreateResult
+        {
             param(
                 [Parameter(Mandatory = $true)]
                 [Bool]$ShouldBeSkipped,
@@ -96,16 +101,16 @@ function Get-OSPerfTuningStatus
                 [String[]]$Messages
             )
 
-            $Result = @{}
+            $Result = @{ }
             $Result.ShouldBeSkipped = $ShouldBeSkipped
             $Result.Messages = $Messages
 
             return $Result
         }
 
-        $PerfTuning = @{}
+        $PerfTuning = @{ }
         $PerfTuning.SomethingToDo = $False
-        $PerfTuning.Sections = @{}
+        $PerfTuning.Sections = @{ }
     }
 
     process
@@ -125,169 +130,169 @@ function Get-OSPerfTuningStatus
 
         $PerfTuning.Sections.ProcessSchedulingConfig = CreatePerfTuningStatus -Title "Setting Windows processor scheduling priority to 'background services'" `
             -ScriptBlock `
+        {
+            $ShouldBeSkipped = $True
+            $Messages = @()
+
+            try
             {
-                $ShouldBeSkipped = $True
-                $Messages = @()
+                $Value = RegRead -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Type "Dword"
 
-                try
+                $ShouldBeSkipped = ($Value -eq 24)
+
+                if ($ShouldBeSkipped)
                 {
-                    $Value = RegRead -Path "HKLM:\HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\PriorityControl" -Name "Win32PrioritySeparation" -Type "Dword"
-
-                    $ShouldBeSkipped = ($Value -eq 24)
-
-                    if ($ShouldBeSkipped)
-                    {
-                        $Messages = @("Already set to 'background services'.")
-                    }
-                    else
-                    {
-                        $Messages = @("Not set to 'background services'.")
-                    }
+                    $Messages = @("Already set to 'background services'.")
                 }
-                catch
+                else
                 {
-                    $Messages = @("Unable to determine current value. Skipping.")
+                    $Messages = @("Not set to 'background services'.")
                 }
-
-                # No current scenarios where we should skip this
-                return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
             }
+            catch
+            {
+                $Messages = @("Unable to determine current value. Skipping.")
+            }
+
+            # No current scenarios where we should skip this
+            return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+        }
 
         $PerfTuning.Sections.NETConfig = CreatePerfTuningStatus -Title ".NET upload size limits and execution timeout configuration" `
             -ScriptBlock `
+        {
+            $ShouldBeSkipped = $True
+            $Messages = @()
+
+            try
             {
-                $ShouldBeSkipped = $True
-                $Messages = @()
+                $NETConfig = $(GetDotNetLimits)
 
-                try
-                {
-                    $NETConfig = $(GetDotNetLimits)
+                $CurrentMaxRequestLength = $NETConfig.SystemWeb.HttpRuntime.maxRequestLength
+                $CurrentMaxRequestLengthInMB = "$($CurrentMaxRequestLength/1024) MB"
+                $CurrentExecutionTimeout = $NETConfig.SystemWeb.HttpRuntime.executionTimeout
 
-                    $CurrentMaxRequestLength = $NETConfig.SystemWeb.HttpRuntime.maxRequestLength
-                    $CurrentMaxRequestLengthInMB = "$($CurrentMaxRequestLength/1024) MB"
-                    $CurrentExecutionTimeout = $NETConfig.SystemWeb.HttpRuntime.executionTimeout
+                # upload size limits default is 4096 KB
+                #   https://docs.microsoft.com/en-us/dotnet/api/system.web.configuration.httpruntimesection.maxrequestlength
+                $DefaultMaxRequestLength = 4096
+                $DefaultMaxRequestLengthInMB = "$($DefaultMaxRequestLength/1024) MB"
 
-                    # upload size limits default is 4096 KB
-                    #   https://docs.microsoft.com/en-us/dotnet/api/system.web.configuration.httpruntimesection.maxrequestlength
-                    $DefaultMaxRequestLength = 4096
-                    $DefaultMaxRequestLengthInMB = "$($DefaultMaxRequestLength/1024) MB"
+                # execution timeout default is 110 seconds
+                #   https://docs.microsoft.com/en-us/dotnet/api/system.web.configuration.httpruntimesection.executiontimeout
+                [TimeSpan]$DefaultExecutionTimeout = "00:01:50"
 
-                    # execution timeout default is 110 seconds
-                    #   https://docs.microsoft.com/en-us/dotnet/api/system.web.configuration.httpruntimesection.executiontimeout
-                    [TimeSpan]$DefaultExecutionTimeout = "00:01:50"
+                $HasSmashableMaxRequestLength = $CurrentMaxRequestLength -eq $DefaultMaxRequestLength
+                $HasSmashableExecutionTimeout = $CurrentExecutionTimeout -eq $DefaultExecutionTimeout
 
-                    $HasSmashableMaxRequestLength = $CurrentMaxRequestLength -eq $DefaultMaxRequestLength
-                    $HasSmashableExecutionTimeout = $CurrentExecutionTimeout -eq $DefaultExecutionTimeout
+                $ShouldBeSkipped = $(-not $HasSmashableMaxRequestLength) -or $(-not $HasSmashableExecutionTimeout)
 
-                    $ShouldBeSkipped = $(-not $HasSmashableMaxRequestLength) -or $(-not $HasSmashableExecutionTimeout)
+                $CompTextMaxRequestLength = $(GetIsOrIsntText $HasSmashableMaxRequestLength)
 
-                    $CompTextMaxRequestLength = $(GetIsOrIsntText $HasSmashableMaxRequestLength)
+                $Messages += @("Current upload limit value ('$CurrentMaxRequestLengthInMB') $CompTextMaxRequestLength the default ('$DefaultMaxRequestLengthInMB').")
 
-                    $Messages += @("Current upload limit value ('$CurrentMaxRequestLengthInMB') $CompTextMaxRequestLength the default ('$DefaultMaxRequestLengthInMB').")
+                $CompTextExecutionTimeout = $(GetIsOrIsntText $HasSmashableExecutionTimeout)
 
-                    $CompTextExecutionTimeout = $(GetIsOrIsntText $HasSmashableExecutionTimeout)
-
-                    $Messages += @("Current execution timeout value ('$CurrentExecutionTimeout') $CompTextExecutionTimeout the default ('$DefaultExecutionTimeout').")
-                }
-                catch
-                {
-                    $Messages = @("Unable to determine current values. Skipping.")
-                }
-
-                return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+                $Messages += @("Current execution timeout value ('$CurrentExecutionTimeout') $CompTextExecutionTimeout the default ('$DefaultExecutionTimeout').")
             }
+            catch
+            {
+                $Messages = @("Unable to determine current values. Skipping.")
+            }
+
+            return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+        }
 
         $PerfTuning.Sections.IISUploadSizeLimitsConfig = CreatePerfTuningStatus -Title "IIS upload size limits configuration" `
             -ScriptBlock `
+        {
+            $ShouldBeSkipped = $True
+            $Messages = @()
+
+            try
             {
-                $ShouldBeSkipped = $True
-                $Messages = @()
+                $Filter = "system.webServer/security/requestFiltering/requestLimits"
+                $Name = "maxAllowedContentLength"
 
-                try
-                {
-                    $Filter = "system.webServer/security/requestFiltering/requestLimits"
-                    $Name = "maxAllowedContentLength"
+                $MaxAllowedContentLength = $(GetWebConfigurationProperty -PSPath "MACHINE/WEBROOT/APPHOST" -Filter "$Filter" -Name "$Name")
+                # MaxAllowedContentLength default value is 30000000
+                #  https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/#configuration
+                $DefaultMaxAllowedContentLength = 30000000
 
-                    $MaxAllowedContentLength = $(GetWebConfigurationProperty -PSPath "MACHINE/WEBROOT/APPHOST" -Filter "$Filter" -Name "$Name")
-                    # MaxAllowedContentLength default value is 30000000
-                    #  https://docs.microsoft.com/en-us/iis/configuration/system.webserver/security/requestfiltering/requestlimits/#configuration
-                    $DefaultMaxAllowedContentLength = 30000000
+                $ShouldBeSkipped = $MaxAllowedContentLength -ne $DefaultMaxAllowedContentLength
 
-                    $ShouldBeSkipped = $MaxAllowedContentLength -ne $DefaultMaxAllowedContentLength
+                $CompTextMaxAllowedContentLength = $(GetIsOrIsntText (-not $ShouldBeSkipped))
 
-                    $CompTextMaxAllowedContentLength = $(GetIsOrIsntText (-not $ShouldBeSkipped))
-
-                    $Messages = @("Current max allowed content length value ('$($MaxAllowedContentLength.Value) Bytes') $CompTextMaxAllowedContentLength the default ('$DefaultMaxAllowedContentLength Bytes').")
-                }
-                catch
-                {
-                    $Messages = @("Unable to determine current value. Skipping.")
-                }
-
-                return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+                $Messages = @("Current max allowed content length value ('$($MaxAllowedContentLength.Value) Bytes') $CompTextMaxAllowedContentLength the default ('$DefaultMaxAllowedContentLength Bytes').")
             }
+            catch
+            {
+                $Messages = @("Unable to determine current value. Skipping.")
+            }
+
+            return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+        }
 
         $PerfTuning.Sections.IISConnectionsConfig = CreatePerfTuningStatus -Title "IIS for unlimited connections configuration" `
             -ScriptBlock `
+        {
+            $ShouldBeSkipped = $True
+            $Messages = @()
+
+            try
             {
-                $ShouldBeSkipped = $True
-                $Messages = @()
+                $IISConfigs = $(GetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost/sites/site[@name='Default Web Site']" -Name "Limits")
 
-                try
-                {
-                    $IISConfigs = $(GetWebConfigurationProperty -PSPath "IIS:\" -Filter "system.applicationHost/sites/site[@name='Default Web Site']" -Name "Limits")
+                $CurrentValue = $IISConfigs.maxConnections
+                $RecommendedValue = $OSPerfTuningMaxConnections
 
-                    $CurrentValue = $IISConfigs.maxConnections
-                    $RecommendedValue = $OSPerfTuningMaxConnections
+                $ShouldBeSkipped = $CurrentValue -ge $RecommendedValue
 
-                    $ShouldBeSkipped = $CurrentValue -ge $RecommendedValue
+                $CompText = $(GetCompareText -IsGreaterOrEqual $ShouldBeSkipped)
 
-                    $CompText = $(GetCompareText -IsGreaterOrEqual $ShouldBeSkipped)
-
-                    $Messages = @("Current value ('$CurrentValue') is $CompText than our recommended ('$RecommendedValue').")
-                }
-                catch
-                {
-                    $Messages = @("Unable to determine current value. Skipping.")
-                }
-
-                return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+                $Messages = @("Current value ('$CurrentValue') is $CompText than our recommended ('$RecommendedValue').")
             }
+            catch
+            {
+                $Messages = @("Unable to determine current value. Skipping.")
+            }
+
+            return $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+        }
 
         $PerfTuning.Sections.AppPoolsConfig = CreatePerfTuningStatus -Title "IIS Application Pools configuration" `
             -ScriptBlock `
+        {
+            $ShouldBeSkipped = $True
+            $Messages = @()
+            $AppPoolsToForciblyCreateAndConfig = @()
+
+            try
             {
-                $ShouldBeSkipped = $True
-                $Messages = @()
-                $AppPoolsToForciblyCreateAndConfig = @()
-
-                try
+                foreach ($AppPool in @("OutSystemsApplications", "ServiceCenterAppPool"))
                 {
-                    foreach ($AppPool in @("OutSystemsApplications", "ServiceCenterAppPool"))
+                    if (-not $(Get-ChildItem -Path "IIS:\AppPools\$($AppPool)" -ErrorAction SilentlyContinue))
                     {
-                        if (-not $(Get-ChildItem -Path "IIS:\AppPools\$($AppPool)" -ErrorAction SilentlyContinue))
-                        {
-                            $AppPoolsToForciblyCreateAndConfig += $AppPool
-                            $Messages += "'$AppPool' will be created and configured."
-                        }
-                        else
-                        {
-                            $Messages += "Detected that '$AppPool' may have user configurations. Skipping."
-                        }
+                        $AppPoolsToForciblyCreateAndConfig += $AppPool
+                        $Messages += "'$AppPool' will be created and configured."
                     }
-
-                    $ShouldBeSkipped = $($AppPoolsToForciblyCreateAndConfig.Count -eq 0)
-                }
-                catch
-                {
-                    $Messages += "Unable to determine application pools status. Skipping."
+                    else
+                    {
+                        $Messages += "Detected that '$AppPool' may have user configurations. Skipping."
+                    }
                 }
 
-                $Result = $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
-                $Result.AppPoolsToForciblyCreateAndConfig = $AppPoolsToForciblyCreateAndConfig
-
-                return $Result
+                $ShouldBeSkipped = $($AppPoolsToForciblyCreateAndConfig.Count -eq 0)
             }
+            catch
+            {
+                $Messages += "Unable to determine application pools status. Skipping."
+            }
+
+            $Result = $(CreateResult -ShouldBeSkipped $ShouldBeSkipped -Messages $Messages)
+            $Result.AppPoolsToForciblyCreateAndConfig = $AppPoolsToForciblyCreateAndConfig
+
+            return $Result
+        }
 
         foreach ($Status in $PerfTuning.Sections.values)
         {
