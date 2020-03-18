@@ -377,12 +377,12 @@ function InstallDotNetCore([string]$Sources)
 {
     if ($Sources)
     {
-        $installer = "$Sources\DotNetCoreWindowsHosting.exe"
+        $installer = "$Sources\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCoreWindowsHosting.exe"
+        $installer = "$ENV:TEMP\DotNetCore_WindowsHosting.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
         DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
     }

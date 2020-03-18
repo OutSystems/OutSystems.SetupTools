@@ -40,7 +40,7 @@ Write-Verbose "Downloading .NET 4.7.2" -Verbose
 Write-Verbose "Downloading BuildTools 2015" -Verbose
 (New-Object System.Net.WebClient).DownloadFile($OSRepoURLBuildTools, "$env:Temp\OSOfflineBundle\PreReqs\BuildTools_Full.exe")
 Write-Verbose "Downloading .NET Core 2.0.8" -Verbose
-(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCoreWindowsHosting.exe")
+(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCore_WindowsHosting.exe")
 
 # -- Download outsystems
 $OSServerVersion = Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion $MajorVersion -Latest
