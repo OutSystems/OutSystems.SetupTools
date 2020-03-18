@@ -36,7 +36,7 @@ Save-Module -Name OutSystems.SetupTools -Path "$env:Temp\OSOfflineBundle\Modules
 
 # -- Download prereqs to the prereqs folder
 Write-Verbose "Downloading .NET 4.7.2" -Verbose
-(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNET, "$env:Temp\OSOfflineBundle\PreReqs\DotNet.exe")
+(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNET, "$env:Temp\OSOfflineBundle\PreReqs\NDP472-KB4054530-x86-x64-AllOS-ENU.exe")
 Write-Verbose "Downloading BuildTools 2015" -Verbose
 (New-Object System.Net.WebClient).DownloadFile($OSRepoURLBuildTools, "$env:Temp\OSOfflineBundle\PreReqs\BuildTools_Full.exe")
 Write-Verbose "Downloading .NET Core 2.0.8" -Verbose
