@@ -192,11 +192,9 @@ function Get-OSServerPreReqs
         $RequirementStatuses += CreateRequirementStatus -Title "Microsoft.NET Framework Version" `
                                                         -ScriptBlock `
                                                         {
-                                                            $MinDotNet4Version = $script:OSDotNetReqForMajor[$MajorVersion]['Value']
-
-                                                            $Status = $(GetDotNet4Version) -ge $MinDotNet4Version.Value
-                                                            $OKMessages = @("Minimum .NET version $($MinDotNet4Version.Version) found.")
-                                                            $NOKMessages = @("Minimum .NET version $($MinDotNet4Version.Version) not found.")
+                                                            $Status = $(GetDotNet4Version) -ge $script:OSDotNetReqForMajor[$MajorVersion]['Value']
+                                                            $OKMessages = @("Minimum .NET version $($script:OSDotNetReqForMajor[$MajorVersion]['Version']) found.")
+                                                            $NOKMessages = @("Minimum .NET version $($script:OSDotNetReqForMajor[$MajorVersion]['Version']) not found.")
 
                                                             return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
