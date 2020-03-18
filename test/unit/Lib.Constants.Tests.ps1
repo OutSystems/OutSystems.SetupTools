@@ -7,7 +7,7 @@ Describe 'Lib Constants Tests' {
 
         $MajorVersion = '11'
         $SavePath = "$env:TEMP\dotnet11.exe"
-        $FileHash = 'C908F0A5BEA4BE282E35ACBA307D0061B71B8B66CA9894943D3CBB53CAD019BC'
+        $FileHash = 'C908F0A5BEA4BE282E35ACBA307D0061B71B8B66CA9894943D3CBB53CAD019BC1'
 
         It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.7.2" }
         It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "461808" }
