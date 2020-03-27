@@ -67,7 +67,10 @@ function Install-OSServer
         [switch]$SkipRabbitMQ,
 
         [Parameter()]
-        [switch]$WithLifetime
+        [switch]$WithLifetime,
+
+        [Parameter()]
+        [switch]$Force
     )
 
     dynamicParam
@@ -166,8 +169,14 @@ function Install-OSServer
         }
         else
         {
-            $installPlatformServer = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server already installed with the specified version $osVersion"
+            if ($Force.IsPresent)
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
+            }else{
+                $installPlatformServer = $false
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server already installed with the specified version $osVersion"
+            }
+
         }
 
         if ($Version -ge '11.0.0.0')
