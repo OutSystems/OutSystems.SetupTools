@@ -26,6 +26,9 @@ function Install-OSServer
     .PARAMETER FullPathInstallDir
     If specified, the InstallDir will not be appended with \Platform Server
 
+    .PARAMETER Force
+    Forces the reinstallation if already installed.
+
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0"
 
@@ -37,6 +40,9 @@ function Install-OSServer
 
     .EXAMPLE
     Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
+
+    .EXAMPLE
+    Install-OSServer -Version "10.0.823.0" -Force
 
     .EXAMPLE
     To install the latest 11 version
