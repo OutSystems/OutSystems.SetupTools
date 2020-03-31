@@ -34,7 +34,7 @@ function New-OSServerConfig
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('SQL', 'Oracle')]
+        [ValidateSet('SQL', 'Oracle', 'PostgreSQL')]
         [string]$DatabaseProvider,
 
         [Parameter(ValueFromPipeline = $true)]
@@ -139,6 +139,10 @@ function New-OSServerConfig
             'Oracle'
             {
                 $templateFile = "$osInstallDir\docs\Oracle_template.hsconf"
+            }
+            'PostgreSQL'
+            {
+                $templateFile = "$osInstallDir\docs\PostgreSQL_template.hsconf"
             }
         }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Copying configuration to the platform server folder"
