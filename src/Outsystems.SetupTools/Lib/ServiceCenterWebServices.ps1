@@ -32,14 +32,12 @@ function SCWS_GetOutSystemsPlatformProxy([string]$SCHost)
     return $platformWS
 }
 
-function SCWS_GetPlatformInfo([string]$SCHost)
+function SCWS_GetPlatformInfo([string]$SCHost, [string]$SCUser, [string]$SCPass)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform info from $SCHost"
 
-    $dummy = ""
-
     $platformWS = SCWS_GetOutSystemsPlatformProxy -SCHost $SCHost
-    $result = $($platformWS).GetPlatformInfo(([ref]$dummy))
+    $result = $($platformWS).GetPlatformInfo($SCUser, $(GetHashedPassword($SCPass)))
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
 

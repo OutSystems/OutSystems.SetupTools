@@ -11,11 +11,13 @@ function Get-OSPlatformVersion
     Service Center address. If not specified, will default to localhost (127.0.0.1).
 
     .EXAMPLE
-    Get-OSPlatformVersion -ServiceCenterHost "10.0.0.1"
+    $Credential = Get-Credential
+    Get-OSPlatformModules -ServiceCenterHost "10.0.0.1" -Credential $Credential
 
     .EXAMPLE
     Using the pipeline
-    "10.0.0.1", "10.0.0.1", "10.0.0.3" | Get-OSPlatformVersion
+    $Credential = Get-Credential
+    @(@{'ServiceCenterHost'="10.0.0.1";'Credential'=$Credential},@{'ServiceCenterHost'="10.0.0.3";'Credential'=$Credential}) | Get-OSPlatformVersion
 
     #>
 
@@ -25,7 +27,12 @@ function Get-OSPlatformVersion
         [Parameter(ValueFromPipeline=$true)]
         [Alias('Host')]
         [ValidateNotNullOrEmpty()]
-        [string[]]$ServiceCenterHost = '127.0.0.1'
+        [string[]]$ServiceCenterHost = '127.0.0.1',
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [System.Management.Automation.Credential()]
+        [System.Management.Automation.PSCredential]$Credential = $OSSCCred
     )
 
     begin
@@ -38,7 +45,7 @@ function Get-OSPlatformVersion
     {
         try
         {
-            $version = GetPlatformVersion -SCHost $ServiceCenterHost
+            $version = GetPlatformVersion -SCHost $ServiceCenterHost -Credential $Credential
         }
         catch
         {
