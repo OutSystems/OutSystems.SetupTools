@@ -779,13 +779,11 @@ function GenerateEncryptKey()
     return $key
 }
 
-function GetPlatformVersion([string]$SCHost, [pscredential]$Credential)
+function GetPlatformVersion([string]$SCHost)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting platform version from $SCHost"
 
-    $SCUser = $Credential.UserName
-    $SCPass = $Credential.GetNetworkCredential().Password
-    $result = SCWS_GetPlatformInfo -SCHost $SCHost -SCUser $SCUser -SCPass $SCPass
+    $result = SCWS_GetPlatformInfo -SCHost $SCHost
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $result"
 
