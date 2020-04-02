@@ -20,6 +20,9 @@ function Install-OSServer
     .PARAMETER Version
     The version to be installed.
 
+    .PARAMETER SkipRabbitMQ
+    If specified, the cmdlet will skip RabbitMQ installation.
+    
     .PARAMETER WithLifetime
     If specified, the cmdlet will install the platform server with lifetime.
 
@@ -62,6 +65,9 @@ function Install-OSServer
         [Parameter(ParameterSetName = 'Remote', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [version]$Version,
+        
+        [Parameter()]
+        [string]$AdditionalParameters,
 
         [Parameter()]
         [switch]$SkipRabbitMQ,
@@ -243,7 +249,7 @@ function Install-OSServer
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
-                $result = Start-Process -FilePath $installer -ArgumentList "/S /D=$InstallDir" -Wait -PassThru -ErrorAction Stop
+                $result = Start-Process -FilePath $installer -ArgumentList "/S /D=$InstallDir $AdditionalParameters" -Wait -PassThru -ErrorAction Stop
                 $exitCode = $result.ExitCode
             }
             catch
