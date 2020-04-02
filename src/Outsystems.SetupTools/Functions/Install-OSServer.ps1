@@ -76,9 +76,6 @@ function Install-OSServer
         [string]$AdditionalParameters,
 
         [Parameter()]
-        [string]$AdditionalParameters,
-
-        [Parameter()]
         [switch]$SkipRabbitMQ,
 
         [Parameter()]
