@@ -22,7 +22,7 @@ function Install-OSServer
 
     .PARAMETER SkipRabbitMQ
     If specified, the cmdlet will skip RabbitMQ installation.
-    
+
     .PARAMETER WithLifetime
     If specified, the cmdlet will install the platform server with lifetime.
 
@@ -65,7 +65,7 @@ function Install-OSServer
         [Parameter(ParameterSetName = 'Remote', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
         [version]$Version,
-        
+
         [Parameter()]
         [string]$AdditionalParameters,
 
