@@ -75,7 +75,21 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
 
+        Context 'When the platform server is already installed with the right version but -Force switch is specified' {
+
+            $result = Install-OSServer -Version '10.0.0.1' -Force -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServer -Version '10.0.0.1' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When theres an error downloading the sources from the repo' {
