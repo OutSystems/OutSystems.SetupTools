@@ -29,6 +29,9 @@ function Install-OSServer
     .PARAMETER FullPathInstallDir
     If specified, the InstallDir will not be appended with \Platform Server
 
+    .PARAMETER Force
+    Forces the reinstallation if already installed.
+
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0"
 
@@ -40,6 +43,9 @@ function Install-OSServer
 
     .EXAMPLE
     Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
+
+    .EXAMPLE
+    Install-OSServer -Version "10.0.823.0" -Force
 
     .EXAMPLE
     To install the latest 11 version
@@ -73,7 +79,10 @@ function Install-OSServer
         [switch]$SkipRabbitMQ,
 
         [Parameter()]
-        [switch]$WithLifetime
+        [switch]$WithLifetime,
+
+        [Parameter()]
+        [switch]$Force
     )
 
     dynamicParam
@@ -172,8 +181,16 @@ function Install-OSServer
         }
         else
         {
-            $installPlatformServer = $false
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server already installed with the specified version $osVersion"
+            if ($Force.IsPresent)
+            {
+                $installPlatformServer = $true
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
+            }
+            else
+            {
+                $installPlatformServer = $false
+            }
         }
 
         if ($Version -ge '11.0.0.0')
@@ -270,7 +287,7 @@ function Install-OSServer
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server successfully installed"
                 }
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -320,7 +337,7 @@ function Install-OSServer
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang successfully installed"
                 }
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -383,10 +400,10 @@ function Install-OSServer
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ successfully installed"
 
                     # Flag the installation for the configuration tool
-                     $env:OUTSYSTEMS_RABBITMQ = "$osInstallDir\thirdparty\RabbitMQ Server"
+                    $env:OUTSYSTEMS_RABBITMQ = "$osInstallDir\thirdparty\RabbitMQ Server"
                     [System.Environment]::SetEnvironmentVariable('OUTSYSTEMS_RABBITMQ', "$osInstallDir\thirdparty\RabbitMQ Server", "Machine")
                 }
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
