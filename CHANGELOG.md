@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.2.0.0
+
+- Added another database option to New-OSServerConfig
+
 ## 3.1.0.0
 
 - Added support for OutSystems 11.X.X.X
