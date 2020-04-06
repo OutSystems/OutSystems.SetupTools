@@ -181,14 +181,16 @@ function Install-OSServer
         }
         else
         {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server already installed with the specified version $osVersion"
             if ($Force.IsPresent)
             {
+                $installPlatformServer = $true
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
-            }else{
-                $installPlatformServer = $false
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server already installed with the specified version $osVersion"
             }
-
+            else
+            {
+                $installPlatformServer = $false
+            }
         }
 
         if ($Version -ge '11.0.0.0')
@@ -285,7 +287,7 @@ function Install-OSServer
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server successfully installed"
                 }
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems platform server successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -335,7 +337,7 @@ function Install-OSServer
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang successfully installed"
                 }
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
@@ -398,10 +400,10 @@ function Install-OSServer
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ successfully installed"
 
                     # Flag the installation for the configuration tool
-                     $env:OUTSYSTEMS_RABBITMQ = "$osInstallDir\thirdparty\RabbitMQ Server"
+                    $env:OUTSYSTEMS_RABBITMQ = "$osInstallDir\thirdparty\RabbitMQ Server"
                     [System.Environment]::SetEnvironmentVariable('OUTSYSTEMS_RABBITMQ', "$osInstallDir\thirdparty\RabbitMQ Server", "Machine")
                 }
-                {$_ -in 3010, 3011}
+                { $_ -in 3010, 3011 }
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
