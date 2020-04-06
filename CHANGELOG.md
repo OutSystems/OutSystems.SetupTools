@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.3.0.0
+
+- Install-OSServer: Added -Force and -AdditionalParameters switch
+
 ## 3.2.0.0
 
 - Added another database option to New-OSServerConfig
