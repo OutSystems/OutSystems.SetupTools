@@ -266,7 +266,7 @@ function Install-OSServer
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Starting the installation. This can take a while..."
-                $result = Start-Process -FilePath $installer -ArgumentList "/S /D=$InstallDir $AdditionalParameters" -Wait -PassThru -ErrorAction Stop
+                $result = Start-Process -FilePath $installer -ArgumentList "/S $AdditionalParameters /D=$InstallDir" -Wait -PassThru -ErrorAction Stop
                 $exitCode = $result.ExitCode
             }
             catch

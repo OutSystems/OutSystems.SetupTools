@@ -135,7 +135,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems " } }
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S  /D=C:\Program Files\Outsystems" } }
 
             $result = Install-OSServer -Version '10.0.0.1' -InstallDir 'C:\Program Files\Outsystems' -FullPathInstallDir -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -155,7 +155,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems TestParam" } }
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S TestParam /D=C:\Program Files\Outsystems" } }
 
             $result = Install-OSServer -Version '10.0.0.1' -InstallDir 'C:\Program Files\Outsystems' -AdditionalParameters "TestParam" -FullPathInstallDir -ErrorVariable err -ErrorAction SilentlyContinue
 
