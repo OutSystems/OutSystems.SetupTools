@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.3.1.0
+
+- Install-OSServer: Fixed -AdditionalParameters switch
+
 ## 3.3.0.0
 
 - Install-OSServer: Added -Force and -AdditionalParameters switch
