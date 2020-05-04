@@ -16,6 +16,7 @@ function Get-OSServerPreReqs
     #>
 
     [CmdletBinding()]
+    [OutputType('System.Collections.Hashtable')]
     param(
         [Parameter(Mandatory = $true)]
         [ValidatePattern('1[0-1]{1}(\.0)?')]
@@ -41,6 +42,7 @@ function Get-OSServerPreReqs
             $RequirementStatus = @{}
             $RequirementStatus.Title = $Title
             $RequirementStatus.Status = $Result.Status
+            $RequirementStatus.OptionalsFailed = $Result.OptionalsFailed
 
             $TextStatus = "OK"
             if (-not $($Result.Status))
@@ -65,6 +67,9 @@ function Get-OSServerPreReqs
                 [Parameter(Mandatory = $true)]
                 [Bool]$Status,
 
+                [Parameter(Mandatory = $false)]
+                [Bool]$OptionalsFailed,
+
                 [Parameter(Mandatory = $true)]
                 [AllowEmptyCollection()]
                 [String[]]$OKMessages,
@@ -77,9 +82,22 @@ function Get-OSServerPreReqs
             $Result = @{}
             $Result.Status = $Status
 
-            if ($Result.Status)
+            if ($null -eq $OptionalsFailed)
+            {
+                $Result.OptionalsFailed = $false
+            }
+            else
+            {
+                $Result.OptionalsFailed = $OptionalsFailed
+            }
+
+            if ($Result.Status -and -not $Result.OptionalsFailed)
             {
                 $Result.Messages = $OKMessages
+            }
+            elseif ($Result.Status -and $Result.OptionalsFailed)
+            {
+                $Result.Messages = $NOKMessages
             }
             else
             {
@@ -89,7 +107,9 @@ function Get-OSServerPreReqs
             return $Result
         }
 
-        $GlobalRequirementsStatus = $True
+        $GlobalRequirementsResults = @{}
+        $GlobalRequirementsResults.Success = $True
+        $GlobalRequirementsResults.OptionalsFailed = $False
 
         $RequirementStatuses = @()
     }
@@ -235,6 +255,7 @@ function Get-OSServerPreReqs
                                                         -ScriptBlock `
                                                         {
                                                             $Status = $True
+                                                            $OptionalsFailed = $False
                                                             $OKMessages = @("All Event Logs are correctly configured.")
                                                             $NOKMessages = @()
 
@@ -245,21 +266,27 @@ function Get-OSServerPreReqs
                                                                     $EventLog = $(Get-EventLog -List | Where-Object { $_.Log -eq $EventLogName})
 
                                                                     $CheckMaxLogSize = ($EventLog.MaximumKilobytes * 1024) -lt $OSWinEventLogSize
-                                                                    $CheckOverflowAction = $EventLog.OverflowAction -ne $OSWinEventLogOverflowAction
+                                                                    $CheckOverflowAction = ($EventLog.OverflowAction -ne $OSWinEventLogOverflowAction)
+
+                                                                    if ($CheckOverflowAction) {
+                                                                        #If the overflow action is OverwriteAsNeeded the registry entry we check might not exist
+                                                                        $AutoBackUp = (Get-ItemPropertyValue "HKLM:\SYSTEM\CurrentControlSet\services\eventlog\$EventLogName" -Name $OSWinEventLogAutoBackup) -eq 1
+                                                                        $CheckOverflowAction = (-not $AutoBackUp)
+                                                                    }
 
                                                                     if ($CheckMaxLogSize -or $CheckOverflowAction)
                                                                     {
-                                                                        $Status = $False
-                                                                        $NOKMessage = "Event Log '$EventLogName' is not correctly configured."
+                                                                        $OptionalsFailed = $True
+                                                                        $NOKMessage += "Event Log '$EventLogName' is not correctly configured."
 
                                                                         if ($CheckMaxLogSize)
                                                                         {
-                                                                            $NOKMessage = "$NOKMessage Maximum log size is under $OSWinEventLogOverflowAction."
+                                                                            $NOKMessage += "$NOKMessage Maximum log size is under $OSWinEventLogSize."
                                                                         }
 
                                                                         if ($CheckOverflowAction)
                                                                         {
-                                                                            $NOKMessage = "$NOKMessage 'Overwrite events as needed' is not set."
+                                                                            $NOKMessage += "$NOKMessage 'Overwrite events as needed' or 'Archive the log when full' is not set."
                                                                         }
 
                                                                         $NOKMessages += $NOKMessage
@@ -268,11 +295,11 @@ function Get-OSServerPreReqs
                                                             }
                                                             catch
                                                             {
-                                                                $Status = $False
+                                                                $OptionalsFailed = $True
                                                                 $NOKMessages += "Something went wrong when trying to obtain Event Logs information: `"$_`""
                                                             }
 
-                                                            return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                            return $(CreateResult -Status $Status -OptionalsFailed $OptionalsFailed -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
 
         $RequirementStatuses += CreateRequirementStatus -Title "FIPS Compliant Algorithms" `
@@ -294,11 +321,15 @@ function Get-OSServerPreReqs
 
             if (-not $RequirementStatus.Status)
             {
-                $GlobalRequirementsStatus = $False
+                $GlobalRequirementsResults.Success = $False
+            }
+            if ($RequirementStatus.OptionalsFailed)
+            {
+                $GlobalRequirementsResults.OptionalsFailed = $True
             }
         }
 
-        return $GlobalRequirementsStatus
+        return $GlobalRequirementsResults
     }
 
     end

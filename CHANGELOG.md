@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.3.2.0
+
+- Get-OSServerPreReqs: Now Windows event logs configurations are optional and don't block installer
+
 ## 3.3.1.0
 
 - Install-OSServer: Fixed -AdditionalParameters switch
