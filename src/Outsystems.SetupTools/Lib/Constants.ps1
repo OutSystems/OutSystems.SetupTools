@@ -70,6 +70,8 @@ $OSWinEventLogName = @(
     "Application",
     "System"
 )
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSWinEventLogAutoBackup = "AutoBackupLogFiles"
 
 # Default install directories
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]

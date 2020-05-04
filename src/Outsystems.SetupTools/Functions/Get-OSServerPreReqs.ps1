@@ -266,9 +266,13 @@ function Get-OSServerPreReqs
                                                                     $EventLog = $(Get-EventLog -List | Where-Object { $_.Log -eq $EventLogName})
 
                                                                     $CheckMaxLogSize = ($EventLog.MaximumKilobytes * 1024) -lt $OSWinEventLogSize
+                                                                    $CheckOverflowAction = ($EventLog.OverflowAction -ne $OSWinEventLogOverflowAction)
 
-                                                                    $AutoBackUp = (Get-ItemPropertyValue "HKLM:\SYSTEM\CurrentControlSet\services\eventlog\$EventLogName" -Name "AutoBackupLogFiles") -eq 1
-                                                                    $CheckOverflowAction = ($EventLog.OverflowAction -ne $OSWinEventLogOverflowAction) -and (-not $AutoBackUp)
+                                                                    if ($CheckOverflowAction) {
+                                                                        #If the overflow action is OverwriteAsNeeded the registry entry we check might not exist
+                                                                        $AutoBackUp = (Get-ItemPropertyValue "HKLM:\SYSTEM\CurrentControlSet\services\eventlog\$EventLogName" -Name $OSWinEventLogAutoBackup) -eq 1
+                                                                        $CheckOverflowAction = (-not $AutoBackUp)
+                                                                    }
 
                                                                     if ($CheckMaxLogSize -or $CheckOverflowAction)
                                                                     {
