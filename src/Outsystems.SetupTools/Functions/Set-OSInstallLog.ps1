@@ -35,7 +35,10 @@ function Set-OSInstallLog
         [string]$File,
 
         [Parameter()]
-        [switch]$LogDebug
+        [switch]$LogDebug,
+        
+        [Parameter(ValueFromRemainingArguments = $true)]
+        [string]$RemainingArguments
     )
     begin
     {
