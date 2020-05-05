@@ -137,8 +137,20 @@ function InstallDotNet([string]$Sources, [string]$URL)
 {
     if ($Sources)
     {
-        $installer = "$Sources\DotNet.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        if (Test-Path "$Sources\DotNet.exe")
+        {
+            $installer = "$Sources\DotNet.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        }
+        # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
+        elseif (Test-Path "$Sources\DotNet.exe.exe")
+        {
+            $installer = "$Sources\DotNet.exe.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+        }
+        else {
+            throw [System.IO.FileNotFoundException] "DotNet.exe not found."
+        }
     }
     else
     {
@@ -351,12 +363,24 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
     return $output
 }
 
-function InstallBuildTools([string]$Sources)
+function InstallBuildTools([string]$Sources, [bool]$Fallback)
 {
     if ($Sources)
     {
-        $installer = "$Sources\BuildTools_Full.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        if (Test-Path "$Sources\BuildTools_Full.exe")
+        {
+            $installer = "$Sources\BuildTools_Full.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        }
+        # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
+        elseif (Test-Path "$Sources\BuildTools_Full.exe.exe")
+        {
+            $installer = "$Sources\BuildTools_Full.exe.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+        }
+        else {
+            throw [System.IO.FileNotFoundException] "BuildTools_Full.exe not found."
+        }
     }
     else
     {
@@ -373,12 +397,24 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCore([string]$Sources)
+function InstallDotNetCore([string]$Sources, [bool]$Fallback)
 {
     if ($Sources)
     {
-        $installer = "$Sources\DotNetCore_WindowsHosting.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        if (Test-Path "$Sources\DotNetCore_WindowsHosting.exe")
+        {
+            $installer = "$Sources\DotNetCore_WindowsHosting.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        }
+        # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
+        elseif (Test-Path "$Sources\DotNetCore_WindowsHosting.exe.exe")
+        {
+            $installer = "$Sources\DotNetCore_WindowsHosting.exe.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+        }
+        else {
+            throw [System.IO.FileNotFoundException] "DotNetCore_WindowsHosting.exe not found."
+        }
     }
     else
     {

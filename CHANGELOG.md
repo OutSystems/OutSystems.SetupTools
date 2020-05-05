@@ -2,7 +2,7 @@
 
 ## 3.3.3.0
 
-- PlatformSetup: Now all expected files are using canonical names.
+- PlatformSetup: Now all expected files are using canonical names and code improvement
 
 ## 3.3.2.0
 

@@ -207,6 +207,17 @@ function Install-OSServerPreReqs
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Build Tools 2015"
                 $exitCode = InstallBuildTools -Sources $SourcePath
             }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Build Tools installer not found"
+                WriteNonTerminalError -Message "Build Tools installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Build Tools installer not found'
+
+                return $installResult
+            }
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the Build Tools installation"
@@ -254,6 +265,17 @@ function Install-OSServerPreReqs
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core Windows Server Hosting bundle"
                 $exitCode = InstallDotNetCore -Sources $SourcePath
             }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Core installer not found"
+                WriteNonTerminalError -Message ".NET Core installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = '.NET Core installer not found'
+
+                return $installResult
+            }
             catch
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core installation"
@@ -300,6 +322,17 @@ function Install-OSServerPreReqs
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
                 $exitCode = InstallDotNet -Sources $SourcePath -URL $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL']
+            }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET installer not found"
+                WriteNonTerminalError -Message ".NET installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = '.NET installer not found'
+
+                return $installResult
             }
             catch
             {
