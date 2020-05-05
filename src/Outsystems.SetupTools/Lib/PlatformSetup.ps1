@@ -137,12 +137,12 @@ function InstallDotNet([string]$Sources, [string]$URL)
 {
     if ($Sources)
     {
-        $installer = "$Sources\NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
+        $installer = "$Sources\DotNet.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
     }
     else
     {
-        $installer = "$ENV:TEMP\NDP472-KB4054530-x86-x64-AllOS-ENU.exe"
+        $installer = "$ENV:TEMP\DotNet.exe"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $URL"
         DownloadOSSources -URL $URL -SavePath $installer
     }
