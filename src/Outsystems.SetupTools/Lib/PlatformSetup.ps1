@@ -363,7 +363,7 @@ function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$Max
     return $output
 }
 
-function InstallBuildTools([string]$Sources, [bool]$Fallback)
+function InstallBuildTools([string]$Sources)
 {
     if ($Sources)
     {
@@ -397,7 +397,7 @@ function InstallBuildTools([string]$Sources, [bool]$Fallback)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCore([string]$Sources, [bool]$Fallback)
+function InstallDotNetCore([string]$Sources)
 {
     if ($Sources)
     {
