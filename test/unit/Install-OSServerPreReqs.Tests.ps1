@@ -194,9 +194,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock InstallDotNet { throw [System.IO.FileNotFoundException] '.NET installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
-            It 'cenas' {
-                Assert-MockCalled InstallDotNet -Times 1
-            }
 
             It 'Should not run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
