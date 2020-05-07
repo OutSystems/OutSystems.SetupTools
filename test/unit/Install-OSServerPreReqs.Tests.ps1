@@ -190,6 +190,35 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When .NET installer is not found' {
+
+            Mock InstallDotNet { throw [System.IO.FileNotFoundException] '.NET installer not found' }
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
+            It 'cenas' {
+                Assert-MockCalled InstallDotNet -Times 1
+            }
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assNotRunConfigureServiceWMI
+                Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assNotRunDisableFIPS
+                Assert-MockCalled @assNotRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be '.NET installer not found'
+            }
+            It 'Should output an error' { $err[-1] | Should Be '.NET installer not found' }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When .NET reports a reboot' {
 
             Mock InstallDotNet { return 3010 }
@@ -303,6 +332,32 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error downloading or starting the Build Tools installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the Build Tools installation' }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When build tools installer not found' {
+
+            Mock InstallBuildTools { throw [System.IO.FileNotFoundException] 'Build Tools installer not found' }
+            $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assNotRunConfigureServiceWMI
+                Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assNotRunDisableFIPS
+                Assert-MockCalled @assNotRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Build Tools installer not found'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Build Tools installer not found' }
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -459,6 +514,32 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error downloading or starting the .NET Core installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the .NET Core installation' }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When .NET core installer not found' {
+
+            Mock InstallDotNetCore { throw [System.IO.FileNotFoundException] '.NET Core installer not found' }
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetCore
+                Assert-MockCalled @assNotRunConfigureServiceWMI
+                Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assNotRunDisableFIPS
+                Assert-MockCalled @assNotRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be '.NET Core installer not found'
+            }
+            It 'Should output an error' { $err[-1] | Should Be '.NET Core installer not found' }
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
