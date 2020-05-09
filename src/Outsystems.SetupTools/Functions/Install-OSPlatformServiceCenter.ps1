@@ -122,11 +122,6 @@ function Install-OSPlatformServiceCenter
                 return $installResult
             }
 
-            $outputLog = $($result.Output) -Split ("`r`n")
-            foreach ($logLine in $outputLog)
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCINSTALLER: $logLine"
-            }
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCInstaller exit code: $($result.ExitCode)"
 
             if ( $result.ExitCode -ne 0 )

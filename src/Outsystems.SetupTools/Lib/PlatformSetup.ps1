@@ -554,7 +554,7 @@ Function RunConfigTool([string]$Arguments)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the config tool..."
-    $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments"
+    $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments" -CommandName "Configuration Tool"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($Result.ExitCode)"
 
     Return $Result
@@ -567,7 +567,7 @@ function RunSCInstaller([string]$Arguments)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running SCInstaller..."
     #SCInstaller needs to run inside a CMD or will not return an exit code
-    $result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $installDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%" -ErrorAction Stop
+    $result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $installDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%" -CommandName "SCInstall" -ErrorAction Stop
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($result.ExitCode)"
 
@@ -606,9 +606,9 @@ function RunOSPTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "OSPTool path is $ospToolPath"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the OSPTool..."
-    $result = ExecuteCommand -CommandPath "$ospToolPath\OSPTool.com" -WorkingDirectory $installDir -CommandArgument $Arguments
+    $result = ExecuteCommand -CommandPath "$ospToolPath\OSPTool.com" -WorkingDirectory $installDir -CommandArgument $Arguments -CommandName "OSPTOOL"
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($result.ExitCode)"
+    #LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($result.ExitCode)"
 
     return $result
 }
@@ -688,7 +688,7 @@ function DownloadOSSources([string]$URL, [string]$SavePath)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File successfully downloaded!"
 }
 
-Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string]$CommandArguments)
+Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string]$CommandArguments, [string]$CommandName = "")
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
 
@@ -706,12 +706,20 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process.StartInfo = $ProcessInfo
         $Process.Start() | Out-Null
         $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle
-        $Output = $Process.StandardOutput.ReadToEnd()
+
+        if ($CommandName -eq ""){
+            $logPrepend = ""
+        }else{
+            $logPrepend = $CommandName+": "
+        }
+
+        do{ # Keep redirecting output until process exits
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$logPrepend$($process.StandardOutput.ReadLine())"
+        } until ($process.HasExited)
 
         $Process.WaitForExit()
 
         Return [PSCustomObject]@{
-            Output   = $Output
             ExitCode = $Process.ExitCode
         }
     }

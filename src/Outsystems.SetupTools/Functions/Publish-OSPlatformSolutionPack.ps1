@@ -112,11 +112,6 @@ function Publish-OSPlatformSolutionPack
             return $publishResult
         }
 
-        $outputLog = $($result.Output) -Split ("`r`n")
-        foreach ($logline in $outputLog)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTOOL: $logline"
-        }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($result.ExitCode)"
 
         if ( $result.ExitCode -ne 0 )
