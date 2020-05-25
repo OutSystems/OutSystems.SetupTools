@@ -540,6 +540,33 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When IIS can''t find ASP.NET modules' {
+
+            Mock GetWindowsServerHostingVersion { return '2.1.12'}
+            Mock Get-WebGlobalModule { return  @() }
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetCore
+                Assert-MockCalled @assRunConfigureServiceWMI
+                Assert-MockCalled @assRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assRunDisableFIPS
+                Assert-MockCalled @assRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When .NET core reports a reboot' {
 
             Mock InstallDotNetCore { return 3010 }

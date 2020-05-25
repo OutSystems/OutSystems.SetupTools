@@ -258,7 +258,7 @@ function Install-OSServerPreReqs
         }
 
         # If IIS can't find ASP.NET modules install Hosting Bundle again to repair
-        $aspModules = Get-WebGlobalModule | where-object { $_.name -like "aspnetcoremodule*" }
+        $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -like "aspnetcoremodule*" }
         # Install .NET Core Windows Server Hosting bundle
         if ($installDotNetCore -or $aspModules.Count -lt 1)
         {

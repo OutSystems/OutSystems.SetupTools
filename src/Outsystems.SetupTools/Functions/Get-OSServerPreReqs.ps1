@@ -147,7 +147,7 @@ function Get-OSServerPreReqs
                                                                 -ScriptBlock `
                                                                 {
                                                                     $Status = $([version]$(GetWindowsServerHostingVersion) -ge [version]$OS11ReqsMinDotNetCoreVersion)
-                                                                    $aspModules = Get-WebGlobalModule | where-object { $_.name -like "aspnetcoremodule*" }
+                                                                    $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -like "aspnetcoremodule*" }
                                                                     $OKMessages = @("Minimum .NET Core Windows Server Hosting found.")
                                                                     $NOKMessages = @("Minimum .NET Core Windows Server Hosting not found.")
 

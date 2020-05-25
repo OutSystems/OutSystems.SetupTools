@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.3.4.0
+
+- Get-OSServerPreReqs and Install-OSServer: Now check if IIS can find ASP.NET modules
+
 ## 3.3.3.0
 
 - PlatformSetup: Now all expected files are using canonical names and code improvement
