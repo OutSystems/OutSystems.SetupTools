@@ -2,7 +2,7 @@
 
 ## 3.3.4.0
 
-- Get-OSServerPreReqs and Install-OSServer: Now check if IIS can find ASP.NET modules
+- Get-OSServerPreReqs: Now check if IIS can find ASP.NET modules
 
 ## 3.3.3.0
 
