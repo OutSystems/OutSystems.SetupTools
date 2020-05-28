@@ -554,7 +554,13 @@ Function RunConfigTool([string]$Arguments)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the config tool..."
-    $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments" -CommandName "Configuration Tool"
+
+    $onLogEvent = {
+        param($logLine)
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+    }
+
+    $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments" -onLogEvent $onLogEvent
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($Result.ExitCode)"
 
     Return $Result
@@ -567,7 +573,13 @@ function RunSCInstaller([string]$Arguments)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running SCInstaller..."
     #SCInstaller needs to run inside a CMD or will not return an exit code
-    $result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $installDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%" -CommandName "SCInstall" -ErrorAction Stop
+
+    $onLogEvent = {
+        param($logLine)
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+    }
+
+    $result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $installDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%" -onLogEvent $onLogEvent -ErrorAction Stop
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($result.ExitCode)"
 
@@ -606,7 +618,13 @@ function RunOSPTool([string]$Arguments)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "OSPTool path is $ospToolPath"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the OSPTool..."
-    $result = ExecuteCommand -CommandPath "$ospToolPath\OSPTool.com" -WorkingDirectory $installDir -CommandArgument $Arguments -CommandName "OSPTOOL"
+
+    $onLogEvent = {
+        param($logLine)
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+    }
+
+    $result = ExecuteCommand -CommandPath "$ospToolPath\OSPTool.com" -WorkingDirectory $installDir -CommandArgument $Arguments -onLogEvent $onLogEvent
 
     #LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Return code: $($result.ExitCode)"
 
@@ -688,7 +706,7 @@ function DownloadOSSources([string]$URL, [string]$SavePath)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File successfully downloaded!"
 }
 
-Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string]$CommandArguments, [string]$CommandName = "")
+Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string]$CommandArguments, [scriptblock]$onLogEvent = $null)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Launching the process $CommandPath with the arguments $CommandArguments"
 
@@ -707,14 +725,12 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process.Start() | Out-Null
         $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle
 
-        if ($CommandName -eq ""){
-            $logPrepend = ""
-        }else{
-            $logPrepend = $CommandName+": "
-        }
 
         do{ # Keep redirecting output until process exits
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$logPrepend$($process.StandardOutput.ReadLine())"
+            if ($onLogEvent){
+                $onLogEvent.Invoke($process.StandardOutput.ReadLine());
+            }
+
         } until ($process.HasExited)
 
         $Process.WaitForExit()
