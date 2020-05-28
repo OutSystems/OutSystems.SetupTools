@@ -727,6 +727,7 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 
 
         do{ # Keep redirecting output until process exits
+
             if ($onLogEvent){
                 $onLogEvent.Invoke($process.StandardOutput.ReadLine());
             }
