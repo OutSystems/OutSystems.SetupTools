@@ -4,6 +4,10 @@
 
 - ExecuteCommand: Enabled real time logging for all executed processes. This impacts the execution of PlatformInstaller, ConfigTool, Scinstall
 
+## 3.3.3.0
+
+- PlatformSetup: Now all expected files are using canonical names and code improvement
+
 ## 3.3.2.0
 
 - Get-OSServerPreReqs: Now Windows event logs configurations are optional and don't block installer
