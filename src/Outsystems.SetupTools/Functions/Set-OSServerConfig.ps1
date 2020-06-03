@@ -366,6 +366,7 @@ function Set-OSServerConfig
                 }
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the platform. This can take a while..."
+
                 try
                 {
                     $result = RunConfigTool -Arguments $configToolArguments
