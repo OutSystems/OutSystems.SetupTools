@@ -42,7 +42,7 @@ function Get-OSServerPreReqs
             $RequirementStatus = @{}
             $RequirementStatus.Title = $Title
             $RequirementStatus.Status = $Result.Status
-            $RequirementStatus.OptionalsFailed = $Result.OptionalsFailed
+            $RequirementStatus.OptionalsStatus = $Result.OptionalsStatus
 
             $TextStatus = "OK"
             if (-not $($Result.Status))
@@ -68,7 +68,10 @@ function Get-OSServerPreReqs
                 [Bool]$Status,
 
                 [Parameter(Mandatory = $false)]
-                [Bool]$OptionalsFailed,
+                [Bool]$OptionalsStatus = $True,
+
+                [Parameter(Mandatory = $false)]
+                [Bool]$IISStatus = $True,
 
                 [Parameter(Mandatory = $true)]
                 [AllowEmptyCollection()]
@@ -81,21 +84,19 @@ function Get-OSServerPreReqs
 
             $Result = @{}
             $Result.Status = $Status
+            $Result.OptionalsStatus = $OptionalsStatus
+            $Result.IISStatus = $IISStatus
 
-            if ($null -eq $OptionalsFailed)
-            {
-                $Result.OptionalsFailed = $false
-            }
-            else
-            {
-                $Result.OptionalsFailed = $OptionalsFailed
-            }
 
-            if ($Result.Status -and -not $Result.OptionalsFailed)
+            if ($Result.Status -and $Result.OptionalsStatus)
             {
                 $Result.Messages = $OKMessages
             }
-            elseif ($Result.Status -and $Result.OptionalsFailed)
+            elseif ($Result.Status -and -not $Result.OptionalsStatus)
+            {
+                $Result.Messages = $NOKMessages
+            }
+            elseif (-not $Result.IISStatus)
             {
                 $Result.Messages = $NOKMessages
             }
@@ -109,7 +110,8 @@ function Get-OSServerPreReqs
 
         $GlobalRequirementsResults = @{}
         $GlobalRequirementsResults.Success = $True
-        $GlobalRequirementsResults.OptionalsFailed = $False
+        $GlobalRequirementsResults.OptionalsStatus = $True
+        $GlobalRequirementsResults.IISStatus = $True
 
         $RequirementStatuses = @()
     }
@@ -145,10 +147,23 @@ function Get-OSServerPreReqs
                                                                 -ScriptBlock `
                                                                 {
                                                                     $Status = $([version]$(GetWindowsServerHostingVersion) -ge [version]$OS11ReqsMinDotNetCoreVersion)
+                                                                    $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -like "aspnetcoremodule*" }
                                                                     $OKMessages = @("Minimum .NET Core Windows Server Hosting found.")
                                                                     $NOKMessages = @("Minimum .NET Core Windows Server Hosting not found.")
 
-                                                                    return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                                    # Check if IIS can find ASP.NET modules
+                                                                    if ($aspModules.Count -lt 1)
+                                                                    {
+                                                                        $Status = $False
+                                                                        $IISStatus = $False
+                                                                        $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        $IISStatus = $True
+                                                                    }
+
+                                                                    return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                                 }
             }
         }
@@ -255,7 +270,7 @@ function Get-OSServerPreReqs
                                                         -ScriptBlock `
                                                         {
                                                             $Status = $True
-                                                            $OptionalsFailed = $False
+                                                            $OptionalsStatus = $True
                                                             $OKMessages = @("All Event Logs are correctly configured.")
                                                             $NOKMessages = @()
 
@@ -276,7 +291,7 @@ function Get-OSServerPreReqs
 
                                                                     if ($CheckMaxLogSize -or $CheckOverflowAction)
                                                                     {
-                                                                        $OptionalsFailed = $True
+                                                                        $OptionalsStatus = $False
                                                                         $NOKMessage += "Event Log '$EventLogName' is not correctly configured."
 
                                                                         if ($CheckMaxLogSize)
@@ -295,11 +310,11 @@ function Get-OSServerPreReqs
                                                             }
                                                             catch
                                                             {
-                                                                $OptionalsFailed = $True
+                                                                $OptionalsStatus = $False
                                                                 $NOKMessages += "Something went wrong when trying to obtain Event Logs information: `"$_`""
                                                             }
 
-                                                            return $(CreateResult -Status $Status -OptionalsFailed $OptionalsFailed -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                            return $(CreateResult -Status $Status -OptionalsStatus $OptionalsStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
 
         $RequirementStatuses += CreateRequirementStatus -Title "FIPS Compliant Algorithms" `
@@ -323,9 +338,13 @@ function Get-OSServerPreReqs
             {
                 $GlobalRequirementsResults.Success = $False
             }
-            if ($RequirementStatus.OptionalsFailed)
+            if (-not $RequirementStatus.OptionalsStatus)
             {
-                $GlobalRequirementsResults.OptionalsFailed = $True
+                $GlobalRequirementsResults.OptionalsStatus = $False
+            }
+            if (-not $RequirementStatus.IISStatus)
+            {
+                $GlobalRequirementsResults.IISStatus = $False
             }
         }
 
