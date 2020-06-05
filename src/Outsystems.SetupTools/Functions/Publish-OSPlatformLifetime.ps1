@@ -146,6 +146,7 @@ function Publish-OSPlatformLifetime
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Lifetime. This can take a while..."
+
             $onLogEvent = {
                 param($logLine)
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
@@ -153,7 +154,7 @@ function Publish-OSPlatformLifetime
 
             try
             {
-                $result = PublishSolution -Solution "$osInstallDir\Lifetime.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass -onlogEvent $OnLogEvent
+                $result = PublishSolution -Solution "$osInstallDir\Lifetime.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass -OnLogEvent $onLogEvent
             }
             catch
             {
@@ -167,11 +168,6 @@ function Publish-OSPlatformLifetime
                 return $installResult
             }
 
-            $outputLog = $($result.Output) -Split ("`r`n")
-            foreach ($logLine in $outputLog)
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTOOL: $logLine"
-            }
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($result.ExitCode)"
 
             if ($result.ExitCode -ne 0)

@@ -107,11 +107,6 @@ function Install-OSPlatformLicense
             return
         }
 
-        $confToolOutputLog = $($result.Output) -Split ("`r`n")
-        foreach ($logline in $confToolOutputLog)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "CONFTOOL: $logline"
-        }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($result.ExitCode)"
 
         if ($result.ExitCode -ne 0)
