@@ -90,9 +90,15 @@ function Set-OSPlatformDeploymentZone
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool parameters are: $configToolArguments"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Running the configuration tool. This can take a while..."
+
+        $onLogEvent = {
+            param($logLine)
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+        }
+
         try
         {
-            $result = RunConfigTool -Arguments $configToolArguments
+            $result = RunConfigTool -Arguments $configToolArguments -OnLogEvent $onLogEvent
         }
         catch
         {

@@ -367,9 +367,14 @@ function Set-OSServerConfig
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the platform. This can take a while..."
 
+                $onLogEvent = {
+                    param($logLine)
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+                }
+
                 try
                 {
-                    $result = RunConfigTool -Arguments $configToolArguments
+                    $result = RunConfigTool -Arguments $configToolArguments -OnLogEvent $onLogEvent
                 }
                 catch
                 {

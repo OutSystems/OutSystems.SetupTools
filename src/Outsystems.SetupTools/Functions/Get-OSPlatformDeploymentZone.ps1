@@ -62,9 +62,15 @@ function Get-OSPlatformDeploymentZone
         $configToolArguments = "/getdeploymentzones"
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Running the configuration tool. This can take a while..."
+
+        $onLogEvent = {
+            param($logLine)
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+        }
+
         try
         {
-            $result = RunConfigTool -Arguments $configToolArguments
+            $result = RunConfigTool -Arguments $configToolArguments -OnLogEvent $onLogEvent
         }
         catch
         {

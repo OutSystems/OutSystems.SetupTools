@@ -575,7 +575,7 @@ function GetOperatingSystemProductType()
     return $osProductType
 }
 
-Function RunConfigTool([string]$Arguments)
+Function RunConfigTool([string]$Arguments, [scriptblock]$OnLogEvent)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server install directory"
     $InstallDir = GetServerInstallDir
@@ -591,29 +591,19 @@ Function RunConfigTool([string]$Arguments)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running the config tool..."
 
-    $onLogEvent = {
-        param($logLine)
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
-    }
-
     $Result = ExecuteCommand -CommandPath "$InstallDir\ConfigurationTool.com" -WorkingDirectory $InstallDir -CommandArguments "$Arguments" -onLogEvent $onLogEvent
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Exit code: $($Result.ExitCode)"
 
     Return $Result
 }
 
-function RunSCInstaller([string]$Arguments)
+function RunSCInstaller([string]$Arguments , [scriptblock] $OnLogEvent)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting server install directory"
     $installDir = GetServerInstallDir
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Running SCInstaller..."
     #SCInstaller needs to run inside a CMD or will not return an exit code
-
-    $onLogEvent = {
-        param($logLine)
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
-    }
 
     $result = ExecuteCommand -CommandPath "$env:comspec" -WorkingDirectory $installDir -CommandArguments "/c SCInstaller.exe $Arguments && exit /b %ERRORLEVEL%" -onLogEvent $onLogEvent -ErrorAction Stop
 

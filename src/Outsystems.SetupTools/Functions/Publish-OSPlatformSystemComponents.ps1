@@ -134,9 +134,14 @@ function Publish-OSPlatformSystemComponents
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems System Components. This can take a while..."
+            $onLogEvent = {
+                param($logLine)
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+            }
+
             try
             {
-                $result = PublishSolution -Solution "$osInstallDir\System_Components.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass
+                $result = PublishSolution -Solution "$osInstallDir\System_Components.osp" -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass -onlogEvent $OnLogEvent
             }
             catch
             {
