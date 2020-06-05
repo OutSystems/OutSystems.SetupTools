@@ -1,7 +1,8 @@
 # Outsystems.SetupTools Release History
 
-## 3.3.4.0
+## 3.4.0.0
 
+- ExecuteCommand: Enabled real time logging for all executed processes. This impacts the execution of PlatformInstaller, ConfigTool, Scinstall
 - Get-OSServerPreReqs: Now check if IIS can find ASP.NET modules
 
 ## 3.3.3.0

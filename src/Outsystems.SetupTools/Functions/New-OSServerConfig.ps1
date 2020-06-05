@@ -107,9 +107,14 @@ function New-OSServerConfig
         #region generate templates
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Generating new configuration for database provider $DatabaseProvider"
 
+        $onLogEvent = {
+            param($logLine)
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+        }
+
         try
         {
-            $result = RunConfigTool -Arguments "/GenerateTemplates"
+            $result = RunConfigTool -Arguments "/GenerateTemplates" -OnLogEvent $onLogEvent
         }
         catch
         {
