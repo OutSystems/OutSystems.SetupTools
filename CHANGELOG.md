@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.4.0.0
+
+- ExecuteCommand: Enabled real time logging for all executed processes. This impacts the execution of PlatformInstaller, ConfigTool, Scinstall
+
 ## 3.3.3.0
 
 - PlatformSetup: Now all expected files are using canonical names and code improvement

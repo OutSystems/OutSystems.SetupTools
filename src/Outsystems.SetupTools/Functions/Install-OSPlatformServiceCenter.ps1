@@ -106,9 +106,15 @@ function Install-OSPlatformServiceCenter
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems Service Center. This can take a while..."
+
+            $onLogEvent = {
+                param($logLine)
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+            }
+
             try
             {
-                $result = RunSCInstaller -Arguments $scInstallerArguments
+                $result = RunSCInstaller -Arguments $scInstallerArguments -OnLogEvent $onLogEvent
             }
             catch
             {
@@ -122,11 +128,6 @@ function Install-OSPlatformServiceCenter
                 return $installResult
             }
 
-            $outputLog = $($result.Output) -Split ("`r`n")
-            foreach ($logLine in $outputLog)
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCINSTALLER: $logLine"
-            }
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SCInstaller exit code: $($result.ExitCode)"
 
             if ( $result.ExitCode -ne 0 )

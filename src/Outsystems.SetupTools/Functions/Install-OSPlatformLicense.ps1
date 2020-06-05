@@ -89,9 +89,15 @@ function Install-OSPlatformLicense
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing outsytems license"
+
+        $onLogEvent = {
+            param($logLine)
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+        }
+
         try
         {
-            $result = RunConfigTool -Arguments $("/UploadLicense " + [char]34 + $Path + [char]34)
+            $result = RunConfigTool -Arguments $("/UploadLicense " + [char]34 + $Path + [char]34) -OnLogEvent $onLogEvent
         }
         catch
         {
@@ -101,11 +107,6 @@ function Install-OSPlatformLicense
             return
         }
 
-        $confToolOutputLog = $($result.Output) -Split ("`r`n")
-        foreach ($logline in $confToolOutputLog)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "CONFTOOL: $logline"
-        }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($result.ExitCode)"
 
         if ($result.ExitCode -ne 0)
