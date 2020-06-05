@@ -413,9 +413,15 @@ function Set-OSServerConfig
                 }
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring the platform. This can take a while..."
+
+                $onLogEvent = {
+                    param($logLine)
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+                }
+
                 try
                 {
-                    $result = RunConfigTool -Arguments $configToolArguments
+                    $result = RunConfigTool -Arguments $configToolArguments -OnLogEvent $onLogEvent
                 }
                 catch
                 {
@@ -425,11 +431,6 @@ function Set-OSServerConfig
                     return $null
                 }
 
-                $confToolOutputLog = $($result.Output) -Split ("`r`n")
-                foreach ($logline in $confToolOutputLog)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration Tool: $logline"
-                }
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration tool exit code: $($result.ExitCode)"
 
                 if ($result.ExitCode -ne 0)

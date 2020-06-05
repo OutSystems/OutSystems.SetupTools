@@ -96,9 +96,15 @@ function Publish-OSPlatformSolutionPack
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems solution. This can take a while..."
+
+        $onLogEvent = {
+            param($logLine)
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message $logLine
+        }
+
         try
         {
-            $result = PublishSolution -Solution $solution -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass
+            $result = PublishSolution -Solution $solution -SCUser $ServiceCenterUser -SCPass $ServiceCenterPass -OnLogEvent $onLogEvent
         }
         catch
         {
@@ -112,11 +118,6 @@ function Publish-OSPlatformSolutionPack
             return $publishResult
         }
 
-        $outputLog = $($result.Output) -Split ("`r`n")
-        foreach ($logline in $outputLog)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTOOL: $logline"
-        }
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OSPTool exit code: $($result.ExitCode)"
 
         if ( $result.ExitCode -ne 0 )
