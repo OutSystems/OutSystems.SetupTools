@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.5.1.0
+
+- Get-OSServerPreReqs: Fixed bug that caused script to output wrong error message
+
 ## 3.5.0.0
 
 - Get-OSServerPreReqs: Now check if IIS can find ASP.NET modules
