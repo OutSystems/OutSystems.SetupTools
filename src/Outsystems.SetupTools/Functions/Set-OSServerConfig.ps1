@@ -53,7 +53,7 @@ function Set-OSServerConfig
     If specified, the configuration tool will upgrade the environment using integrated auth
 
     .EXAMPLE
-    Set-OSServerConfig -Apply -UseIntegratedAuth -WinAuthPassword password
+    Set-OSServerConfig -Apply -UpgradeEnvironment -UseIntegratedAuth -WinAuthPassword password
 
     .EXAMPLE
     Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceUsername' -Value 'admin'
