@@ -207,15 +207,6 @@ function Set-OSServerConfig
             return $null
         }
 
-        if (($PSBoundParameters.UpgradeEnvironment.IsPresent) -and ( $osMajorVersion -ne '11'))
-        {
-            $errorMessage = "Upgrade environment is only supported in OutSystems 11."
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message $errorMessage
-            WriteNonTerminalError -Message $errorMessage
-
-            return $null
-        }
-
         if (($PSBoundParameters.UseIntegratedAuth.IsPresent) -and (-Not $PSBoundParameters.UpgradeEnvironment.IsPresent))
         {
             $errorMessage = "SetupTools is currently only supporting integrated auth with upgrade environment option."
@@ -332,54 +323,53 @@ function Set-OSServerConfig
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "In apply configuration mode"
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Building configuration tool command line"
 
-                $upgradeMode = "/setupinstall"
+                # Build the command line
+                if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
+                    $configToolArguments = "/UpgradeEnvironment"
+                }
+                else
+                {
+                    $configToolArguments = "/setupinstall"
+                }
 
                 if ($PlatformDBCredential)
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using supplied admin credentials for the platform database"
-                    $dbUser = $PlatformDBCredential.UserName
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using $dbUser for the platform database"
-                    $dbPass = $PlatformDBCredential.GetNetworkCredential().Password
-                    $adminAuth = "$dbUser $dbPass"
+                    if (-Not $PSBoundParameters.UseIntegratedAuth.IsPresent)
+                    {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using supplied admin credentials for the platform database"
+                        $dbUser = $PlatformDBCredential.UserName
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using $dbUser for the platform database"
+                        $dbPass = $PlatformDBCredential.GetNetworkCredential().Password
+                        $configToolArguments += "$dbUser $dbPass "
+                    }
+                    else
+                    {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using supplied password for the Integrated Auth User"
+                        $configToolArguments += "$WinAuthPassword "
+                    }
+
                 }
-                elseif (-Not $PSBoundParameters.UseIntegratedAuth.IsPresent)
-                {
+                else{
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using existing admin credentials for the platform database"
-                    $adminAuth = "  "
+                    $configToolArguments += "  "
                 }
 
                 if ($osMajorVersion -eq '11')
                 {
-                    if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
-                    {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
-                        $upgradeMode = "/UpgradeEnvironment"
-                    }
-
-                    $configToolArguments = "$upgradeMode "
-                    $logAuth = ""
-
-                    if($PSBoundParameters.UseIntegratedAuth.IsPresent){
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using supplied password for the Integrated Auth User"
-                        $adminAuth = "$WinAuthPassword"
-                    }
-                    elseif ($PSBoundParameters.LogDBCredential)
+                    if ($PSBoundParameters.LogDBCredential)
                     {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using supplied admin credentials for the log database"
                         $dbUser = $PSBoundParameters.LogDBCredential.UserName
                         $dbPass = $PSBoundParameters.LogDBCredential.GetNetworkCredential().Password
-                        $logAuth += "$dbUser $dbPass "
+                        $configToolArguments += "$dbUser $dbPass "
                     }
                     else
                     {
                         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Using existing admin credentials for the log database"
-                        $logAuth += "  "
+                        $configToolArguments += "  "
                     }
-
-                    $configToolArguments += "$adminAuth $logAuth "
-                }
-                else{
-                    $configToolArguments = "$upgradeMode $adminAuth "
                 }
 
                 if (-not $SkipSessionRebuild.IsPresent)
