@@ -148,11 +148,11 @@ function Set-OSServerConfig
                     $IntegratedAuthPasswordAttrib.ParameterSetName = 'ApplyConfig'
                     $IntegratedAuthPasswordAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
                     $IntegratedAuthPasswordAttribCollection.Add($IntegratedAuthPasswordAttrib)
-                    $UseIntegratedAuthParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IntegratedAuthPassword', [string], $IntegratedAuthPasswordAttribCollection)
+                    $IntegratedAuthPasswordParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IntegratedAuthPassword', [string], $IntegratedAuthPasswordAttribCollection)
 
                     $paramDictionary.Add('ConfigureCacheInvalidationService', $ConfigureCacheInvalidationServiceParam)
                     $paramDictionary.Add('LogDBCredential', $LogDBCredentialParam)
-                    $paramDictionary.Add('IntegratedAuthPassword', $UseIntegratedAuthParam)
+                    $paramDictionary.Add('IntegratedAuthPassword', $IntegratedAuthPasswordParam)
                     $paramDictionary.Add('UpgradeEnvironment', $UpgradeEnvironmentParam)
                 }
             }
