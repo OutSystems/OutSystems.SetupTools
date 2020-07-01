@@ -43,6 +43,7 @@ function Get-OSServerPreReqs
             $RequirementStatus.Title = $Title
             $RequirementStatus.Status = $Result.Status
             $RequirementStatus.OptionalsStatus = $Result.OptionalsStatus
+            $RequirementStatus.IISStatus = $Result.IISStatus
 
             $TextStatus = "OK"
             if (-not $($Result.Status))
@@ -147,21 +148,29 @@ function Get-OSServerPreReqs
                                                                 -ScriptBlock `
                                                                 {
                                                                     $Status = $([version]$(GetWindowsServerHostingVersion) -ge [version]$OS11ReqsMinDotNetCoreVersion)
-                                                                    $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -like "aspnetcoremodule*" }
                                                                     $OKMessages = @("Minimum .NET Core Windows Server Hosting found.")
                                                                     $NOKMessages = @("Minimum .NET Core Windows Server Hosting not found.")
+                                                                    $IISStatus = $True
 
-                                                                    # Check if IIS can find ASP.NET modules
-                                                                    if ($aspModules.Count -lt 1)
+                                                                    if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
                                                                     {
-                                                                        $Status = $False
-                                                                        $IISStatus = $False
-                                                                        $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                        $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -like "aspnetcoremodule*" }
+                                                                        if ($Status)
+                                                                        {
+                                                                            # Check if IIS can find ASP.NET modules
+                                                                            if ($aspModules.Count -lt 1)
+                                                                            {
+                                                                                $Status = $False
+                                                                                $IISStatus = $False
+                                                                                $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                $IISStatus = $True
+                                                                            }
+                                                                        }
                                                                     }
-                                                                    else
-                                                                    {
-                                                                        $IISStatus = $True
-                                                                    }
+
 
                                                                     return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                                 }
