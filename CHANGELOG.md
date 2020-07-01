@@ -1,8 +1,10 @@
 # Outsystems.SetupTools Release History
 
-## 3.5.1.0
+## 3.6.0.0
 
 - Get-OSServerPreReqs: Fixed bug that caused script to output wrong error message
+- Set-OSServerConfig: Added -IntegratedAuthPassword for upgrading environments using windows authentication
+- Set-OSServerConfig: Fixed -UpgradeEnvironment switch
 
 ## 3.5.0.0
 
