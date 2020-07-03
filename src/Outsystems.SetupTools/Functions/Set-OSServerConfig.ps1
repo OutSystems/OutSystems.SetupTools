@@ -323,11 +323,11 @@ function Set-OSServerConfig
                 if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
-                    $configToolArguments = "/UpgradeEnvironment"
+                    $configToolArguments = "/UpgradeEnvironment "
                 }
                 else
                 {
-                    $configToolArguments = "/setupinstall"
+                    $configToolArguments = "/setupinstall "
                 }
 
                 if ($PSBoundParameters.IntegratedAuthPassword.IsPresent)

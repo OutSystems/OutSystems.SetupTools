@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.6.1.0
+
+- Set-OSServerConfig: Fixed a bug introduced in the 3.6.0.0 version
+
 ## 3.6.0.0
 
 - Get-OSServerPreReqs: Fixed bug that caused script to output wrong error message
