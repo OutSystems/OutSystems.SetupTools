@@ -320,15 +320,7 @@ function Set-OSServerConfig
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Building configuration tool command line"
 
                 # Build the command line
-                if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
-                    $configToolArguments = "/UpgradeEnvironment "
-                }
-                else
-                {
-                    $configToolArguments = "/setupinstall "
-                }
+                $configToolArguments = "/setupinstall "
 
                 if ($PSBoundParameters.IntegratedAuthPassword.IsPresent)
                 {
@@ -387,6 +379,12 @@ function Set-OSServerConfig
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuration of the cache invalidation service will be performed"
                     $configToolArguments += "/createupgradecacheinvalidationservice "
+                }
+
+                if ($PSBoundParameters.UpgradeEnvironment.IsPresent)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Upgrade of environment will be performed"
+                    $configToolArguments += "/UpgradeEnvironment "
                 }
 
                 if ($PSBoundParameters.InstallServiceCenter.IsPresent)
