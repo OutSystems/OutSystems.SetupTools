@@ -12,6 +12,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock Start-Process { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
 
         $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context' }
+		$procmonRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context' }
         $assNotRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }
 
         Context 'When user is not admin' {
@@ -35,7 +36,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return '10.0.0.0' }
             $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should run the installation' { Assert-MockCalled @procmonRunParams }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
@@ -81,7 +82,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServer -Version '10.0.0.1' -Force -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should run the installation' { Assert-MockCalled @procmonRunParams }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
@@ -119,7 +120,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should run the installation' { Assert-MockCalled @procmonRunParams }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
@@ -178,7 +179,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should run the installation' { Assert-MockCalled @procmonRunParams }
             It 'Should return the right result' {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
@@ -197,7 +198,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should run the installation' { Assert-MockCalled @procmonRunParams }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -216,7 +217,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServer -Version '10.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the installation' { Assert-MockCalled @assRunParams }
+            It 'Should run the installation' { Assert-MockCalled @procmonRunParams }
             It 'Should return the right result' {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
