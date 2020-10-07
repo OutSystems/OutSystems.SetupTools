@@ -62,6 +62,9 @@
 # Private properties.
 ###############################################################################
 Properties {
+	[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+    $OutDir = "$PSScriptRoot\Release"
+	
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
     $ModuleOutDir = "$OutDir\$ModuleName"
 

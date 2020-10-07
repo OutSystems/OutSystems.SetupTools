@@ -272,6 +272,12 @@ function Install-OSServer
                     $AdditionalParameters = "$AdditionalParameters "
                 }
 
+				$traceFile = "$ENV:TEMP\trace.pml"
+				if (Test-Path $traceFile) {
+				  Remove-Item -Path $traceFile -Force
+				}
+				$result = Start-Process -FilePath "procmon.exe" -ArgumentList "/quiet /minimized /backingfile $traceFile" -ErrorAction Stop
+				
                 $result = Start-Process -FilePath $installer -ArgumentList "/S $AdditionalParameters/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
                 $exitCode = $result.ExitCode
             }
@@ -286,6 +292,10 @@ function Install-OSServer
 
                 return $installResult
             }
+			finally
+			{
+				Start-Process -FilePath "procmon.exe" -ArgumentList "/terminate"
+			}
 
             switch ($exitCode)
             {
