@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.7.0.0
+
+- Set-OSServerConfig: Added SectionAttribute and SectionAttributeValue parameters
+
 ## 3.6.2.0
 
 - Set-OSServerConfig: Fixed a bug introduced in the 3.6.0.0 version

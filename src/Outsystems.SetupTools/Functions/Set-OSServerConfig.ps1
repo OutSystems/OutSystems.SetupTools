@@ -19,6 +19,12 @@ function Set-OSServerConfig
     .PARAMETER SettingSection
     The setting section. When this is specified, the cmdLet will run in configure mode
 
+    .PARAMETER SectionAttribute
+    The attribute of a section.
+
+    .PARAMETER SectionAttributeValue
+    The value of an attribute of a section.
+
     .PARAMETER Setting
     The setting
 
@@ -80,6 +86,14 @@ function Set-OSServerConfig
         [ValidateNotNullOrEmpty()]
         [ValidatePattern('^[a-zA-Z]+$')]
         [string]$SettingSection,
+
+        [Parameter(ValueFromPipeline = $true, ParameterSetName = 'ChangeSettings')]
+        [ValidateNotNullOrEmpty()]
+        [string]$SectionAttribute,
+
+        [Parameter(ValueFromPipeline = $true, ParameterSetName = 'ChangeSettings')]
+        [ValidateNotNullOrEmpty()]
+        [string]$SectionAttributeValue,
 
         [Parameter(ParameterSetName = 'ChangeSettings', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
@@ -244,6 +258,14 @@ function Set-OSServerConfig
 
                     $newElement = $hsConf.CreateElement($SettingSection)
                     $hsConf.EnvironmentConfiguration.AppendChild($newElement) | Out-Null
+                }
+
+                if ($SectionAttribute) {
+                    if (-not $($($hsConf.EnvironmentConfiguration).SelectSingleNode($SettingSection).GetAttribute($SectionAttribute)))
+                    {
+                        $section = $($hsConf.EnvironmentConfiguration).SelectSingleNode($SettingSection)
+                        $section.SetAttribute($SectionAttribute, $SectionAttributeValue)
+                    }
                 }
 
                 if ($($hsConf.EnvironmentConfiguration).SelectSingleNode($SettingSection).SelectSingleNode($Setting))
