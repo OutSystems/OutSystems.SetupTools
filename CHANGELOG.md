@@ -1,7 +1,8 @@
 # Outsystems.SetupTools Release History
 
-## 3.6.1.2
-- Set-OSServerConfig: Fixed a bug introduced in the 3.6.0.0 version. This time a critical one. Configtool order.
+## 3.6.2.0
+
+- Set-OSServerConfig: Fixed a bug introduced in the 3.6.0.0 version
 
 ## 3.6.1.0
 
