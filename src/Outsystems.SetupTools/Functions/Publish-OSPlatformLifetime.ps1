@@ -117,18 +117,6 @@ function Publish-OSPlatformLifetime
             return $installResult
         }
 
-        if ($(GetSysComponentsCompiledVersion) -ne $osVersion)
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
-            WriteNonTerminalError -Message "System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first"
-
-            $installResult.Success = $false
-            $installResult.ExitCode = -1
-            $installResult.Message = 'System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first'
-
-            return $installResult
-        }
-
         if ($(GetLifetimeCompiledVersion) -ne $osVersion)
         {
             $doInstall = $true
