@@ -51,23 +51,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When system components are not installed or have a wrong version' {
-
-            Mock GetSysComponentsCompiledVersion { return $null }
-
-            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
-
-            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
-            It 'Should return the right result' {
-                $result.Success | Should Be $false
-                $result.RebootNeeded | Should Be $false
-                $result.ExitCode | Should Be -1
-                $result.Message | Should Be 'System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first'
-            }
-            It 'Should output an error' { $err[-1] | Should Be 'System Components version mismatch. You should run the Publish-OSPlatformSystemComponents first' }
-            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
-        }
-
         Context 'When lifetime and the platform dont have the same version' {
 
             Mock GetLifetimeCompiledVersion { return '10.0.0.0' }
