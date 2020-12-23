@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.7.1.0
+
+- Publish-OSPlatformLifetime: Allowed to run after a Platform Server upgrade
+
 ## 3.7.0.0
 
 - Set-OSServerConfig: Added SectionAttribute and SectionAttributeValue parameters
