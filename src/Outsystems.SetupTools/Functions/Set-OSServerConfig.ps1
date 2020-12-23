@@ -444,7 +444,7 @@ function Set-OSServerConfig
                     return $null
                 }
 
-                if ($PSBoundParameters.InstallServiceCenter.IsPresent)
+                if ($PSBoundParameters.InstallServiceCenter.IsPresent -or $PSBoundParameters.UpgradeEnvironment.IsPresent)
                 {
                     # Flag service center installation
                     try
