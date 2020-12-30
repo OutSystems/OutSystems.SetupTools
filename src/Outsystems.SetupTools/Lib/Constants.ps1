@@ -87,7 +87,7 @@ $OSSCCred = New-Object System.Management.Automation.PSCredential ($OSSCUser, $(C
 
 # Sources download URLs
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURL = "https://myfilerepo.blob.core.windows.net/sources"
+$OSRepoURL = "https://ossetuptools.blob.core.windows.net/sources"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
