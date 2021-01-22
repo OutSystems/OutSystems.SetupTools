@@ -8,6 +8,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock IsAdmin { return $true }
         Mock GetServerVersion { return '10.0.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+        Mock GetLifetimeVersion { return $null }
         Mock DownloadOSSources {}
         Mock Start-Process { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
 
@@ -236,11 +237,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When lifetime switch is specified' {
 
             Mock GetServerVersion { return $null }
-            Mock GetServerInstallDir { return $null }
+
+            # Here we are testing also that the version used to compare is the lifetime version and not the platform server version
+            Mock GetServerInstallDir { return '11.1.0.0' }
+            Mock GetLifetimeVersion { return '11.0.0.0' }
 
             $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\LifeTimeWithPlatformServer-11.0.0.1.exe" } }
 
-            $result = Install-OSServer -Version '11.0.0.1' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Install-OSServer -Version '11.0.0.1' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation using the lifetime installer' { Assert-MockCalled @assRunParams }
         }
@@ -252,7 +256,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\PlatformServer-11.0.0.1.exe" } }
 
-            $result = Install-OSServer -Version '11.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Install-OSServer -Version '11.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation using the normal installer' { Assert-MockCalled @assRunParams }
         }

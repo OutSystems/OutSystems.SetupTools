@@ -1,5 +1,10 @@
 # Outsystems.SetupTools Release History
 
+## 3.9.0.0
+
+- Install-OSServer: Fixed a bug when trying to update lifetime installer
+- Get-OSServerInfo: Added Lifetime version output
+
 ## 3.8.0.0
 
 - Updated the OutSystems repo for downloading sources

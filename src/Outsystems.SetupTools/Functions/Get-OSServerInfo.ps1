@@ -23,12 +23,13 @@ function Get-OSServerInfo
 
         # Initialize the results object
         $serverInfo = [pscustomobject]@{
-            PSTypeName   = 'Outsystems.SetupTools.ServerInfo'
-            InstallDir   = ''
-            Version      = ''
-            MachineName  = ''
-            SerialNumber = ''
-            PrivateKey   = ''
+            PSTypeName       = 'Outsystems.SetupTools.ServerInfo'
+            InstallDir       = ''
+            Version          = ''
+            MachineName      = ''
+            SerialNumber     = ''
+            PrivateKey       = ''
+            LifetimeVersion  = ''
         }
     }
 
@@ -48,11 +49,13 @@ function Get-OSServerInfo
         $serverInfo.Version = [System.Version]$serverInfo.Version
         $serverInfo.MachineName = GetServerMachineName
         $serverInfo.SerialNumber = GetServerSerialNumber
+        $serverInfo.LifetimeVersion = [System.Version]$(GetLifetimeVersion)
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server InstallDir is: $($serverInfo.InstallDir)"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server version is: $($serverInfo.Version)"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server machine name is: $($serverInfo.MachineName)"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server serial number is: $($serverInfo.SerialNumber)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Lifetime version is: $($serverInfo.LifetimeVersion)"
 
         #region private key
         $privateKeyFile = "$($serverInfo.InstallDir)\private.key"

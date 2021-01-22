@@ -706,6 +706,16 @@ function GetServerVersion()
     return $output
 }
 
+function GetLifetimeVersion()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\LifeTime"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "LifeTime"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
+    return $output
+}
+
 function GetServiceStudioVersion([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"

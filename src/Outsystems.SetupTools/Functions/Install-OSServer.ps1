@@ -119,13 +119,16 @@ function Install-OSServer
 
         $osVersion = GetServerVersion
         $osInstallDir = GetServerInstallDir
-
-        # Installer name
         $osInstaller = "PlatformServer-$Version.exe"
+
+        # Lifetime with platform server
         if ($WithLifetime.IsPresent)
         {
-            # Lifetime installer instead
+            # Replace the installer name
             $osInstaller = "LifeTimeWithPlatformServer-$Version.exe"
+
+            # Get lifetime version instead of platform server
+            $osVersion = GetLifetimeVersion
         }
     }
 
