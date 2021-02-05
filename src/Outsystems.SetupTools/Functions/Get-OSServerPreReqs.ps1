@@ -142,7 +142,7 @@ function Get-OSServerPreReqs
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
             }
-            '11'
+            { ($_  -as [int]) -ge 11}
             {
                 $RequirementStatuses += CreateRequirementStatus -Title ".NET Core Windows Server Hosting" `
                                                                 -ScriptBlock `

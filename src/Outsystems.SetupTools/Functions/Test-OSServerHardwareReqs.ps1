@@ -19,8 +19,11 @@ function Test-OSServerHardwareReqs
     [CmdletBinding()]
     [OutputType('Outsystems.SetupTools.TestResult')]
     param(
+
+
+
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0', '10', '11')]   # We changed the versioning of the product but we still support the old versioning
+        [ValidatePattern('\d\d+.?0?')]
         [string]$MajorVersion
     )
 
@@ -68,7 +71,7 @@ function Test-OSServerHardwareReqs
                     return $testResult
                 }
             }
-            '11'
+            { ($_  -as [int]) -ge 11}
             {
                 if ($(GetNumberOfCores) -lt $OS11ReqsMinCores)
                 {

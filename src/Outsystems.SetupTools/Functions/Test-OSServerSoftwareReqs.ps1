@@ -20,7 +20,7 @@ function Test-OSServerSoftwareReqs
     [OutputType('Outsystems.SetupTools.TestResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0', '10', '11')]   # We changed the versioning of the product but we still support the old versioning
+        [ValidatePattern('\d\d+.?0?')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion
     )
 
@@ -68,7 +68,7 @@ function Test-OSServerSoftwareReqs
                     return $testResult
                 }
             }
-            '11'
+            { ($_  -as [int]) -ge 11}
             {
                 if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS11ReqsMinOSVersion)
                 {

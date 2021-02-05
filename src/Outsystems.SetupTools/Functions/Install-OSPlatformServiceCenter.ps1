@@ -88,7 +88,7 @@ function Install-OSPlatformServiceCenter
                 {
                     $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif'
                 }
-                '11'
+                { ($_  -as [int]) -ge 11}
                 {
                     $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif'
                 }
