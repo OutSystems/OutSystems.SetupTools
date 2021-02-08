@@ -34,7 +34,7 @@ function Install-OSServerPreReqs
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('\d\d+')]
+        [ValidatePattern('\d\d+(\.0)?$')]
         [string]$MajorVersion,
 
         [Parameter()]
