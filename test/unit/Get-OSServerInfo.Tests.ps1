@@ -83,7 +83,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         }
 
         Context 'When the platform server is installed and configured for O12' {
-
+            Mock GetServerVersion { return '12.0.0.0' }
             $output = Get-OSServerInfo -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the correct install directory' { $output.InstallDir | Should Be 'C:\Program Files\OutSystems\Platform Server' }
