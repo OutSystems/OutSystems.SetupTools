@@ -68,7 +68,7 @@ function Test-OSServerSoftwareReqs
                     return $testResult
                 }
             }
-            { ($_  -as [int]) -ge 11}
+            default
             {
                 if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS11ReqsMinOSVersion)
                 {

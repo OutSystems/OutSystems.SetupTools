@@ -138,7 +138,11 @@ function Set-OSServerConfig
             # Version specific parameters
             switch ($osMajorVersion)
             {
-                { ($_  -as [int]) -ge 11}
+                '10'
+                {
+                    #do nothing
+                }
+                default
                 {
                     $ConfigureCacheInvalidationServiceAttrib = New-Object System.Management.Automation.ParameterAttribute
                     $ConfigureCacheInvalidationServiceAttrib.ParameterSetName = 'ApplyConfig'

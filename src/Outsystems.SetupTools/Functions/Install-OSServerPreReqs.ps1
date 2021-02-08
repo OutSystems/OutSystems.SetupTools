@@ -125,7 +125,7 @@ function Install-OSServerPreReqs
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
             }
-            { ($_  -as [int]) -ge 11}
+            default
             {
                 # Check .NET Core Windows Server Hosting version
                 if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
@@ -473,7 +473,7 @@ function Install-OSServerPreReqs
                     return $installResult
                 }
             }
-            { ($_  -as [int]) -ge 11}
+            default
             {
                 # Nothing to be done here
             }

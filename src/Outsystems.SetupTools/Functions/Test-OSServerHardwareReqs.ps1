@@ -71,7 +71,7 @@ function Test-OSServerHardwareReqs
                     return $testResult
                 }
             }
-            { ($_  -as [int]) -ge 11}
+            default
             {
                 if ($(GetNumberOfCores) -lt $OS11ReqsMinCores)
                 {
