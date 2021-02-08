@@ -20,7 +20,7 @@ function Test-OSServerSoftwareReqs
     [OutputType('Outsystems.SetupTools.TestResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('\d\d+.?0?')]   # We changed the versioning of the product but we still support the old versioning
+        [ValidatePattern('\d\d+(\.0)?$')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion
     )
 
