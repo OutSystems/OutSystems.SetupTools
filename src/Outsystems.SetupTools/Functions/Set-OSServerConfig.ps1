@@ -138,7 +138,11 @@ function Set-OSServerConfig
             # Version specific parameters
             switch ($osMajorVersion)
             {
-                '11'
+                '10'
+                {
+                    #do nothing
+                }
+                default
                 {
                     $ConfigureCacheInvalidationServiceAttrib = New-Object System.Management.Automation.ParameterAttribute
                     $ConfigureCacheInvalidationServiceAttrib.ParameterSetName = 'ApplyConfig'
@@ -363,7 +367,7 @@ function Set-OSServerConfig
                     $configToolArguments += "  "
                 }
 
-                if ($osMajorVersion -eq '11')
+                if ($osMajorVersion -ge '11')
                 {
                     if ($PSBoundParameters.LogDBCredential)
                     {

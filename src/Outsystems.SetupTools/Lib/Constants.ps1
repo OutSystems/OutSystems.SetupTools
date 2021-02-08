@@ -108,6 +108,12 @@ $OSDotNetReqForMajor = @{
         ToInstallVersion     = '4.7.2'
         ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
     }
+    '12' = @{
+        Version              = '4.7.2'
+        Value                = '461808'
+        ToInstallVersion     = '4.7.2'
+        ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
+    }
 }
 
 # Database default timeout

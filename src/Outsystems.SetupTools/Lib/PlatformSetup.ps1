@@ -292,7 +292,7 @@ function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
             return ($InstallInfo.HasMSBuild2015) -and (-not $InstallInfo.HasMSBuild2017)
         }
 
-        '11'
+        { ($_  -as [int]) -ge 11}
         {
             # Has either MSBuildTools 2015 or MSBuildTools 2017
             return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2017)

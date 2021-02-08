@@ -179,7 +179,7 @@ function Set-OSServerPerformanceTunning
                     {
                         $AppPoolItem.managedPipelineMode = "Classic"
                     }
-                    '11.0'
+                    default
                     {
                         $AppPoolItem.managedPipelineMode = "Integrated"
                     }
