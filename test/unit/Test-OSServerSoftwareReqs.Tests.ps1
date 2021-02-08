@@ -60,6 +60,22 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Test-OSServerSoftwareReqs -MajorVersion 11 -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When trying to install OS12 in an OS less than win2k16' {
+
+            Mock GetOperatingSystemVersion { return "6.1.0.0" }
+
+            $result = Test-OSServerSoftwareReqs -MajorVersion 12 -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should call GetOperatingSystemProductType' { Assert-MockCalled @assRunGetOperatingSystemProductType }
+            It 'Should call GetOperatingSystemVersion' { Assert-MockCalled @assRunGetOperatingSystemVersion }
+            It 'Should return the right result' {
+                $result.Result | Should Be $false
+                $result.Message | Should Be 'This operating system version is not supported for Outsystems 12'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'This operating system version is not supported for Outsystems 12' }
+            It 'Should not throw' { { Test-OSServerSoftwareReqs -MajorVersion 12 -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When trying to install OS10 on win2k16' {
 
             $result = Test-OSServerSoftwareReqs -MajorVersion 10 -ErrorVariable err -ErrorAction SilentlyContinue
@@ -86,6 +102,20 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Test-OSServerSoftwareReqs -MajorVersion 11 -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When trying to install OS12 on win2k16' {
+
+            $result = Test-OSServerSoftwareReqs -MajorVersion 12 -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should call GetOperatingSystemProductType' { Assert-MockCalled @assRunGetOperatingSystemProductType }
+            It 'Should call GetOperatingSystemVersion' { Assert-MockCalled @assRunGetOperatingSystemVersion }
+            It 'Should return the right result' {
+                $result.Result | Should Be $true
+                $result.Message | Should Be 'Operating system was validated for Outsystems 12'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Test-OSServerSoftwareReqs -MajorVersion 12 -ErrorAction SilentlyContinue } | Should Not throw }
         }
     }
 }

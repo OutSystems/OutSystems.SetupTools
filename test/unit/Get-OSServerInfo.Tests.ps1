@@ -50,7 +50,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Get-OSServerInfo -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When the platform server is installed and configured' {
+        Context 'When the platform server is installed and configured for O11' {
 
             $output = Get-OSServerInfo -ErrorAction SilentlyContinue -ErrorVariable err
 
@@ -70,13 +70,45 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Get-OSServerInfo -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When lifetime is installed' {
+        Context 'When lifetime is installed for O11' {
 
             Mock GetLifetimeVersion { return '11.0.0.1' }
 
             $output = Get-OSServerInfo -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the correct server version' { $output.LifetimeVersion| Should Be '11.0.0.1' }
+            It 'Should output a version type property for lifetime' { ($output.LifetimeVersion).GetType().Name | Should Be 'Version' }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSServerInfo -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When the platform server is installed and configured for O12' {
+
+            $output = Get-OSServerInfo -ErrorAction SilentlyContinue -ErrorVariable err
+
+            It 'Should return the correct install directory' { $output.InstallDir | Should Be 'C:\Program Files\OutSystems\Platform Server' }
+            It 'Should return the correct server version' { $output.Version| Should Be '12.0.0.0' }
+            It 'Should return the correct machine name' { $output.MachineName | Should Be 'MYMACHINE' }
+            It 'Should return the correct serial number' { $output.SerialNumber | Should Be 'XBI-NMO-IL5-OYI-9SO-LCU-4SQ-QUT' }
+            It 'Should return the correct private key' { $output.PrivateKey | Should Be 'v4iwANAsGDRpjiEpO8Kt3Q==' }
+            It 'Should return the correct lifetime version' { $output.LifetimeVersion| Should Be $null }
+            It 'Should output a version type property' { ($output.Version).GetType().Name | Should Be 'Version' }
+            It 'Should call the GetServerInstallDir' { Assert-MockCalled @assGetServerInstallDir }
+            It 'Should call the GetServerVersion' { Assert-MockCalled @assGetServerVersion }
+            It 'Should call the GetServerMachineName' { Assert-MockCalled @assGetServerMachineName }
+            It 'Should call the GetServerSerialNumber' { Assert-MockCalled @assGetServerSerialNumber }
+            It 'Should call the GetLifetimeVersion' { Assert-MockCalled @assGetLifetimeVersion }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Get-OSServerInfo -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When lifetime is installed for O12' {
+
+            Mock GetLifetimeVersion { return '12.0.0.1' }
+
+            $output = Get-OSServerInfo -ErrorAction SilentlyContinue -ErrorVariable err
+
+            It 'Should return the correct server version' { $output.LifetimeVersion| Should Be '12.0.0.1' }
             It 'Should output a version type property for lifetime' { ($output.LifetimeVersion).GetType().Name | Should Be 'Version' }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Get-OSServerInfo -ErrorAction SilentlyContinue } | Should Not throw }

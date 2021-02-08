@@ -138,6 +138,56 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When installing OS 12 on a clean machine and everything succeed' {
+
+            $result = Install-OSServerPreReqs -MajorVersion '12' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '12' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When installing OS 12 with all prereqs installed' {
+
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
+            Mock GetDotNet4Version { return 461808 }
+            Mock GetWindowsServerHostingVersion { return '2.1.12' }
+
+            $result = Install-OSServerPreReqs -MajorVersion '12' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
+            It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '12' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When user is not admin' {
 
             Mock IsAdmin { return $false }
@@ -302,6 +352,24 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = IsMSBuildToolsVersionValid -MajorVersion $Major11 -InstallInfo (GetMSBuildToolsInstallInfo)
 
             It "All MS Build versions 2015 and 2017 are supported in major version '$Major11'" {
+                $result | Should Be $True
+            }
+
+            $Major12 = '12'
+
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'Build Tools Update 3'; 'RebootNeeded' = $False } }
+
+            $result = IsMSBuildToolsVersionValid -MajorVersion $Major12 -InstallInfo (GetMSBuildToolsInstallInfo)
+
+            It "All 2015 versions of MS Build are supported in major version '$Major12'" {
+                $result | Should Be $True
+            }
+
+            Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $True; 'LatestVersionInstalled' = 'Build Tools 2017'; 'RebootNeeded' = $False } }
+
+            $result = IsMSBuildToolsVersionValid -MajorVersion $Major12 -InstallInfo (GetMSBuildToolsInstallInfo)
+
+            It "All MS Build versions 2015 and 2017 are supported in major version '$Major12'" {
                 $result | Should Be $True
             }
         }

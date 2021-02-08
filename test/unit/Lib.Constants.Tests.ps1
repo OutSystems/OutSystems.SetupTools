@@ -3,6 +3,21 @@
 
 Describe 'Lib Constants Tests' {
 
+    Context 'Check .NET constants for OS12' {
+
+        $MajorVersion = '12'
+        $SavePath = "$env:TEMP\dotnet12.exe"
+        $FileHash = 'C908F0A5BEA4BE282E35ACBA307D0061B71B8B66CA9894943D3CBB53CAD019BC'
+
+        It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.7.2" }
+        It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "461808" }
+        It 'Should have the right "ToInstallVersion"' { $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'] | Should Be "4.7.2" }
+        It '"ToInstallDownloadURL" should be downloadable and have the right file hash' {
+            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL'], $SavePath)
+            $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
+        }
+    }
+
     Context 'Check .NET constants for OS11' {
 
         $MajorVersion = '11'
