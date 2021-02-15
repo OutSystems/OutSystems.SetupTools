@@ -6,6 +6,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         # Global mocks
         Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetLifetimeVersion { return '10.0.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
         Mock GetSCCompiledVersion { return '10.0.0.1' }
         Mock GetSysComponentsCompiledVersion { return '10.0.0.1' }
@@ -20,6 +21,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
+            Mock GetLifetimeVersion { return $null }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -28,9 +30,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be -1
-                $result.Message | Should Be 'Outsystems platform is not installed'
+                $result.Message | Should Be 'OutSystems platform with Lifetime is not installed'
             }
-            It 'Should output an error' { $err[-1] | Should Be 'Outsystems platform is not installed' }
+            It 'Should output an error' { $err[-1] | Should Be 'OutSystems platform with Lifetime is not installed' }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -62,7 +64,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 0
-                $result.Message | Should Be 'Outsystems lifetime successfully installed'
+                $result.Message | Should Be 'OutSystems Lifetime successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
@@ -79,7 +81,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 0
-                $result.Message | Should Be 'Outsystems lifetime successfully installed'
+                $result.Message | Should Be 'OutSystems Lifetime successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
@@ -94,7 +96,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 0
-                $result.Message | Should Be 'Outsystems lifetime successfully installed'
+                $result.Message | Should Be 'OutSystems Lifetime successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
@@ -109,7 +111,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be 0
-                $result.Message | Should Be 'Outsystems lifetime successfully installed'
+                $result.Message | Should Be 'OutSystems Lifetime successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
@@ -173,7 +175,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetLifetimeCompiledVersion { return $null }
 
-            $result = Publish-OSPlatformLifetime -ServiceCenterUser 'Whatever' -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Publish-OSPlatformLifetime -ServiceCenterUser 'Whatever' -ErrorVariable err -ErrorAction SilentlyContinue
 
             $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "Whatever" -and $SCPass -eq "admin" } }
 
@@ -186,7 +188,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $cred = New-Object System.Management.Automation.PSCredential ("Whatever", $(ConvertTo-SecureString "admin" -AsPlainText -Force))
 
-            $result = Publish-OSPlatformLifetime -Credential $cred -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Publish-OSPlatformLifetime -Credential $cred -ErrorVariable err -ErrorAction SilentlyContinue
 
             $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "Whatever" -and $SCPass -eq "admin" } }
 

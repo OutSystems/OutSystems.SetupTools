@@ -74,11 +74,12 @@ function Publish-OSPlatformLifetime
             Success      = $true
             RebootNeeded = $false
             ExitCode     = 0
-            Message      = 'Outsystems lifetime successfully installed'
+            Message      = 'OutSystems Lifetime successfully installed'
         }
 
         $osVersion = GetServerVersion
         $osInstallDir = GetServerInstallDir
+        $ltVersion = GetLifetimeVersion
 
         switch ($PsCmdlet.ParameterSetName)
         {
@@ -92,15 +93,14 @@ function Publish-OSPlatformLifetime
 
     process
     {
-
-        if ($(-not $osVersion) -or $(-not $osInstallDir))
+        if ($(-not $ltVersion) -or $(-not $osInstallDir))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems platform is not installed"
-            WriteNonTerminalError -Message "Outsystems platform is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "OutSystems platform with Lifetime is not installed"
+            WriteNonTerminalError -Message "OutSystems platform with Lifetime is not installed"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
-            $installResult.Message = 'Outsystems platform is not installed'
+            $installResult.Message = 'OutSystems platform with Lifetime is not installed'
 
             return $installResult
         }
@@ -117,7 +117,7 @@ function Publish-OSPlatformLifetime
             return $installResult
         }
 
-        if ($(GetLifetimeCompiledVersion) -ne $osVersion)
+        if ($(GetLifetimeCompiledVersion) -lt $ltVersion)
         {
             $doInstall = $true
         }
@@ -172,7 +172,7 @@ function Publish-OSPlatformLifetime
 
             try
             {
-                SetLifetimeCompiledVersion -LifetimeVersion $osVersion
+                SetLifetimeCompiledVersion -LifetimeVersion $ltVersion
             }
             catch
             {

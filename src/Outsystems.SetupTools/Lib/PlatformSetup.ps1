@@ -813,7 +813,7 @@ function SetSysComponentsCompiledVersion([string]$SysComponentsVersion)
 function GetLifetimeCompiledVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime"
-    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "LifetimePublished"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
 
@@ -823,7 +823,7 @@ function GetLifetimeCompiledVersion()
 function SetLifetimeCompiledVersion([string]$LifetimeVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:SOFTWARE\OutSystems\Installer\Server\Lifetime = $LifetimeVersion"
-    RegWrite -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "Lifetime" -Value $LifetimeVersion -Type "String"
+    RegWrite -Path "HKLM:SOFTWARE\OutSystems\Installer\Server" -Name "LifetimePublished" -Value $LifetimeVersion -Type "String"
 }
 
 function GenerateEncryptKey()

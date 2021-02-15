@@ -1,5 +1,8 @@
 # Outsystems.SetupTools Release History
 
+## 3.10.1.0
+
+- Fixed Publish-OSPlatformLifetime when updating lifetime with newer lifetime versions
 ## 3.10.0.0
 
 - Support for OutSystems major versions
