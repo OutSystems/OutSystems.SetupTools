@@ -84,7 +84,7 @@ function Set-OSServerConfig
     param(
         [Parameter(ParameterSetName = 'ChangeSettings', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^[a-zA-Z]+$')]
+        [ValidatePattern('^[a-zA-Z0-9]+$')]
         [string]$SettingSection,
 
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'ChangeSettings')]
@@ -97,7 +97,7 @@ function Set-OSServerConfig
 
         [Parameter(ParameterSetName = 'ChangeSettings', Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^[a-zA-Z_]+$')]
+        [ValidatePattern('^[a-zA-Z0-9]+$')]
         [string]$Setting,
 
         [Parameter(ValueFromPipeline = $true, ParameterSetName = 'ChangeSettings', Mandatory = $true)]
