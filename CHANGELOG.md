@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.11.0.0
+
+- Change Set-OSServerConfig and Get-OSServerConfig to allow properties with numbers
+
 ## 3.10.1.0
 
 - Fixed Publish-OSPlatformLifetime when updating lifetime with newer lifetime versions

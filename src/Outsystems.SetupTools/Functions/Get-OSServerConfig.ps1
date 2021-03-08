@@ -21,12 +21,12 @@ function Get-OSServerConfig
     param(
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^[a-zA-Z]+$')]
+        [ValidatePattern('^[a-zA-Z0-9]+$')]
         [string]$SettingSection,
 
         [Parameter(Mandatory = $true)]
         [ValidateNotNullOrEmpty()]
-        [ValidatePattern('^[a-zA-Z]+$')]
+        [ValidatePattern('^[a-zA-Z0-9]+$')]
         [string]$Setting
     )
 
