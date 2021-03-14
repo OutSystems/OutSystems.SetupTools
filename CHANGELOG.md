@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.11.1.0
+
+- Fix Set-OSServerConfig and Get-OSServerConfig bug introduced in 3.11.0.0 version
+
 ## 3.11.0.0
 
 - Change Set-OSServerConfig and Get-OSServerConfig to allow properties with numbers
