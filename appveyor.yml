@@ -1,4 +1,4 @@
-version: 3.11.1.{build}
+version: 3.12.0.{build}
 
 only_commits:
   files:

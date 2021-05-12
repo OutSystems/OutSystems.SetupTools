@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.12.0.0
+
+- Updated .NET Core to 3.1.14
+
 ## 3.11.1.0
 
 - Fix Set-OSServerConfig and Get-OSServerConfig bug introduced in 3.11.0.0 version
