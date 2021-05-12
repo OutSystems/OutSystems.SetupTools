@@ -115,7 +115,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetWindowsServerHostingVersion { return '2.1.12' }
+            Mock GetWindowsServerHostingVersion { return '3.1.14' }
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -165,7 +165,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetWindowsServerHostingVersion { return '2.1.12' }
+            Mock GetWindowsServerHostingVersion { return '3.1.14' }
 
             $result = Install-OSServerPreReqs -MajorVersion '12' -ErrorVariable err -ErrorAction SilentlyContinue
 
