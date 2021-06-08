@@ -397,30 +397,41 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCore([string]$Sources)
+function InnerInstallDotNetCore([bool]$InstallVersion21, [string]$Sources)
 {
+    if ($InstallVersion21)
+    {
+        $installerName = "DotNetCore_WindowsHosting21"
+        $installerRepoURL = $OSRepoURLDotNETCore21
+    }
+    else
+    {
+        $installerName = "DotNetCore_WindowsHosting"
+        $installerRepoURL = $OSRepoURLDotNETCore
+    }
+
     if ($Sources)
     {
-        if (Test-Path "$Sources\DotNetCore_WindowsHosting.exe")
+        if (Test-Path "$Sources\$installerName.exe")
         {
-            $installer = "$Sources\DotNetCore_WindowsHosting.exe"
+            $installer = "$Sources\$installerName.exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\DotNetCore_WindowsHosting.exe.exe")
+        elseif (Test-Path "$Sources\$installerName.exe.exe")
         {
-            $installer = "$Sources\DotNetCore_WindowsHosting.exe.exe"
+            $installer = "$Sources\$installerName.exe.exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
         }
         else {
-            throw [System.IO.FileNotFoundException] "DotNetCore_WindowsHosting.exe not found."
+            throw [System.IO.FileNotFoundException] "$installerName.exe not found."
         }
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCore_WindowsHosting.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
-        DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
+        $installer = "$ENV:TEMP\$installerName.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $installerRepoURL"
+        DownloadOSSources -URL $installerRepoURL -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
@@ -429,6 +440,16 @@ function InstallDotNetCore([string]$Sources)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
 
     return $($result.ExitCode)
+}
+
+function InstallDotNetCore([string]$Sources)
+{
+    return InnerInstallDotNetCore -InstallVersion21 $False -Sources $SourcePath
+}
+
+function InstallDotNetCore21([string]$Sources)
+{
+    return InnerInstallDotNetCore -InstallVersion21 $True -Sources $SourcePath
 }
 
 function InstallErlang([string]$InstallDir, [string]$Sources)

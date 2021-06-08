@@ -48,6 +48,17 @@ Describe 'Lib Constants Tests' {
         }
     }
 
+    Context 'Check .NETCore 2.1 constants' {
+
+        $SavePath = "$env:TEMP\dotnetcore21.exe"
+        $FileHash = 'AC74CADB690D3A5A175CEDD0EF02A11ABE41A292F9C9055B28522E3EB7B02726'
+
+        It 'Should be downloadable and have the right file hash' {
+            (New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore21, $SavePath)
+            $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
+        }
+    }
+
     Context 'Check .NETCore constants' {
 
         $SavePath = "$env:TEMP\dotnetcore.exe"

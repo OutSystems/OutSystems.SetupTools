@@ -92,6 +92,7 @@ $OSRepoURL = "https://ossetuptools.blob.core.windows.net/sources"
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
+$OSRepoURLDotNETCore21 = 'https://download.visualstudio.microsoft.com/download/pr/eebd54bc-c3a2-4580-bb29-b35c1c5ffa92/22ffe5649861167d3d5728d3cb4b10a1/dotnet-hosting-2.1.12-win.exe'
 
 # .NET related
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
