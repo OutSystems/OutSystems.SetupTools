@@ -587,7 +587,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
-                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -641,7 +641,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
-                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
