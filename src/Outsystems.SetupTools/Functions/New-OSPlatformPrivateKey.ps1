@@ -39,7 +39,8 @@ function New-OSPlatformPrivateKey
             return $null
         }
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning: $newKey"
+        $maskedNewKey = Mask-Key -Text $newKey
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning new generated private key: $maskedNewKey"
         return $newKey
     }
 

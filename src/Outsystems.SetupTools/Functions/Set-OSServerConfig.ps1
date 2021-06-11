@@ -321,7 +321,18 @@ function Set-OSServerConfig
                 }
 
                 # Writting the value
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting '$SettingSection/$Setting' to '$Value'"
+                switch($Setting)
+                {
+                    {'RuntimePassword', 'SessionPassword', 'ServicePassword', 'AdminPassword', 'LogPassword'}
+                    {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting '$SettingSection/$Setting' to the provided value"
+                    }
+                    default
+                    {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Setting '$SettingSection/$Setting' to '$Value'"
+                    }
+                }
+
                 $hsConf.EnvironmentConfiguration.$SettingSection.SelectSingleNode($Setting).InnerXML = $Value
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Saving configuration"

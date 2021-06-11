@@ -11,3 +11,14 @@ Describe 'GetHashedPassword Tests' {
         }
     }
 }
+
+Describe 'MaskKey Tests' {
+    Context 'Normal' {
+        It 'Checks if returns a partial masked string' {
+            MaskKey -Text "ThisIsTheSensitiveData" | Should BeLike "**********Data"
+        }
+        It 'Checks it does not fail on default values' {
+            MaskKey | Should BeLike "**********"
+        }
+    }
+}
