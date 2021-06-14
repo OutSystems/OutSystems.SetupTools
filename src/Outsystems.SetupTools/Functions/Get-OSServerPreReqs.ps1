@@ -147,7 +147,7 @@ function Get-OSServerPreReqs
                 $RequirementStatuses += CreateRequirementStatus -Title ".NET Core Windows Server Hosting" `
                                                                 -ScriptBlock `
                                                                 {
-                                                                    $Status = $([version]$(GetWindowsServerHostingVersion) -ge [version]$OS11ReqsMinDotNetCoreVersion)
+                                                                    $Status = $([version](GetDotNetCoreHostingBundleVersions | Select-Object -First 1) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version'])
                                                                     $OKMessages = @("Minimum .NET Core Windows Server Hosting found.")
                                                                     $NOKMessages = @("Minimum .NET Core Windows Server Hosting not found.")
                                                                     $IISStatus = $True

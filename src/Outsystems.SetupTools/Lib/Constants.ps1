@@ -38,8 +38,6 @@ $OS10ReqsMinOSVersion = "6.2.0.0"
 $OS11ReqsMinOSVersion = "10.0.14393"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSReqsMinOSProductType = 2
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OS11ReqsMinDotNetCoreVersion = "3.1.14"
 
 # Microsoft Build Tools 2015 MSI Product Codes
 
@@ -90,8 +88,6 @@ $OSSCCred = New-Object System.Management.Automation.PSCredential ($OSSCUser, $(C
 $OSRepoURL = "https://ossetuptools.blob.core.windows.net/sources"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
 
 # .NET related
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -113,6 +109,21 @@ $OSDotNetReqForMajor = @{
         Value                = '461808'
         ToInstallVersion     = '4.7.2'
         ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
+    }
+}
+
+# .NET Core Hosting Bundle related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSDotNetCoreHostingBundleReq = @{
+    '2' = @{
+        Version = '2.1.12'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/eebd54bc-c3a2-4580-bb29-b35c1c5ffa92/22ffe5649861167d3d5728d3cb4b10a1/dotnet-hosting-2.1.12-win.exe'
+        InstallerName = 'DotNetCore_WindowsHosting_21.exe'
+    }
+    '3' = @{
+        Version = '3.1.14'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
+        InstallerName = 'DotNetCore_WindowsHosting.exe'
     }
 }
 
