@@ -444,12 +444,12 @@ function InnerInstallDotNetCore([bool]$InstallVersion21, [string]$Sources)
 
 function InstallDotNetCore([string]$Sources)
 {
-    return InnerInstallDotNetCore -InstallVersion21 $False -Sources $SourcePath
+    return InnerInstallDotNetCore -InstallVersion21 $False -Sources $Sources
 }
 
 function InstallDotNetCore21([string]$Sources)
 {
-    return InnerInstallDotNetCore -InstallVersion21 $True -Sources $SourcePath
+    return InnerInstallDotNetCore -InstallVersion21 $True -Sources $Sources
 }
 
 function InstallErlang([string]$InstallDir, [string]$Sources)
