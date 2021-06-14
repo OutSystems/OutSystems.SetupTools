@@ -128,18 +128,24 @@ function Install-OSServerPreReqs
             default
             {
                 # Check .NET Core Windows Server Hosting version
+                $installDotNetCoreHostingBundle2 = $true
+                $installDotNetCoreHostingBundle3 = $true
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
                     # Check version 2.1
-                    if (-not (([version]$version).Major -eq 2 -and ([version]$version) -gt [version]$script:OSDotNetCoreHostingBundleReq['2']['Version'])) {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 2.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                        $installDotNetCoreHostingBundle2 = $true
+                    if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
+                        $installDotNetCoreHostingBundle2 = $false
                     }
                     # Check version 3.1
-                    if (-not (([version]$version).Major -eq 3 -and ([version]$version) -gt [version]$script:OSDotNetCoreHostingBundleReq['3']['Version'])) {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 3.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                        $installDotNetCoreHostingBundle3 = $true
+                    if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
+                        $installDotNetCoreHostingBundle3 = $false
                     }
+                }
+                if ($installDotNetCoreHostingBundle2) {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 2.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
+                }
+                if ($installDotNetCoreHostingBundle3) {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 3.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
                 }
             }
         }
