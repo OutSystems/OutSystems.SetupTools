@@ -8,13 +8,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock IsAdmin { return $true }
         Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $False; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = $Null; 'RebootNeeded' = $False } }
         Mock GetDotNet4Version { return $null }
-        Mock GetWindowsServerHostingVersion { return $null }
+        Mock GetDotNetCoreHostingBundleVersions { return '0.0.0.0' }
 
         Mock InstallDotNet { return 0 }
         Mock InstallBuildTools { return 0 }
         Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $true } }
-        Mock InstallDotNetCore21 { return 0 }
-        Mock InstallDotNetCore { return 0 }
+        Mock InstallDotNetCoreHostingBundle { return 0 }
         Mock ConfigureServiceWMI {}
         Mock ConfigureServiceWindowsSearch {}
         Mock DisableFIPS {}
@@ -27,10 +26,10 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $assNotRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCore'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCore'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunInstallDotNetCore21 = @{ 'CommandName' = 'InstallDotNetCore21'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assNotRunInstallDotNetCore21 = @{ 'CommandName' = 'InstallDotNetCore21'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
+        $assRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "3" }}
+        $assNotRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "3" }}
+        $assRunInstallDotNetCore21 = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "2" }}
+        $assNotRunInstallDotNetCore21 = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "2" }}
         $assRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
@@ -121,7 +120,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetWindowsServerHostingVersion { return '3.1.14' }
+            Mock GetDotNetCoreHostingBundleVersions { return @('3.1.14', '2.1.12') }
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -173,7 +172,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetWindowsServerHostingVersion { return '3.1.14' }
+            Mock GetDotNetCoreHostingBundleVersions { return @('3.1.14', '2.1.12') }
 
             $result = Install-OSServerPreReqs -MajorVersion '12' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -579,7 +578,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core installation fails to start' {
 
-            Mock InstallDotNetCore { throw 'Big error' }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -606,7 +605,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core 2.1 installation fails to start' {
 
-            Mock InstallDotNetCore21 { throw 'Big error' }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -633,7 +632,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core installer not found' {
 
-            Mock InstallDotNetCore { throw [System.IO.FileNotFoundException] '.NET Core 3.1 installer not found' }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { throw [System.IO.FileNotFoundException] '.NET Core 3.1 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -660,7 +659,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core 2.1 installer not found' {
 
-            Mock InstallDotNetCore21 { throw [System.IO.FileNotFoundException] '.NET Core 2.1 installer not found' }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { throw [System.IO.FileNotFoundException] '.NET Core 2.1 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -687,7 +686,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core reports a reboot' {
 
-            Mock InstallDotNetCore { return 3010 }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
@@ -714,7 +713,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core 2.1 reports a reboot' {
 
-            Mock InstallDotNetCore21 { return 3010 }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
@@ -741,7 +740,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core reports an error' {
 
-            Mock InstallDotNetCore { return 10 }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -768,7 +767,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET core 2.1 reports an error' {
 
-            Mock InstallDotNetCore21 { return 10 }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
