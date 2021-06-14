@@ -54,18 +54,18 @@ Describe 'Lib Constants Tests' {
         $FileHash = 'AC74CADB690D3A5A175CEDD0EF02A11ABE41A292F9C9055B28522E3EB7B02726'
 
         It 'Should be downloadable and have the right file hash' {
-            (New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore21, $SavePath)
+            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetCoreHostingBundleReq['2']['ToInstallDownloadURL'], $SavePath)
             $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
         }
     }
 
-    Context 'Check .NETCore constants' {
+    Context 'Check .NETCore 3.1 constants' {
 
         $SavePath = "$env:TEMP\dotnetcore.exe"
         $FileHash = '187179215D0C9DE82F6C6F005E08AC517E34E9689959964053B0F60FEDFD8302'
 
         It 'Should be downloadable and have the right file hash' {
-            (New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore, $SavePath)
+            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetCoreHostingBundleReq['3']['ToInstallDownloadURL'], $SavePath)
             $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
         }
     }
