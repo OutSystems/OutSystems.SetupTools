@@ -401,15 +401,15 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
 {
     if ($Sources)
     {
-        if (Test-Path "$Sources\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']")
+        if (Test-Path "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])")
         {
-            $installer = "$Sources\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']"
+            $installer = "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'].exe")
+        elseif (Test-Path "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']).exe")
         {
-            $installer = "$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'].exe"
+            $installer = "$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
         }
         else {
@@ -418,9 +418,9 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
     }
     else
     {
-        $installer = "$ENV:TEMP\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']"
-        DownloadOSSources -URL $script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'] -SavePath $installer
+        $installer = "$ENV:TEMP\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
+        DownloadOSSources -URL $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
