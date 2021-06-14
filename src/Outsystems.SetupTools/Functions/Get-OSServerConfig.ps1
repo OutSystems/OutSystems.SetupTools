@@ -102,7 +102,7 @@ function Get-OSServerConfig
 
         #region getting value
         $result = $xmlNode.'#text'
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "The raw value from the configuration is $result"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "The raw value from the configuration has been read"
 
         if ($xmlNode.encrypted -eq 'true')
         {
@@ -121,7 +121,7 @@ function Get-OSServerConfig
         }
         #endregion
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $result"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning value"
         return $result
     }
 
