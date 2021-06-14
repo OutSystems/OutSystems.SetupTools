@@ -107,7 +107,7 @@ function GetDotNet4Version()
     return $output
 }
 
-function GetWindowsServerHostingVersion()
+function GetDotNetCoreHostingBundleVersions()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .Net Core<*>Windows Server Hosting<*>\PackageVersion"
 
@@ -116,7 +116,7 @@ function GetWindowsServerHostingVersion()
 
     try
     {
-        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending | Select-Object -First 1
+        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending
     }
     catch
     {
@@ -397,30 +397,19 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InnerInstallDotNetCore([bool]$InstallVersion21, [string]$Sources)
+function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
 {
-    if ($InstallVersion21)
-    {
-        $installerName = "DotNetCore_WindowsHosting21"
-        $installerRepoURL = $OSRepoURLDotNETCore21
-    }
-    else
-    {
-        $installerName = "DotNetCore_WindowsHosting"
-        $installerRepoURL = $OSRepoURLDotNETCore
-    }
-
     if ($Sources)
     {
-        if (Test-Path "$Sources\$installerName.exe")
+        if (Test-Path "$Sources\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']")
         {
-            $installer = "$Sources\$installerName.exe"
+            $installer = "$Sources\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\$installerName.exe.exe")
+        elseif (Test-Path "$Sources\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'].exe")
         {
-            $installer = "$Sources\$installerName.exe.exe"
+            $installer = "$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'].exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
         }
         else {
@@ -429,9 +418,9 @@ function InnerInstallDotNetCore([bool]$InstallVersion21, [string]$Sources)
     }
     else
     {
-        $installer = "$ENV:TEMP\$installerName.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $installerRepoURL"
-        DownloadOSSources -URL $installerRepoURL -SavePath $installer
+        $installer = "$ENV:TEMP\$script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']"
+        DownloadOSSources -URL $script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'] -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
@@ -440,16 +429,6 @@ function InnerInstallDotNetCore([bool]$InstallVersion21, [string]$Sources)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
 
     return $($result.ExitCode)
-}
-
-function InstallDotNetCore([string]$Sources)
-{
-    return InnerInstallDotNetCore -InstallVersion21 $False -Sources $Sources
-}
-
-function InstallDotNetCore21([string]$Sources)
-{
-    return InnerInstallDotNetCore -InstallVersion21 $True -Sources $Sources
 }
 
 function InstallErlang([string]$InstallDir, [string]$Sources)

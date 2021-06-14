@@ -128,14 +128,18 @@ function Install-OSServerPreReqs
             default
             {
                 # Check .NET Core Windows Server Hosting version
-                if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
+                foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                    $installDotNetCore = $true
-                }
-                else
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting for OutSystems $MajorVersion found"
+                    # Check version 2.1
+                    if (-not (([version]$version).Major -eq 2 -and ([version]$version) -gt [version]$script:OSDotNetCoreHostingBundleReq['2']['Version'])) {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 2.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
+                        $installDotNetCoreHostingBundle2 = $true
+                    }
+                    # Check version 3.1
+                    if (-not (([version]$version).Major -eq 3 -and ([version]$version) -gt [version]$script:OSDotNetCoreHostingBundleReq['3']['Version'])) {
+                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 3.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
+                        $installDotNetCoreHostingBundle3 = $true
+                    }
                 }
             }
         }
@@ -256,14 +260,13 @@ function Install-OSServerPreReqs
             }
         }
 
-        # Install .NET Core Windows Server Hosting bundle
-        if ($installDotNetCore)
+        # Install .NET Core Windows Server Hosting bundle version 2.1
+        if ($installDotNetCoreHostingBundle2)
         {
-            # Install version 2.1
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core 2.1 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCore21 -Sources $SourcePath
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '2' -Sources $SourcePath
             }
             catch [System.IO.FileNotFoundException]
             {
@@ -314,11 +317,15 @@ function Install-OSServerPreReqs
                 }
             }
 
-            # Install version 3.1
+        }
+
+        # Install .NET Core Windows Server Hosting bundle version 3.1
+        if ($installDotNetCoreHostingBundle3)
+        {
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core 3.1 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCore -Sources $SourcePath
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '3' -Sources $SourcePath
             }
             catch [System.IO.FileNotFoundException]
             {
