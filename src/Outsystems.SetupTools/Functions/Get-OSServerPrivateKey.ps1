@@ -74,7 +74,8 @@ function Get-OSServerPrivateKey
             return $null
         }
 
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $privateKey"
+        $maskedPrivateKey = MaskKey -Text $privateKey
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning key $maskedPrivateKey"
         return $privateKey
     }
 

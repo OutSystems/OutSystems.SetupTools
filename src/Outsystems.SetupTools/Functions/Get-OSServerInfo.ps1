@@ -71,7 +71,8 @@ function Get-OSServerInfo
 
             if ($serverInfo.PrivateKey)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server private key is: $($serverInfo.PrivateKey)"
+                $maskedPrivateKey = MaskKey -Text $serverInfo.PrivateKey
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Server private key is: $($maskedPrivateKey)"
             }
             else
             {

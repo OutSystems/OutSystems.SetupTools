@@ -335,3 +335,11 @@ function EncryptSetting([string]$Setting)
 
     return $encryptedSetting
 }
+
+function MaskKey([String]$Text)
+{
+    $startchar = [math]::min($Text.length - 4, $Text.length)
+    $startchar = [math]::max(0, $startchar)
+    $right = "**********$($Text.SubString($startchar ,[math]::min($Text.length, 4)))"
+    return $right
+}
