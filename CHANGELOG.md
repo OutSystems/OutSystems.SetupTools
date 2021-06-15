@@ -2,7 +2,8 @@
 
 ## 3.13.0.0
 
-- Updated Install-OSServerPreReqs. Now installs .NET Core hosting bundle version 3.1.14 and 2.1.12. The new .NET Core version is a pre-req of newer OutSystems 11 versions. To maintain compability we decided to install both versions.
+- Updated Install-OSServerPreReqs. Now installs .NET Core hosting bundle version 3.1.14 and 2.1.12. The new .NET Core version is a pre-req of newer OutSystems 11 versions. To maintain compability we decided to install both versions
+- Masked sensitive information from log files
 
 ## 3.12.0.0
 
