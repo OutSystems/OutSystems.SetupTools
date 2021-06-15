@@ -849,13 +849,14 @@ function GetPlatformVersion([string]$SCHost)
 
 function GetAzStorageFileList()
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting file list from storage account $OSAzStorageAccountName"
+    $stoAccountName = (([System.Uri]$OSRepoURL).Host).Split('.')[0]
+    $stoContainer = ([System.Uri]$OSRepoURL).Segments[1]
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting file list from storage account $stoAccountName container $stoContainer"
 
-    # This function never throws anything
-    $stoCtx = New-AzureStorageContext -StorageAccountName $OSAzStorageAccountName -SasToken $OSAzStorageSASToken -ErrorAction 'Stop'
+    $stoCtx = New-AzureStorageContext -StorageAccountName $stoAccountName -Anonymous -ErrorAction Stop
 
     $ProgressPreference = "SilentlyContinue"
-    $sources = $(Get-AzureStorageBlob -Container $OSAzStorageContainer -Context $stoCtx -ErrorAction 'Stop').Name
+    $sources = $(Get-AzureStorageBlob -Container $stoContainer -Context $stoCtx -ErrorAction Stop).Name
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($sources.Count)"
 
