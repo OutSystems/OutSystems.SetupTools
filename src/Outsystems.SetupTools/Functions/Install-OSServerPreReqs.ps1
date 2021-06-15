@@ -128,14 +128,24 @@ function Install-OSServerPreReqs
             default
             {
                 # Check .NET Core Windows Server Hosting version
-                if ([version]$(GetWindowsServerHostingVersion) -lt [version]$OS11ReqsMinDotNetCoreVersion)
+                $installDotNetCoreHostingBundle2 = $true
+                $installDotNetCoreHostingBundle3 = $true
+                foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                    $installDotNetCore = $true
+                    # Check version 2.1
+                    if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
+                        $installDotNetCoreHostingBundle2 = $false
+                    }
+                    # Check version 3.1
+                    if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
+                        $installDotNetCoreHostingBundle3 = $false
+                    }
                 }
-                else
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting for OutSystems $MajorVersion found"
+                if ($installDotNetCoreHostingBundle2) {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 2.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
+                }
+                if ($installDotNetCoreHostingBundle3) {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 3.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
                 }
             }
         }
@@ -256,33 +266,33 @@ function Install-OSServerPreReqs
             }
         }
 
-        # Install .NET Core Windows Server Hosting bundle
-        if ($installDotNetCore)
+        # Install .NET Core Windows Server Hosting bundle version 2.1
+        if ($installDotNetCoreHostingBundle2)
         {
             try
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCore -Sources $SourcePath
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core 2.1 Windows Server Hosting bundle"
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '2' -Sources $SourcePath
             }
             catch [System.IO.FileNotFoundException]
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Core installer not found"
-                WriteNonTerminalError -Message ".NET Core installer not found"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Core 2.1 installer not found"
+                WriteNonTerminalError -Message ".NET Core 2.1 installer not found"
 
                 $installResult.Success = $false
                 $installResult.ExitCode = -1
-                $installResult.Message = '.NET Core installer not found'
+                $installResult.Message = '.NET Core 2.1 installer not found'
 
                 return $installResult
             }
             catch
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core installation"
-                WriteNonTerminalError -Message "Error downloading or starting the .NET Core installation"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core 2.1 installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET Core 2.1 installation"
 
                 $installResult.Success = $false
                 $installResult.ExitCode = -1
-                $installResult.Message = 'Error downloading or starting the .NET Core installation'
+                $installResult.Message = 'Error downloading or starting the .NET Core 2.1 installation'
 
                 return $installResult
             }
@@ -291,23 +301,82 @@ function Install-OSServerPreReqs
             {
                 0
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed."
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 2.1 Windows Server Hosting bundle successfully installed."
                 }
 
                 { $_ -in 3010, 3011 }
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 2.1 Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
                 default
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET Core Windows Server Hosting bundle. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET Core Windows Server Hosting bundle. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET Core 2.1 Windows Server Hosting bundle. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET Core 2.1 Windows Server Hosting bundle. Exit code: $exitCode"
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing .NET Core Windows Server Hosting bundle'
+                    $installResult.Message = 'Error installing .NET Core 2.1 Windows Server Hosting bundle'
+
+                    return $installResult
+                }
+            }
+
+        }
+
+        # Install .NET Core Windows Server Hosting bundle version 3.1
+        if ($installDotNetCoreHostingBundle3)
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core 3.1 Windows Server Hosting bundle"
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '3' -Sources $SourcePath
+            }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Core 3.1 installer not found"
+                WriteNonTerminalError -Message ".NET Core 3.1 installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = '.NET Core 3.1 installer not found'
+
+                return $installResult
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core 3.1 installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET Core 3.1 installation"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error downloading or starting the .NET Core 3.1 installation'
+
+                return $installResult
+            }
+
+            switch ($exitCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 3.1 Windows Server Hosting bundle successfully installed."
+                }
+
+                { $_ -in 3010, 3011 }
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 3.1 Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
+                    $installResult.RebootNeeded = $true
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET Core 3.1 Windows Server Hosting bundle. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET Core 3.1 Windows Server Hosting bundle. Exit code: $exitCode"
+
+                    $installResult.Success = $false
+                    $installResult.ExitCode = $exitCode
+                    $installResult.Message = 'Error installing .NET Core 3.1 Windows Server Hosting bundle'
 
                     return $installResult
                 }

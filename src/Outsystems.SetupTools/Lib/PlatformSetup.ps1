@@ -107,7 +107,7 @@ function GetDotNet4Version()
     return $output
 }
 
-function GetWindowsServerHostingVersion()
+function GetDotNetCoreHostingBundleVersions()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .Net Core<*>Windows Server Hosting<*>\PackageVersion"
 
@@ -116,7 +116,7 @@ function GetWindowsServerHostingVersion()
 
     try
     {
-        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending | Select-Object -First 1
+        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending
     }
     catch
     {
@@ -397,30 +397,30 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCore([string]$Sources)
+function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
 {
     if ($Sources)
     {
-        if (Test-Path "$Sources\DotNetCore_WindowsHosting.exe")
+        if (Test-Path "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])")
         {
-            $installer = "$Sources\DotNetCore_WindowsHosting.exe"
+            $installer = "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\DotNetCore_WindowsHosting.exe.exe")
+        elseif (Test-Path "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']).exe")
         {
-            $installer = "$Sources\DotNetCore_WindowsHosting.exe.exe"
+            $installer = "$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
         }
         else {
-            throw [System.IO.FileNotFoundException] "DotNetCore_WindowsHosting.exe not found."
+            throw [System.IO.FileNotFoundException] "$installerName.exe not found."
         }
     }
     else
     {
-        $installer = "$ENV:TEMP\DotNetCore_WindowsHosting.exe"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLDotNETCore"
-        DownloadOSSources -URL $OSRepoURLDotNETCore -SavePath $installer
+        $installer = "$ENV:TEMP\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
+        DownloadOSSources -URL $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
