@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.13.1.0
+
+- Fixed Get-OSRepoAvailableVersions. Was getting versions from an old storage account
+
 ## 3.13.0.0
 
 - Updated Install-OSServerPreReqs. Now installs .NET Core hosting bundle version 3.1.14 and 2.1.12. The new .NET Core version is a pre-req of newer OutSystems 11 versions. To maintain compability we decided to install both versions
