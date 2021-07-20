@@ -43,11 +43,20 @@ function Install-OSServerPreReqs
         [string]$SourcePath,
 
         [Parameter()]
-        [bool]$InstallIISMgmtConsole = $true
+        [bool]$InstallIISMgmtConsole = $true,
+
+        [Parameter()]
+        [ValidatePattern('\d+')]
+        [string]$MinorVersion,
+
+        [Parameter()]
+        [ValidatePattern('\d$')]
+        [string]$PatchVersion
     )
 
     begin
     {
+        Write-Host "Minor $MinorVersion"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
@@ -128,7 +137,8 @@ function Install-OSServerPreReqs
             default
             {
                 # Check .NET Core Windows Server Hosting version
-                $installDotNetCoreHostingBundle2 = $true
+                # Check optional minor and patch versions to check if we should install .NET Core 2 for compatibility
+                $installDotNetCoreHostingBundle2 = ShouldInstallDotNetCoreHostingBundleVersion2 -MinorVersion $MinorVersion -PatchVersion $PatchVersion
                 $installDotNetCoreHostingBundle3 = $true
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
