@@ -118,12 +118,12 @@ $OSDotNetCoreHostingBundleReq = @{
     '2' = @{
         Version = '2.1.12'
         ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/eebd54bc-c3a2-4580-bb29-b35c1c5ffa92/22ffe5649861167d3d5728d3cb4b10a1/dotnet-hosting-2.1.12-win.exe'
-        InstallerName = 'DotNetCore_WindowsHosting_21.exe'
+        InstallerName = 'DotNetCore_WindowsHosting.exe'
     }
     '3' = @{
         Version = '3.1.14'
         ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
-        InstallerName = 'DotNetCore_WindowsHosting.exe'
+        InstallerName = 'DotNetCore_WindowsHosting_31.exe'
     }
 }
 

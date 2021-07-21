@@ -56,7 +56,6 @@ function Install-OSServerPreReqs
 
     begin
     {
-        Write-Host "Minor $MinorVersion"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 0 -Stream 0 -Message "Starting"
         SendFunctionStartEvent -InvocationInfo $MyInvocation
 
