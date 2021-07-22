@@ -148,8 +148,17 @@ function Install-OSServerPreReqs
             {
                 # Check .NET Core Windows Server Hosting version
                 # Check optional minor and patch versions to check if we should install .NET Core 2 for compatibility
-                $installDotNetCoreHostingBundle2 = ShouldInstallDotNetCoreHostingBundleVersion2 -MinorVersion $MinorVersion -PatchVersion $PatchVersion
-                $installDotNetCoreHostingBundle3 = $true
+                $installDotNetCoreHostingBundle2 = ShouldInstallDotNetCoreHostingBundleVersion2 -MajorVersion $MajorVersion -MinorVersion $MinorVersion -PatchVersion $PatchVersion
+
+                #If we decided to install .NET Core 2.1 by checking the optional parameters, it means we don't need to install .NET Core 3.1
+                if ($installDotNetCoreHostingBundle2 -eq $true -and ($MinorVersion -ne '' -and $PatchVersion -ne '')) {
+                    $installDotNetCoreHostingBundle3 = $false
+                }
+                else
+                {
+                    $installDotNetCoreHostingBundle3 = $true
+                }
+
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
                     # Check version 2.1

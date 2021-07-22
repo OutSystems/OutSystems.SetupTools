@@ -936,7 +936,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
-            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should run the .NET core 3.1 installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -960,7 +960,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
-            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should not run the .NET core 3.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }

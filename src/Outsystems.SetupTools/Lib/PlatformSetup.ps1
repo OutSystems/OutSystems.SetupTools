@@ -133,16 +133,17 @@ function GetDotNetCoreHostingBundleVersions()
     return $version
 }
 
-function ShouldInstallDotNetCoreHostingBundleVersion2([string]$MinorVersion, [string]$PatchVersion)
+function ShouldInstallDotNetCoreHostingBundleVersion2([string]$MajorVersion, [string]$MinorVersion, [string]$PatchVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking which versions of .NET Core Hosting Bundle should be installed"
 
+    $MajorVersion = $MajorVersion -as [int]
     $MinorVersion = $MinorVersion -as [int]
     $PatchVersion = $PatchVersion -as [int]
     $shouldInstallDotNetCoreHostingBundleVersion2 = $true
 
 
-    if ($MinorVersion -gt 12 -or ($MinorVersion -eq 12 -and $PatchVersion -ge 2))
+    if ($MajorVersion -eq 11 -and $MinorVersion -gt 12 -or ($MinorVersion -eq 12 -and $PatchVersion -ge 2))
     {
         $shouldInstallDotNetCoreHostingBundleVersion2 = $false
     }
