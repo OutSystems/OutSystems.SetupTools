@@ -12,6 +12,14 @@ function Install-OSServerPreReqs
     Specifies the platform major version.
     Accepted values: 10 or 11.
 
+    .PARAMETER MinorVersion
+    Specifies the platform minor version.
+    Accepted values: one or more digit numbers.
+
+    .PARAMETER PatchVersion
+    Specifies the platform patch version.
+    Accepted values: single digits only.
+
     .PARAMETER InstallIISMgmtConsole
     Specifies if the IIS Managament Console will be installed.
     On servers without GUI this feature can't be installed so you should set this parameter to $false.
@@ -21,6 +29,9 @@ function Install-OSServerPreReqs
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10"
+
+    .EXAMPLE
+    Install-OSServerPreReqs -MajorVersion "11" -MinorVersion "12" -PatchVersion "3"
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false
