@@ -12,6 +12,14 @@ function Install-OSServerPreReqs
     Specifies the platform major version.
     Accepted values: 10 or 11.
 
+    .PARAMETER MinorVersion
+    Specifies the platform minor version.
+    Accepted values: one or more digit numbers.
+
+    .PARAMETER PatchVersion
+    Specifies the platform patch version.
+    Accepted values: single digits only.
+
     .PARAMETER InstallIISMgmtConsole
     Specifies if the IIS Managament Console will be installed.
     On servers without GUI this feature can't be installed so you should set this parameter to $false.
@@ -21,6 +29,9 @@ function Install-OSServerPreReqs
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10"
+
+    .EXAMPLE
+    Install-OSServerPreReqs -MajorVersion "11" -MinorVersion "12" -PatchVersion "3"
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false
@@ -43,7 +54,15 @@ function Install-OSServerPreReqs
         [string]$SourcePath,
 
         [Parameter()]
-        [bool]$InstallIISMgmtConsole = $true
+        [bool]$InstallIISMgmtConsole = $true,
+
+        [Parameter()]
+        [ValidatePattern('\d+')]
+        [string]$MinorVersion = "0",
+
+        [Parameter()]
+        [ValidatePattern('\d$')]
+        [string]$PatchVersion = "0"
     )
 
     begin
@@ -128,8 +147,29 @@ function Install-OSServerPreReqs
             default
             {
                 # Check .NET Core Windows Server Hosting version
-                $installDotNetCoreHostingBundle2 = $true
-                $installDotNetCoreHostingBundle3 = $true
+                $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
+                if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
+                {
+                    # Here means that no specific minor and patch version were specified
+                    # So we install both versions
+                    $installDotNetCoreHostingBundle2 = $true
+                    $installDotNetCoreHostingBundle3 = $true
+                }
+                elseif ($fullVersion -gt [version]"11.12.2.0")
+                {
+                    # Here means that minor and patch version were specified and we are above version 11.12.2.0
+                    # We install version 3 only
+                    $installDotNetCoreHostingBundle2 = $false
+                    $installDotNetCoreHostingBundle3 = $true
+                }
+                else
+                {
+                    # Here means that minor and patch version were specified and we are below version 11.12.2.0
+                    # We install version 2 only
+                    $installDotNetCoreHostingBundle2 = $true
+                    $installDotNetCoreHostingBundle3 = $false
+                }
+
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
                     # Check version 2.1
