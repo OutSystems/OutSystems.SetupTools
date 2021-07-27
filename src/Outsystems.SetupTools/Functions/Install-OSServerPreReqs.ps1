@@ -58,11 +58,11 @@ function Install-OSServerPreReqs
 
         [Parameter()]
         [ValidatePattern('\d+')]
-        [string]$MinorVersion,
+        [string]$MinorVersion = "0",
 
         [Parameter()]
         [ValidatePattern('\d$')]
-        [string]$PatchVersion
+        [string]$PatchVersion = "0"
     )
 
     begin
@@ -147,16 +147,27 @@ function Install-OSServerPreReqs
             default
             {
                 # Check .NET Core Windows Server Hosting version
-                # Check optional minor and patch versions to check if we should install .NET Core 2 for compatibility
-                $installDotNetCoreHostingBundle2 = ShouldInstallDotNetCoreHostingBundleVersion2 -MajorVersion $MajorVersion -MinorVersion $MinorVersion -PatchVersion $PatchVersion
-
-                #If we decided to install .NET Core 2.1 by checking the optional parameters, it means we don't need to install .NET Core 3.1
-                if ($installDotNetCoreHostingBundle2 -eq $true -and ($MinorVersion -ne '' -and $PatchVersion -ne '')) {
-                    $installDotNetCoreHostingBundle3 = $false
+                $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
+                if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
+                {
+                    # Here means that no specific minor and patch version were specified
+                    # So we install both versions
+                    $installDotNetCoreHostingBundle2 = $true
+                    $installDotNetCoreHostingBundle3 = $true
+                }
+                elseif ($fullVersion -gt [version]"11.12.2.0")
+                {
+                    # Here means that minor and patch version were specified and we are above version 11.12.2.0
+                    # We install version 3 only
+                    $installDotNetCoreHostingBundle2 = $false
+                    $installDotNetCoreHostingBundle3 = $true
                 }
                 else
                 {
-                    $installDotNetCoreHostingBundle3 = $true
+                    # Here means that minor and patch version were specified and we are below version 11.12.2.0
+                    # We install version 2 only
+                    $installDotNetCoreHostingBundle2 = $true
+                    $installDotNetCoreHostingBundle3 = $false
                 }
 
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
