@@ -1,5 +1,8 @@
 # Outsystems.SetupTools Release History
 
+## 3.14.1.0
+
+- Updated Install-OSServerPreReqs. Fix OutSystems version for .NET hosting bundle 3.1 installation
 ## 3.14.0.0
 
 - Updated Install-OSServerPreReqs. Install .NET Core hosting bundle version 3.1.14 only if we are above OutSystems version 11.12.2.0. Added parameters so the full OutSystems version can be specified
