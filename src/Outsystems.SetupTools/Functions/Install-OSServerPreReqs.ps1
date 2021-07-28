@@ -155,9 +155,9 @@ function Install-OSServerPreReqs
                     $installDotNetCoreHostingBundle2 = $true
                     $installDotNetCoreHostingBundle3 = $true
                 }
-                elseif ($fullVersion -gt [version]"11.12.2.0")
+                elseif ($fullVersion -ge [version]"11.12.2.0")
                 {
-                    # Here means that minor and patch version were specified and we are above version 11.12.2.0
+                    # Here means that minor and patch version were specified and we are equal or above version 11.12.2.0
                     # We install version 3 only
                     $installDotNetCoreHostingBundle2 = $false
                     $installDotNetCoreHostingBundle3 = $true

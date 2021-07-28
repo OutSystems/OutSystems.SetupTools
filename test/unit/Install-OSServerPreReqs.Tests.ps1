@@ -976,6 +976,30 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '1' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 12 and Patch version 2 (11.12.2)' {
+
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
+            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 13 (11.13.0)' {
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '13' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue
