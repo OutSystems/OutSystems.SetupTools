@@ -10,8 +10,8 @@ Write-Verbose "Starting. Please wait..." -Verbose
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 $OSRepoURLDotNET = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
-$OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
-$OSRepoURLDotNETCore21 = 'https://download.visualstudio.microsoft.com/download/pr/eebd54bc-c3a2-4580-bb29-b35c1c5ffa92/22ffe5649861167d3d5728d3cb4b10a1/dotnet-hosting-2.1.12-win.exe'
+$OSRepoURLDotNETCore31 = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
+$OSRepoURLDotNETCore = 'https://download.visualstudio.microsoft.com/download/pr/eebd54bc-c3a2-4580-bb29-b35c1c5ffa92/22ffe5649861167d3d5728d3cb4b10a1/dotnet-hosting-2.1.12-win.exe'
 $OSRepoURL = 'https://myfilerepo.blob.core.windows.net/sources'
 $OSServerVersion = ""
 $OSServiceStudioVersion = ""
@@ -41,9 +41,9 @@ Write-Verbose "Downloading .NET 4.7.2" -Verbose
 Write-Verbose "Downloading BuildTools 2015" -Verbose
 (New-Object System.Net.WebClient).DownloadFile($OSRepoURLBuildTools, "$env:Temp\OSOfflineBundle\PreReqs\BuildTools_Full.exe")
 Write-Verbose "Downloading .NET Core 2.1 Windows Server Hosting bundle" -Verbose
-(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore21, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCore_WindowsHosting21.exe")
-Write-Verbose "Downloading .NET Core 3.1 Windows Server Hosting bundle" -Verbose
 (New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCore_WindowsHosting.exe")
+Write-Verbose "Downloading .NET Core 3.1 Windows Server Hosting bundle" -Verbose
+(New-Object System.Net.WebClient).DownloadFile($OSRepoURLDotNETCore31, "$env:Temp\OSOfflineBundle\PreReqs\DotNetCore_WindowsHosting_31.exe")
 
 # -- Download outsystems
 $OSServerVersion = Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion $MajorVersion -Latest
