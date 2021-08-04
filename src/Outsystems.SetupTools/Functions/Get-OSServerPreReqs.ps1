@@ -191,7 +191,14 @@ function Get-OSServerPreReqs
                     $RequirementStatuses += CreateRequirementStatus -Title ".NET Core 2.1 Windows Server Hosting" `
                                                                     -ScriptBlock `
                                                                     {
-                                                                        $Status = $([version](GetDotNetCoreHostingBundleVersions | Select-Object -First 1) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version'])
+                                                                        $Status = $False
+                                                                        foreach ($version in GetDotNetCoreHostingBundleVersions)
+                                                                        {
+                                                                            # Check version 2.1
+                                                                            if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
+                                                                                $Status = $True
+                                                                            }
+                                                                        }
                                                                         $OKMessages = @("Minimum .NET Core 2.1 Windows Server Hosting found.")
                                                                         $NOKMessages = @("Minimum .NET Core 2.1 Windows Server Hosting not found.")
                                                                         $IISStatus = $True
@@ -224,7 +231,14 @@ function Get-OSServerPreReqs
                     $RequirementStatuses += CreateRequirementStatus -Title ".NET Core 3.1 Windows Server Hosting" `
                                                                     -ScriptBlock `
                                                                     {
-                                                                        $Status = $([version](GetDotNetCoreHostingBundleVersions | Select-Object -First 1) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version'])
+                                                                        $Status = $False
+                                                                        foreach ($version in GetDotNetCoreHostingBundleVersions)
+                                                                        {
+                                                                            # Check version 3.1
+                                                                            if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
+                                                                                $Status = $True
+                                                                            }
+                                                                        }
                                                                         $OKMessages = @("Minimum .NET Core 3.1 Windows Server Hosting found.")
                                                                         $NOKMessages = @("Minimum .NET Core 3.1 Windows Server Hosting not found.")
                                                                         $IISStatus = $True
