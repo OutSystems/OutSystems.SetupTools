@@ -177,11 +177,11 @@ $OSIISConfig = @(
 
 # Performance Tuning
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSPerfTuningMaxRequestLength = 131072
+$OSPerfTuningMaxRequestLength = 262144
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 [TimeSpan]$OSPerfTuningExecutionTimeout = '00:01:50'
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSPerfTuningMaxAllowedContentLength = 134217728
+$OSPerfTuningMaxAllowedContentLength = 268435456
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSPerfTuningMaxConnections = 4294967295
 
