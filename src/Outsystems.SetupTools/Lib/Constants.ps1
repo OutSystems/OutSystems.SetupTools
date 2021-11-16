@@ -96,19 +96,19 @@ $OSDotNetReqForMajor = @{
         Version              = '4.6.1'
         Value                = '394254'
         ToInstallVersion     = '4.7.2'
-        ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/1f5af042-d0e4-4002-9c59-9ba66bcf15f6/089f837de42708daacaae7c04b7494db/ndp472-kb4054530-x86-x64-allos-enu.exe'
     }
     '11' = @{
         Version              = '4.7.2'
         Value                = '461808'
         ToInstallVersion     = '4.7.2'
-        ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/1f5af042-d0e4-4002-9c59-9ba66bcf15f6/089f837de42708daacaae7c04b7494db/ndp472-kb4054530-x86-x64-allos-enu.exe'
     }
     '12' = @{
         Version              = '4.7.2'
         Value                = '461808'
         ToInstallVersion     = '4.7.2'
-        ToInstallDownloadURL = 'https://download.microsoft.com/download/6/E/4/6E48E8AB-DC00-419E-9704-06DD46E5F81D/NDP472-KB4054530-x86-x64-AllOS-ENU.exe'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/1f5af042-d0e4-4002-9c59-9ba66bcf15f6/089f837de42708daacaae7c04b7494db/ndp472-kb4054530-x86-x64-allos-enu.exe'
     }
 }
 

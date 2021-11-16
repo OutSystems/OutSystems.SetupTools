@@ -7,7 +7,7 @@ Describe 'Lib Constants Tests' {
 
         $MajorVersion = '12'
         $SavePath = "$env:TEMP\dotnet12.exe"
-        $FileHash = 'C908F0A5BEA4BE282E35ACBA307D0061B71B8B66CA9894943D3CBB53CAD019BC'
+        $FileHash = '5CB624B97F9FD6D3895644C52231C9471CD88AACB57D6E198D3024A1839139F6'
 
         It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.7.2" }
         It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "461808" }
@@ -22,7 +22,7 @@ Describe 'Lib Constants Tests' {
 
         $MajorVersion = '11'
         $SavePath = "$env:TEMP\dotnet11.exe"
-        $FileHash = 'C908F0A5BEA4BE282E35ACBA307D0061B71B8B66CA9894943D3CBB53CAD019BC'
+        $FileHash = '5CB624B97F9FD6D3895644C52231C9471CD88AACB57D6E198D3024A1839139F6'
 
         It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.7.2" }
         It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "461808" }
@@ -37,7 +37,7 @@ Describe 'Lib Constants Tests' {
 
         $MajorVersion = '10'
         $SavePath = "$env:TEMP\dotnet10.exe"
-        $FileHash = 'C908F0A5BEA4BE282E35ACBA307D0061B71B8B66CA9894943D3CBB53CAD019BC'
+        $FileHash = '5CB624B97F9FD6D3895644C52231C9471CD88AACB57D6E198D3024A1839139F6'
 
         It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.6.1" }
         It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "394254" }
