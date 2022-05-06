@@ -36,9 +36,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When service center is not installed or has a wrong version' {
+        Context 'When service center has a wrong version' {
 
-            Mock GetSCCompiledVersion { return $null }
+            Mock GetSCCompiledVersion { return '10.0.0.0' }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -51,6 +51,15 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
             It 'Should output an error' { $err[-1] | Should Be 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first' }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When service center is not installed' {
+
+            Mock GetSCCompiledVersion { return $null }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution}
         }
 
         Context 'When lifetime and the platform dont have the same version' {
