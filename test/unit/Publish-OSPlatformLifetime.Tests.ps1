@@ -54,7 +54,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         }
 
         Context 'When service center installation is not found' {
-
+            Mock GetLifetimeVersion { return '10.0.0.0' }
             Mock GetSCCompiledVersion { return $null }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
