@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.15.0.0
+
+- Fix lifetime installer checks
+
 ## 3.14.3.0
 
 - Adjust maxRequest constants to be used during tuning
