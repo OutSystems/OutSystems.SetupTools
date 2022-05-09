@@ -105,7 +105,12 @@ function Publish-OSPlatformLifetime
             return $installResult
         }
 
-        if ($(GetSCCompiledVersion) -ne $osVersion)
+        $SCVersion = GetSCCompiledVersion
+        if (-not $SCVersion)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version not found in registry. The LifeTime installation will proceed"
+        }
+        elseif ($SCVersion -ne $osVersion)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"
             WriteNonTerminalError -Message "Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first"

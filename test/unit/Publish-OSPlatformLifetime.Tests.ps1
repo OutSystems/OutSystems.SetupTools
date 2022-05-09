@@ -36,9 +36,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When service center is not installed or has a wrong version' {
+        Context 'When service center has a wrong version' {
 
-            Mock GetSCCompiledVersion { return $null }
+            Mock GetSCCompiledVersion { return "10.0.0.0" }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -50,6 +50,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Service Center version mismatch. You should run the Install-OSPlatformServiceCenter first' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When service center installation is not found' {
+            Mock GetLifetimeCompiledVersion { return '10.0.0.0' }
+            Mock GetSCCompiledVersion { return $null }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation' { Assert-MockCalled @assRunPublishSolution }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems Lifetime successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -69,6 +86,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not output an error' { $err.Count | Should Be 0 }
             It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
+
 
         Context 'When lifetime is not installed' {
 
