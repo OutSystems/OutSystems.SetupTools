@@ -4,8 +4,7 @@ $OSServices = @(
     "OutSystems Log Service",
     "OutSystems Deployment Controller Service",
     "OutSystems Deployment Service",
-    "OutSystems Scheduler Service",
-    "OutSystems SMS Connector Service"
+    "OutSystems Scheduler Service"
 )
 
 # Outsystems base Windows Features
