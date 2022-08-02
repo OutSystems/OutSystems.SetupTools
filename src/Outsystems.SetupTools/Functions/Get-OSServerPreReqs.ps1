@@ -205,7 +205,7 @@ function Get-OSServerPreReqs
                                                                         $Status = $False
                                                                         foreach ($version in GetDotNetCoreHostingBundleVersions)
                                                                         {
-                                                                            # Check version 2.1
+                                                                            # Check .NET Core 2.1
                                                                             if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
                                                                                 $Status = $True
                                                                             }
@@ -245,7 +245,7 @@ function Get-OSServerPreReqs
                                                                         $Status = $False
                                                                         foreach ($version in GetDotNetCoreHostingBundleVersions)
                                                                         {
-                                                                            # Check version 3.1
+                                                                            # Check .NET Core 3.1
                                                                             if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
                                                                                 $Status = $True
                                                                             }
@@ -279,13 +279,13 @@ function Get-OSServerPreReqs
                 }
 
                 if ($requireDotNetHostingBundle6) {
-                    $RequirementStatuses += CreateRequirementStatus -Title ".NET 6.0.6 Windows Server Hosting" `
+                    $RequirementStatuses += CreateRequirementStatus -Title ".NET 6.0 Windows Server Hosting" `
                                                                     -ScriptBlock `
                                                                     {
                                                                         $Status = $False
                                                                         foreach ($version in GetDotNetHostingBundleVersions)
                                                                         {
-                                                                            # Check version 6.0.6
+                                                                            # Check version 6.0
                                                                             if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
                                                                                 $Status = $True
                                                                             }

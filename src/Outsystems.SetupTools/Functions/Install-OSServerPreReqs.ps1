@@ -158,8 +158,8 @@ function Install-OSServerPreReqs
                 }
                 elseif ($fullVersion -ge [version]"11.17.1.0")
                 {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.12.2.0
-                    # We install version 3 only
+                    # Here means that minor and patch version were specified and we are equal or above version 11.17.1.0
+                    # We install .NET 6.0 only
                     $installDotNetCoreHostingBundle2 = $false
                     $installDotNetCoreHostingBundle3 = $false
                     $installDotNetHostingBundle6 = $true
@@ -183,11 +183,11 @@ function Install-OSServerPreReqs
 
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
-                    # Check version 2.1
+                    # Check .NET Core 2.1
                     if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
                         $installDotNetCoreHostingBundle2 = $false
                     }
-                    # Check version 3.1
+                    # Check .NET Core 3.1
                     if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
                         $installDotNetCoreHostingBundle3 = $false
                     }
@@ -195,7 +195,7 @@ function Install-OSServerPreReqs
 
                 foreach ($version in GetDotNetHostingBundleVersions)
                 {
-                    # Check version 6.0.6
+                    # Check .NET 6.0
                     if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
                         $installDotNetHostingBundle6 = $false
                     }
