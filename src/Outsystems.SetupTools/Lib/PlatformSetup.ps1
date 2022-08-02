@@ -133,6 +133,32 @@ function GetDotNetCoreHostingBundleVersions()
     return $version
 }
 
+function GetDotNetHostingBundleVersions()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET\Microsoft .Net<*>Windows Server Hosting<*>\PackageVersion"
+
+    $rootPath = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Updates\.NET'
+    $filter = 'Microsoft .Net*Windows Server Hosting*'
+
+    try
+    {
+        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending
+    }
+    catch
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
+    }
+
+    if (-not $version)
+    {
+        $version = '0.0.0.0'
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $version"
+
+    return $version
+}
+
 function InstallDotNet([string]$Sources, [string]$URL)
 {
     if ($Sources)
@@ -421,6 +447,40 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
         $installer = "$ENV:TEMP\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
         DownloadOSSources -URL $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+
+    return $($result.ExitCode)
+}
+
+function InstallDotNetHostingBundle([string]$MajorVersion, [string]$Sources)
+{
+    if ($Sources)
+    {
+        if (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])")
+        {
+            $installer = "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        }
+        # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
+        elseif (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe")
+        {
+            $installer = "$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+        }
+        else {
+            throw [System.IO.FileNotFoundException] "$installerName.exe not found."
+        }
+    }
+    else
+    {
+        $installer = "$ENV:TEMP\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
+        DownloadOSSources -URL $($script:OSDotNetHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
