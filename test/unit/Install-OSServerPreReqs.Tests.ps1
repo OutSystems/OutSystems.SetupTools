@@ -1199,7 +1199,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be 0
                 $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
             }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '3' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version older than 1 (11.17.0)' {
@@ -1224,7 +1224,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be 0
                 $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
             }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '1' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version 1 (11.17.1)' {
@@ -1249,7 +1249,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be 0
                 $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
             }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '1' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When trying to install prerequisites for a OS 11 version without passing the optional Minor and Patch Versions' {
