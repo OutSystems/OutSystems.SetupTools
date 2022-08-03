@@ -53,7 +53,7 @@ function Install-OSServiceStudio
         [ValidateNotNullOrEmpty()]
         [string]$Version
     )
-	
+
     dynamicParam
     {
         $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
@@ -89,8 +89,8 @@ function Install-OSServiceStudio
         $osVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major)"
         $osInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major)"
 		
-		$InstallerNamePrefix = "DevelopmentEnvironment"
-		$InstallerFolderPrefix = "Development Environment"
+        $InstallerNamePrefix = "DevelopmentEnvironment"
+        $InstallerFolderPrefix = "Development Environment"
     }
 
     process
@@ -107,12 +107,12 @@ function Install-OSServiceStudio
 
             return $installResult
         }
-		
-		if ([Version]"$Version" -gt [Version]"11.50.0.0")
-		{
-			$InstallerNamePrefix = "ServiceStudio"
-			$InstallerFolderPrefix = "Service Studio"
-		}
+
+        if ([Version]"$Version" -gt [Version]"11.50.0.0")
+        {
+            $InstallerNamePrefix = "ServiceStudio"
+            $InstallerFolderPrefix = "Service Studio"
+        }
 
         if (-not $osVersion )
         {
