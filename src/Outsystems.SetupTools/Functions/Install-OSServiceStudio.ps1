@@ -173,7 +173,6 @@ function Install-OSServiceStudio
                     try
                     {
                         DownloadOSSources -URL "$OSRepoURL\$InstallerNamePrefix-$Version.exe" -SavePath $Installer
-						Write-Output $OSRepoURL\$InstallerNamePrefix-$Version.exe
                     }
                     catch
                     {
