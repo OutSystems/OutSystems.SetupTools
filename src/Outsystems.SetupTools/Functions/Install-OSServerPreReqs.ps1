@@ -151,7 +151,7 @@ function Install-OSServerPreReqs
                 if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
                 {
                     # Here means that no specific minor and patch version were specified
-                    # So we install both versions
+                    # So we install all versions
                     $installDotNetCoreHostingBundle2 = $true
                     $installDotNetCoreHostingBundle3 = $true
                     $installDotNetHostingBundle6 = $true
