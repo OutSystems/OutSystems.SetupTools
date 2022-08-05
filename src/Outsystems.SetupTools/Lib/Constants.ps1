@@ -127,6 +127,16 @@ $OSDotNetCoreHostingBundleReq = @{
     }
 }
 
+# .NET Hosting Bundle related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSDotNetHostingBundleReq = @{
+    '6' = @{
+        Version = '6.0.6'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/0d000d1b-89a4-4593-9708-eb5177777c64/cfb3d74447ac78defb1b66fd9b3f38e0/dotnet-hosting-6.0.6-win.exe'
+        InstallerName = 'DotNet_WindowsHosting_6.exe'
+    }
+}
+
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDBTimeout = "60"

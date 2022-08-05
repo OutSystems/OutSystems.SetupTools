@@ -146,14 +146,23 @@ function Install-OSServerPreReqs
             }
             default
             {
-                # Check .NET Core Windows Server Hosting version
+                # Check .NET Core / .NET Windows Server Hosting version
                 $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
                 if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
                 {
                     # Here means that no specific minor and patch version were specified
-                    # So we install both versions
+                    # So we install all versions
                     $installDotNetCoreHostingBundle2 = $true
                     $installDotNetCoreHostingBundle3 = $true
+                    $installDotNetHostingBundle6 = $true
+                }
+                elseif ($fullVersion -ge [version]"11.17.1.0")
+                {
+                    # Here means that minor and patch version were specified and we are equal or above version 11.17.1.0
+                    # We install .NET 6.0 only
+                    $installDotNetCoreHostingBundle2 = $false
+                    $installDotNetCoreHostingBundle3 = $false
+                    $installDotNetHostingBundle6 = $true
                 }
                 elseif ($fullVersion -ge [version]"11.12.2.0")
                 {
@@ -161,6 +170,7 @@ function Install-OSServerPreReqs
                     # We install version 3 only
                     $installDotNetCoreHostingBundle2 = $false
                     $installDotNetCoreHostingBundle3 = $true
+                    $installDotNetHostingBundle6 = $false
                 }
                 else
                 {
@@ -168,24 +178,37 @@ function Install-OSServerPreReqs
                     # We install version 2 only
                     $installDotNetCoreHostingBundle2 = $true
                     $installDotNetCoreHostingBundle3 = $false
+                    $installDotNetHostingBundle6 = $false
                 }
 
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
                 {
-                    # Check version 2.1
+                    # Check .NET Core 2.1
                     if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
                         $installDotNetCoreHostingBundle2 = $false
                     }
-                    # Check version 3.1
+                    # Check .NET Core 3.1
                     if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
                         $installDotNetCoreHostingBundle3 = $false
                     }
                 }
+
+                foreach ($version in GetDotNetHostingBundleVersions)
+                {
+                    # Check .NET 6.0
+                    if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
+                        $installDotNetHostingBundle6 = $false
+                    }
+                }
+
                 if ($installDotNetCoreHostingBundle2) {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 2.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
                 }
                 if ($installDotNetCoreHostingBundle3) {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 3.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
+                }
+                if ($installDotNetHostingBundle6) {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 6.0.6 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
                 }
             }
         }
@@ -417,6 +440,64 @@ function Install-OSServerPreReqs
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
                     $installResult.Message = 'Error installing .NET Core 3.1 Windows Server Hosting bundle'
+
+                    return $installResult
+                }
+            }
+        }
+
+        # Install .NET Windows Server Hosting bundle version 6
+        if ($installDotNetHostingBundle6)
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 6.0 Windows Server Hosting bundle"
+                $exitCode = InstallDotNetHostingBundle -MajorVersion '6' -Sources $SourcePath
+            }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET 6.0 installer not found"
+                WriteNonTerminalError -Message ".NET 6.0 installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = '.NET 6.0 installer not found'
+
+                return $installResult
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET 6.0 installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET 6.0 installation"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error downloading or starting the .NET 6.0 installation'
+
+                return $installResult
+            }
+
+            switch ($exitCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 6.0 Windows Server Hosting bundle successfully installed."
+                }
+
+                { $_ -in 3010, 3011 }
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 6.0 Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
+                    $installResult.RebootNeeded = $true
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 6.0 Windows Server Hosting bundle. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET 6.0 Windows Server Hosting bundle. Exit code: $exitCode"
+
+                    $installResult.Success = $false
+                    $installResult.ExitCode = $exitCode
+                    $installResult.Message = 'Error installing .NET 6.0 Windows Server Hosting bundle'
 
                     return $installResult
                 }
