@@ -1,5 +1,9 @@
 # Outsystems.SetupTools Release History
 
+## 3.16.0.0
+
+- Upgrade the hosting bundle to .NET 6.0
+
 ## 3.15.0.0
 
 - Fix lifetime installer checks
