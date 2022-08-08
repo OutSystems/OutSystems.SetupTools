@@ -759,7 +759,7 @@ function GetServiceStudioInstallDir([string]$MajorVersion)
 function GetIntegrationStudioInstallDir([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion\(default)"
-    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion" -Name "(default)" #TODO: Add .0 here
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion" -Name "(default)"
 
     if ($output)
     {
