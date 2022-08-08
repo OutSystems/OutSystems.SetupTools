@@ -221,7 +221,7 @@ function Install-OSIntegrationStudio
 
                 default
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing the Outsystems Integration Studio. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing the OutSystems Integration Studio. Exit code: $exitCode"
                     WriteNonTerminalError -Message "Error installing the OutSystems Integration studio. Exit code: $exitCode"
 
                     $installResult.Success = $false
