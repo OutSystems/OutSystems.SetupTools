@@ -237,7 +237,7 @@ function Install-OSIntegrationStudio
         if ($installResult.RebootNeeded)
         {
             $installResult.ExitCode = 3010
-            $installResult.Message = 'Outsystems Integration Studio successfully installed but a reboot is needed'
+            $installResult.Message = 'OutSystems Integration Studio successfully installed but a reboot is needed'
         }
         return $installResult
     }
