@@ -2,7 +2,7 @@ function Get-OSIntegrationStudioInfo
 {
     <#
     .SYNOPSIS
-    Returns where the OutSystems Integration Studio install location and version.
+    Returns the OutSystems Integration Studio install location and version.
 
     .DESCRIPTION
     This will return the OutSystems Integration Studio install location and version.
