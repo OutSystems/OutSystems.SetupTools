@@ -42,7 +42,7 @@ function Get-OSIntegrationStudioInfo
 
         if ($(-not $integrationStudioInfo.Version) -or $(-not $integrationStudioInfo.InstallDir))
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems Integration Studio $MajorVersion is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "OutSystems Integration Studio $MajorVersion is not installed"
             WriteNonTerminalError -Message "OutSystems Integration Studio $MajorVersion is not installed"
 
             return $null
