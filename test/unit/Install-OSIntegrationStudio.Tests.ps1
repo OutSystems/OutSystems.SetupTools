@@ -58,7 +58,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be -1
                 $result.Message | Should Be 'Outsystems integration studio already installed with an higher version 11.14.17.62'
             }
-            It 'Should output an error' { $err[-1] | Should Be 'Outsystems integration studio already installed with an higher version 11.14.17.61' }
+            It 'Should output an error' { $err[-1] | Should Be 'Outsystems integration studio already installed with an higher version 11.14.17.62' }
             It 'Should not throw' { { Install-OSIntegrationStudio -Version '11.14.17.61' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
@@ -190,9 +190,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be -1
-                $result.Message | Should Be 'Error starting the integration center installation'
+                $result.Message | Should Be 'Error starting the installation'
             }
-            It 'Should output an error' { $err[-1] | Should Be 'Error starting the integration center installation' }
+            It 'Should output an error' { $err[-1] | Should Be 'Error starting the installation' }
             It 'Should not throw' { { Install-OSIntegrationStudio -Version '11.14.17.61' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
