@@ -226,7 +226,7 @@ function Install-OSIntegrationStudio
 
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
-                    $installResult.Message = "Error installing the Outsystems Integration Studio"
+                    $installResult.Message = "Error installing the OutSystems Integration Studio"
 
                     return $installResult
                 }
