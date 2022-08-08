@@ -5,7 +5,7 @@ function Get-OSIntegrationStudioInfo
     Returns where the OutSystems Integration Studio install location and version.
 
     .DESCRIPTION
-    This will returns where the OutSystems Integration Studio install location and version.
+    This will return the OutSystems Integration Studio install location and version.
 
     .PARAMETER MajorVersion
     Major version. 11
