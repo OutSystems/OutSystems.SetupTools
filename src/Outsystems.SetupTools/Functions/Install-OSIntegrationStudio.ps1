@@ -7,15 +7,15 @@ function Install-OSIntegrationStudio
     Do not use this script to install or update Integration Studio packaged with Development Environment.
 
     .DESCRIPTION
-    This will installs or updates the OutSystems Integration Studio.
-    if the Integration Studio is already installed it will check if version to be installed is higher than the current one and update it.
+    This will install or update the OutSystems Integration Studio.
+    If the Integration Studio is already installed it will check the if version to be installed is higher than the current one and update it.
 
     .PARAMETER InstallDir
     Where the Integration Studio will be installed. If the Integration Studio is already installed, this parameter has no effect.
     If not specified will default to %ProgramFiles%\Outsystems
 
     .PARAMETER SourcePath
-    If specified, the function will use the sources in that path. if not specified it will download the sources from the OutSystems repository.
+    If specified, the function will use the sources in that path. If not specified it will download the sources from the OutSystems repository.
 
     .PARAMETER Version
     The version to be installed.
@@ -85,7 +85,7 @@ function Install-OSIntegrationStudio
             Success      = $true
             RebootNeeded = $false
             ExitCode     = 0
-            Message      = 'Outsystems Integration Studio successfully installed'
+            Message      = 'OutSystems Integration Studio successfully installed'
         }
 
         $osVersion = GetIntegrationStudioVersion -MajorVersion "$(([System.Version]$Version).Major)"
@@ -109,7 +109,7 @@ function Install-OSIntegrationStudio
 
         if (-not $osVersion )
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems Integration Studio is not installed"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems Integration Studio is not installed"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Proceeding with normal installation"
 
             if (-not $PSBoundParameters.FullPathInstallDir.IsPresent)
@@ -124,7 +124,7 @@ function Install-OSIntegrationStudio
         }
         elseif ([version]$osVersion -lt [version]$Version)
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems Integration Studio already installed. Updating!!"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems Integration Studio already installed. Updating!!"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Current version $osVersion will be updated to $Version"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Ignoring InstallDir since this is an update"
             $InstallDir = $osInstallDir
@@ -133,19 +133,19 @@ function Install-OSIntegrationStudio
         elseif ([version]$osVersion -gt [version]$Version)
         {
             $doInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Outsystems Integration Studio already installed with an higher version $osVersion"
-            WriteNonTerminalError -Message "Outsystems Integration Studio already installed with an higher version $osVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "OutSystems Integration Studio already installed with an higher version $osVersion"
+            WriteNonTerminalError -Message "OutSystems Integration Studio already installed with an higher version $osVersion"
 
             $installResult.Success = $false
             $installResult.ExitCode = -1
-            $installResult.Message = "Outsystems Integration Studio already installed with an higher version $osVersion"
+            $installResult.Message = "OutSystems Integration Studio already installed with an higher version $osVersion"
 
             return $installResult
         }
         else
         {
             $doInstall = $false
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems Integration Studio already installed with the specified version $osVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems Integration Studio already installed with the specified version $osVersion"
         }
 
         if ( $doInstall )
@@ -210,12 +210,12 @@ function Install-OSIntegrationStudio
             {
                 0
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems Integration Studio successfully installed"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems Integration Studio successfully installed"
                 }
 
                 {$_ -in 3010, 3011}
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems Integration Studio successfully installed but a reboot is needed. Exit code: $exitCode"
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems Integration Studio successfully installed but a reboot is needed. Exit code: $exitCode"
                     $installResult.RebootNeeded = $true
                 }
 
