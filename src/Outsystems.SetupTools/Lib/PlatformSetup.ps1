@@ -756,6 +756,20 @@ function GetServiceStudioInstallDir([string]$MajorVersion)
     return $output
 }
 
+function GetIntegrationStudioInstallDir([string]$MajorVersion)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion\(default)"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion" -Name "(default)"
+
+    if ($output)
+    {
+        $output = $output.Replace("\Integration Studio", "")
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
+    return $output
+}
+
 function GetServerVersion()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Server\Server"
@@ -780,6 +794,16 @@ function GetServiceStudioVersion([string]$MajorVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion\Service Studio $MajorVersion"
     $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Service Studio $MajorVersion" -Name "Service Studio $MajorVersion"
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
+
+    return $output
+}
+
+function GetIntegrationStudioVersion([string]$MajorVersion)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion\Integration Studio $MajorVersion"
+    $output = RegRead -Path "HKLM:SOFTWARE\OutSystems\Installer\Integration Studio $MajorVersion" -Name "Integration Studio $MajorVersion"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning: $output"
 
