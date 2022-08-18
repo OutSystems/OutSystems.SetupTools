@@ -1,5 +1,10 @@
 # Outsystems.SetupTools Release History
 
+## 3.16.1.0
+
+- Adapt build script for new Service Studio installer
+- Added build script for new Integration Studio installation
+
 ## 3.16.0.0
 
 - Upgrade the hosting bundle to .NET 6.0
