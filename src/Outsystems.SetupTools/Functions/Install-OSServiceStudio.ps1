@@ -5,11 +5,11 @@ function Install-OSServiceStudio
     Installs or updates the OutSystems development environment (Service Studio).
 
     .DESCRIPTION
-    This will installs or updates the OutSystems development environment.
-    if the development environment is already installed it will check if version to be installed is higher than the current one and update it.
+    This will install or update the OutSystems Service Studio.
+    if Service Studio is already installed it will check if version to be installed is higher than the current one and update it.
 
     .PARAMETER InstallDir
-    Where the development environment will be installed. If the development environment is already installed, this parameter has no effect.
+    Where Service Studio will be installed. If Service Studio is already installed, this parameter has no effect.
     If not specified will default to %ProgramFiles%\Outsystems
 
     .PARAMETER SourcePath
@@ -19,7 +19,7 @@ function Install-OSServiceStudio
     The version to be installed.
 
     .PARAMETER FullPathInstallDir
-    If specified, the InstallDir will not be appended with \DevelopmentEnvironment-<Version>
+    If specified, the InstallDir will not be appended with \<InstallerNamePrefix>-<Version>
 
     .EXAMPLE
     Install-OSServiceStudio -Version "10.0.823.0"
@@ -88,6 +88,9 @@ function Install-OSServiceStudio
 
         $osVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major)"
         $osInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major)"
+		
+        $InstallerNamePrefix = "DevelopmentEnvironment"
+        $InstallerFolderPrefix = "Development Environment"
     }
 
     process
@@ -105,6 +108,12 @@ function Install-OSServiceStudio
             return $installResult
         }
 
+        if ([Version]"$Version" -gt [Version]"11.50.0.0")
+        {
+            $InstallerNamePrefix = "ServiceStudio"
+            $InstallerFolderPrefix = "Service Studio"
+        }
+
         if (-not $osVersion )
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Outsystems service studio is not installed"
@@ -112,11 +121,11 @@ function Install-OSServiceStudio
 
             if (-not $PSBoundParameters.FullPathInstallDir.IsPresent)
             {
-                $InstallDir = "$InstallDir\Development Environment $(([System.Version]$Version).Major)"
+                $InstallDir = "$InstallDir\$InstallerFolderPrefix $(([System.Version]$Version).Major)"
             }
             else
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "FullPathInstallDir specified. Not appending \Development Environment <version>"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "FullPathInstallDir specified. Not appending \$InstallerFolderPrefix <version>"
             }
             $doInstall = $true
         }
@@ -158,12 +167,12 @@ function Install-OSServiceStudio
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SourcePath not specified. Downloading installer from repository"
 
-                    $Installer = "$ENV:TEMP\DevelopmentEnvironment-$Version.exe"
+                    $Installer = "$ENV:TEMP\$InstallerNamePrefix-$Version.exe"
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Saving installer to $Installer"
 
                     try
                     {
-                        DownloadOSSources -URL "$OSRepoURL\DevelopmentEnvironment-$Version.exe" -SavePath $Installer
+                        DownloadOSSources -URL "$OSRepoURL\$InstallerNamePrefix-$Version.exe" -SavePath $Installer
                     }
                     catch
                     {
@@ -181,7 +190,7 @@ function Install-OSServiceStudio
                 "Local"
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SourcePath specified. Using the local installer"
-                    $Installer = "$SourcePath\DevelopmentEnvironment-$Version.exe"
+                    $Installer = "$SourcePath\$InstallerNamePrefix-$Version.exe"
                 }
             }
 
