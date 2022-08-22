@@ -286,7 +286,7 @@ function Get-OSServerPreReqs
                                                                         foreach ($version in GetDotNetHostingBundleVersions)
                                                                         {
                                                                             # Check version 6.0
-                                                                            if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
+                                                                            if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['6']['Version']) {
                                                                                 $Status = $True
                                                                             }
                                                                         }

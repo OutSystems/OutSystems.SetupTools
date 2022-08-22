@@ -1,4 +1,8 @@
-# Outsystems.SetupTools Release History
+# OutSystems.SetupTools Release History
+
+## 3.16.2.0
+
+- Skip installing the .NET Core Runtime and the ASP.NET Runtime when installing the hosting bundle
 
 ## 3.16.1.0
 
