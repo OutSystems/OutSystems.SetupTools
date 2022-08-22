@@ -12,7 +12,7 @@
 RootModule = 'OutSystems.SetupTools.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.16.1.0'
+ModuleVersion = '3.16.2.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -21,13 +21,13 @@ ModuleVersion = '3.16.1.0'
 GUID = 'dcc020ea-a9c7-4bd3-91fc-e97432301020'
 
 # Author of this module
-Author = 'Pedro Nunes'
+Author = 'OutSystems'
 
 # Company or vendor of this module
 CompanyName = 'OutSystems'
 
 # Copyright statement for this module
-Copyright = '(c) 2018 OutSystems. All rights reserved.'
+Copyright = '(c) OutSystems. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Tools for installing and manage the OutSystems platform installation'
