@@ -69,8 +69,7 @@ function Install-OSServerPreReqs
         [string]$PatchVersion = "0",
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [string]$OnlyMostRecentHostingBundlePackage = "0"
+        [bool]$OnlyMostRecentHostingBundlePackage = $false
     )
 
     begin
@@ -515,7 +514,7 @@ function Install-OSServerPreReqs
             }
         }
 
-        if ($mostRecentHostingBundleVersion -and $OnlyMostRecentHostingBundlePackage -eq "1")
+        if ($mostRecentHostingBundleVersion -and $OnlyMostRecentHostingBundlePackage)
         {
             $isInstalled = IsDotNetCoreUninstallToolInstalled
             if (-not $isInstalled)

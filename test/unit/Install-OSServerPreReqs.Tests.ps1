@@ -1261,7 +1261,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version newer than 1 (11.17.2) with OnlyMostRecentHostingBundlePackage flag active' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '2' -OnlyMostRecentHostingBundlePackage '1' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '2' -OnlyMostRecentHostingBundlePackage $true -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -1287,7 +1287,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version older than 1 (11.17.0) with OnlyMostRecentHostingBundlePackage flag active' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '0' -OnlyMostRecentHostingBundlePackage '1' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '0' -OnlyMostRecentHostingBundlePackage $true -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -1313,7 +1313,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version 1 (11.17.1) with OnlyMostRecentHostingBundlePackage flag active' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '1' -OnlyMostRecentHostingBundlePackage '1' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '1' -OnlyMostRecentHostingBundlePackage $true -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -1365,7 +1365,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When trying to install prerequisites for a OS 11 version without passing the optional Minor and Patch Versions and with OnlyMostRecentHostingBundlePackage flag active' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -OnlyMostRecentHostingBundlePackage '1' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -OnlyMostRecentHostingBundlePackage $true -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
