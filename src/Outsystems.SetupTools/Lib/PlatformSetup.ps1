@@ -423,7 +423,7 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources, [string]$SkipRuntime)
+function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources, [string]$OnlyMostRecentHostingBundlePackage)
 {
     if ($Sources)
     {
@@ -452,7 +452,7 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources,
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
 
 
-    if ($SkipRuntime -eq "1") {
+    if ($OnlyMostRecentHostingBundlePackage -eq "1") {
         $result = Start-Process -FilePath $installer -ArgumentList "OPT_NO_RUNTIME=1","OPT_NO_SHAREDFX=1","/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
         return $($result.ExitCode)

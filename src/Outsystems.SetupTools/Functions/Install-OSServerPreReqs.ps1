@@ -27,9 +27,8 @@ function Install-OSServerPreReqs
     .PARAMETER SourcePath
     Specifies a local path having the pre-requisites binaries.
 
-    .PARAMETER SkipRuntime
-    Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime.
-    Note: This also removes previous installations of .NET Core Runtime and the ASP.NET Runtime.
+    .PARAMETER OnlyMostRecentHostingBundlePackage
+    Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime and remove previous installations of the Hosting Bundle.
     Accepted values: $false and $true. By default this is set to $false.
 
     .EXAMPLE
@@ -71,7 +70,7 @@ function Install-OSServerPreReqs
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string]$SkipRuntime = "0"
+        [string]$OnlyMostRecentHostingBundlePackage = "0"
     )
 
     begin
@@ -463,8 +462,8 @@ function Install-OSServerPreReqs
         {
             try
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 6.0 Windows Server Hosting bundle - SkipRuntime $SkipRuntime"
-                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '6' -Sources $SourcePath -SkipRuntime $SkipRuntime
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 6.0 Windows Server Hosting bundle"
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '6' -Sources $SourcePath -OnlyMostRecentHostingBundlePackage $OnlyMostRecentHostingBundlePackage
             }
             catch [System.IO.FileNotFoundException]
             {
@@ -516,7 +515,7 @@ function Install-OSServerPreReqs
             }
         }
 
-        if ($mostRecentHostingBundleVersion -and $SkipRuntime -eq "1")
+        if ($mostRecentHostingBundleVersion -and $OnlyMostRecentHostingBundlePackage -eq "1")
         {
             $isInstalled = IsDotNetCoreUninstallToolInstalled
             if (-not $isInstalled)
@@ -551,7 +550,7 @@ function Install-OSServerPreReqs
             }
             else
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Uninstall Tool already installed"
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Uninstall Tool found"
             }
 
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
