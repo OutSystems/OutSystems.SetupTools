@@ -2,7 +2,7 @@
 
 ## 3.16.2.0
 
-- Skip installing the .NET Core Runtime and the ASP.NET Runtime when installing the hosting bundle
+- Implement flag to uninstall previous .NET Core packages and skip the installation of the .NET Core Runtime and the ASP.NET Runtime when installing the hosting bundle
 
 ## 3.16.1.0
 
