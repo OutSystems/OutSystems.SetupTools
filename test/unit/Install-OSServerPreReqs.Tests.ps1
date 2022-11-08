@@ -15,7 +15,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Mock InstallBuildTools { return 0 }
         Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $true } }
         Mock InstallDotNetCoreHostingBundle { return 0 }
-        Mock InstallDotNetHostingBundle { return 0 }
+        Mock InstallDotNetCoreUninstallTool { }
+        Mock IsDotNetCoreUninstallToolInstalled { return $false }
+        Mock UninstallPreviousDotNetCorePackages { return $true }
         Mock ConfigureServiceWMI {}
         Mock ConfigureServiceWindowsSearch {}
         Mock DisableFIPS {}
@@ -28,8 +30,10 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $assNotRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
-        $assRunInstallDotNetHostingBundle = @{ 'CommandName' = 'InstallDotNetHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
-        $assNotRunInstallDotNetHostingBundle  = @{ 'CommandName' = 'InstallDotNetHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
+        $assRunInstallDotNetHostingBundle = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
+        $assNotRunInstallDotNetHostingBundle  = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
+        $assRunInstallDotNetCoreUninstallTool = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
+        $assNotRunInstallDotNetCoreUninstallTool = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "3" }}
         $assNotRunInstallDotNetCore = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "3" }}
         $assRunInstallDotNetCore21 = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "2" }}
@@ -602,7 +606,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET 6.0 installation fails to start' {
 
-            Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw 'Big error' }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -686,7 +690,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET 6.0 installer not found' {
 
-            Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 6.0 installer not found' }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 6.0 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -770,7 +774,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET 6.0 reports a reboot' {
 
-            Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 3010 }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run every action' {
@@ -854,7 +858,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET 6.0 reports an error' {
 
-            Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 10 }
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the next actions' {
@@ -1187,6 +1191,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core 3.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1212,6 +1217,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should run the .NET core 3.1 installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1237,6 +1243,85 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '1' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version newer than 1 (11.17.2) with SkipRuntime set to True' {
+
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '2' -SkipRuntime '1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
+            It 'Should not run the .NET core 3.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
+            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version older than 1 (11.17.0) with SkipRuntime set to True' {
+
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '0' -SkipRuntime '1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
+            It 'Should run the .NET core 3.1 installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 17 and Patch version 1 (11.17.1) with SkipRuntime set to True' {
+
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '1' -SkipRuntime '1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
+            It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
+            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1262,6 +1347,33 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21}
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When trying to install prerequisites for a OS 11 version without passing the optional Minor and Patch Versions, but with SkipRuntime set to True' {
+
+            $result = Install-OSServerPreReqs -MajorVersion '11' -SkipRuntime '1' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21}
+            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }

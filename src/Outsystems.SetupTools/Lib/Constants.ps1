@@ -132,6 +132,16 @@ $OSDotNetCoreHostingBundleReq = @{
     }
 }
 
+# .NET Core Uninstall Tool related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSDotNetCoreUninstallReq = @{
+    '1.5' = @{
+        Version = ''
+        ToInstallDownloadURL = 'https://github.com/dotnet/cli-lab/releases/download/1.5.255402/dotnet-core-uninstall-1.5.255402.msi'
+        InstallerName = 'DotNetCore_Uninstall_15.msi'
+    }
+}
+
 # Database default timeout
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDBTimeout = "60"
