@@ -296,13 +296,13 @@ function TestFileLock([string]$Path)
         if ($stream) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Sucessfully open the file. File is not locked"
             $stream.Close()
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Closing and returnig false"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Closing and Returning false"
         }
         return $false
     }
     catch
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!!! Returnig true!!"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "File is locked!!! Returning true!!"
         return $true
     }
 }
@@ -321,7 +321,7 @@ function DecryptSetting([string]$Setting)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Decrypting setting $Setting"
     $decryptedSetting = [OutSystems.HubEdition.RuntimePlatform.Settings]::DecryptString($Setting)
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $decryptedSetting"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $decryptedSetting"
 
     return $decryptedSetting
 }
@@ -331,7 +331,7 @@ function EncryptSetting([string]$Setting)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Encrypting setting $Setting"
     $encryptedSetting = [OutSystems.HubEdition.RuntimePlatform.Settings]::EncryptString($Setting)
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $encryptedSetting"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $encryptedSetting"
 
     return $encryptedSetting
 }

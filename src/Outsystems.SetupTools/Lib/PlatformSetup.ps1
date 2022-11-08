@@ -451,24 +451,20 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources,
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
 
-
     if ($OnlyMostRecentHostingBundlePackage) {
         $result = Start-Process -FilePath $installer -ArgumentList "OPT_NO_RUNTIME=1","OPT_NO_SHAREDFX=1","/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
         return $($result.ExitCode)
     }
     else {
         $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
         return $($result.ExitCode)
     }
 }
 
 function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
 {
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Reached here with major: $MajorVersion and $Sources"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Path: $Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName'])"
-
     if ($Sources)
     {
         if (Test-Path "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName'])")
@@ -496,7 +492,7 @@ function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
 
     $result = Start-Process -FilePath $installer -ArgumentList "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
     return $($result.ExitCode)
 }
 
@@ -557,7 +553,7 @@ function InstallErlang([string]$InstallDir, [string]$Sources)
 
     $result = Start-Process -FilePath $Sources -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
 
     return $($result.ExitCode)
 }
@@ -975,7 +971,7 @@ function GenerateEncryptKey()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Generating a new encrypted key"
     $key = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $key"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $key"
 
     return $key
 }
