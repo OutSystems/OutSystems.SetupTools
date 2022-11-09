@@ -3,7 +3,8 @@
 ## 3.16.2.0
 
 - Implement flag to uninstall previous .NET Core packages when installing the hosting bundle
-- Implement flag to skip the installation of the .NET Core Runtime and the ASP.NET Runtime when installing the hosting bundle 
+- Implement flag to skip the installation of the .NET Core Runtime and the ASP.NET Runtime when installing the hosting bundle
+
 ## 3.16.1.0
 
 - Adapt build script for new Service Studio installer
