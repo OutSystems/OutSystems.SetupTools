@@ -514,7 +514,7 @@ function IsDotNetCoreUninstallToolInstalled()
 
 function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVersion)
 {
-    Write-Output "y" | dotnet-core-uninstall remove --all-but $mostRecentHostingBundleVersion $Package
+    Write-Output "y" | dotnet-core-uninstall remove --all-but $mostRecentHostingBundleVersion $Package | Out-Null
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of previous .NET Core versions exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
 
