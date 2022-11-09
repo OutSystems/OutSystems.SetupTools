@@ -423,7 +423,7 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources, [bool]$OnlyMostRecentHostingBundlePackage)
+function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources, [bool]$SkipRuntimePackages)
 {
     if ($Sources)
     {
@@ -451,16 +451,15 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources,
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
 
-    if ($OnlyMostRecentHostingBundlePackage) {
+    if ($SkipRuntimePackages) {
         $result = Start-Process -FilePath $installer -ArgumentList "OPT_NO_RUNTIME=1","OPT_NO_SHAREDFX=1","/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
-        return $($result.ExitCode)
     }
     else {
         $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
-        return $($result.ExitCode)
     }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
+    return $($result.ExitCode)
 }
 
 function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
@@ -545,6 +544,18 @@ function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVe
     }
 
     return $false
+}
+
+function LogErrorMessage([pscustomobject]$InstallResult, [string]$Message)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message $Message
+    WriteNonTerminalError -Message $Message
+
+    $installResult.Success = $false
+    $installResult.ExitCode = -1
+    $installResult.Message = $Message
+
+    return $installResult
 }
 
 function InstallErlang([string]$InstallDir, [string]$Sources)

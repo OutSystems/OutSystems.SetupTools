@@ -28,7 +28,11 @@ function Install-OSServerPreReqs
     Specifies a local path having the pre-requisites binaries.
 
     .PARAMETER OnlyMostRecentHostingBundlePackage
-    Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime and remove previous installations of the Hosting Bundle.
+    Specifies whether the installer should remove previous installations of the Hosting Bundle.
+    Accepted values: $false and $true. By default this is set to $false.
+
+    .PARAMETER SkipRuntimePackages
+    Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime.
     Accepted values: $false and $true. By default this is set to $false.
 
     .EXAMPLE
@@ -69,7 +73,10 @@ function Install-OSServerPreReqs
         [string]$PatchVersion = "0",
 
         [Parameter()]
-        [bool]$OnlyMostRecentHostingBundlePackage = $false
+        [bool]$OnlyMostRecentHostingBundlePackage = $false,
+
+        [Parameter()]
+        [bool]$SkipRuntimePackages = $false
     )
 
     begin
@@ -462,7 +469,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 6.0 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '6' -Sources $SourcePath -OnlyMostRecentHostingBundlePackage $OnlyMostRecentHostingBundlePackage
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '6' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
             }
             catch [System.IO.FileNotFoundException]
             {
@@ -526,25 +533,11 @@ function Install-OSServerPreReqs
                 }
                 catch [System.IO.FileNotFoundException]
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Uninstall Tool installer not found"
-                    WriteNonTerminalError -Message ".NET Uninstall Tool installer not found"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = -1
-                    $installResult.Message = '.NET Uninstall Tool installer not found'
-
-                    return $installResult
+                    return LogErrorMessage -InstallResult $installResult -Message '.NET Uninstall Tool installer not found'
                 }
                 catch
                 {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Uninstall Tool installation"
-                    WriteNonTerminalError -Message "Error downloading or starting the .NET Uninstall Tool installation"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = -1
-                    $installResult.Message = 'Error downloading or starting the .NET Uninstall Tool installation'
-
-                    return $installResult
+                    return LogErrorMessage -InstallResult $installResult -Message 'Error downloading or starting the .NET Uninstall Tool installation'
                 }
             }
             else
@@ -558,42 +551,21 @@ function Install-OSServerPreReqs
             $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--aspnet-runtime' -Version $mostRecentHostingBundleVersion
             if (-not $isUninstalled)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error uninstalling previous ASP.NET Core Runtime packages"
-                WriteNonTerminalError -Message "Error uninstalling previous ASP.NET Core Runtime packages"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error uninstalling previous ASP.NET Core Runtime packages'
-
-                return $installResult
+                return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous ASP.NET Core Runtime packages'
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous .NET Core Runtime packages"
             $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--runtime' -Version $mostRecentHostingBundleVersion
             if (-not $isUninstalled)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error uninstalling previous .NET Core Runtime packages"
-                WriteNonTerminalError -Message "Error uninstalling previous .NET Core Runtime packages"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error uninstalling previous .NET Core Runtime packages'
-
-                return $installResult
+                return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous .NET Core Runtime packages'
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous .NET Hosting Bundle packages"
             $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--hosting-bundle' -Version $mostRecentHostingBundleVersion
             if (-not $isUninstalled)
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error uninstalling previous .NET Hosting Bundle packages"
-                WriteNonTerminalError -Message "Error uninstalling previous .NET Hosting Bundle packages"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error uninstalling previous .NET Hosting Bundle packages'
-
-                return $installResult
+                return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous .NET Hosting Bundle packages'
             }
         }
 
