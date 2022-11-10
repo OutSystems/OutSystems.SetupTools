@@ -423,7 +423,7 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
+function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources, [bool]$SkipRuntimePackages)
 {
     if ($Sources)
     {
@@ -450,26 +450,31 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources)
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+    if ($SkipRuntimePackages) {
+        $result = Start-Process -FilePath $installer -ArgumentList "OPT_NO_RUNTIME=1","OPT_NO_SHAREDFX=1","/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
+    }
+    else {
+        $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
+    }
 
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
     return $($result.ExitCode)
 }
 
-function InstallDotNetHostingBundle([string]$MajorVersion, [string]$Sources)
+function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
 {
     if ($Sources)
     {
-        if (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])")
+        if (Test-Path "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName'])")
         {
-            $installer = "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
+            $installer = "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName'])"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe")
+        elseif (Test-Path "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).exe")
         {
-            $installer = "$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe"
+            $installer = "$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
         }
         else {
@@ -478,17 +483,79 @@ function InstallDotNetHostingBundle([string]$MajorVersion, [string]$Sources)
     }
     else
     {
-        $installer = "$ENV:TEMP\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
-        DownloadOSSources -URL $($script:OSDotNetHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
+        $installer = "$ENV:TEMP\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName'])"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetCoreUninstallReq[$MajorVersion]['ToInstallDownloadURL'])"
+        DownloadOSSources -URL $($script:OSDotNetCoreUninstallReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-    $result = Start-Process -FilePath $installer -ArgumentList "/install", "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
-
+    $result = Start-Process -FilePath $installer -ArgumentList "/quiet", "/norestart" -Wait -PassThru -ErrorAction Stop
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
     return $($result.ExitCode)
+}
+
+function IsDotNetCoreUninstallToolInstalled()
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of .NET Core Uninstall Tool exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+
+    $rootPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+    $filter = '*Microsoft .NET Core SDK Uninstall Tool (x86)*'
+
+    $item = Get-ChildItem -Path $rootPath -ErrorAction Stop | Get-ItemProperty -Name DisplayName -ErrorAction SilentlyContinue | Where-Object { $_ -like $filter}
+
+    if (-not $item)
+    {
+        return $false
+    }
+
+    return $true
+}
+
+function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVersion)
+{
+    Write-Output "y" | dotnet-core-uninstall remove --all-but $mostRecentHostingBundleVersion $Package | Out-Null
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of previous .NET Core versions exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+
+    $rootPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
+    $filter = ''
+
+    switch ($Package) {
+        '--runtime'
+        {
+            $filter = '*Microsoft .NET*Runtime*'
+        }
+        '--aspnet-runtime'
+        {
+            $filter = '*Microsoft ASP.NET*Shared Framework*'
+        }
+        '--hosting-bundle'
+        {
+            $filter = '*Microsoft*Hosting Bundle*'
+        }
+    }
+
+    $item = Get-ChildItem -Path $rootPath -ErrorAction Stop | Get-ItemProperty -Name DisplayName -ErrorAction SilentlyContinue | Where-Object { $_ -like $filter -and $_ -notlike "*$RecentVersion*"}
+
+    if (-not $item)
+    {
+        return $true
+    }
+
+    return $false
+}
+
+function LogErrorMessage([pscustomobject]$InstallResult, [string]$Message)
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message $Message
+    WriteNonTerminalError -Message $Message
+
+    $installResult.Success = $false
+    $installResult.ExitCode = -1
+    $installResult.Message = $Message
+
+    return $installResult
 }
 
 function InstallErlang([string]$InstallDir, [string]$Sources)
@@ -497,7 +564,7 @@ function InstallErlang([string]$InstallDir, [string]$Sources)
 
     $result = Start-Process -FilePath $Sources -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returnig $($result.ExitCode)"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
 
     return $($result.ExitCode)
 }
@@ -915,7 +982,7 @@ function GenerateEncryptKey()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Generating a new encrypted key"
     $key = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
 
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig $key"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $key"
 
     return $key
 }

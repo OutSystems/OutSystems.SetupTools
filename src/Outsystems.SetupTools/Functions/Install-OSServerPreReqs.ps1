@@ -27,6 +27,14 @@ function Install-OSServerPreReqs
     .PARAMETER SourcePath
     Specifies a local path having the pre-requisites binaries.
 
+    .PARAMETER OnlyMostRecentHostingBundlePackage
+    Specifies whether the installer should remove previous installations of the Hosting Bundle.
+    Accepted values: $false and $true. By default this is set to $false.
+
+    .PARAMETER SkipRuntimePackages
+    Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime.
+    Accepted values: $false and $true. By default this is set to $false.
+
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10"
 
@@ -62,7 +70,13 @@ function Install-OSServerPreReqs
 
         [Parameter()]
         [ValidatePattern('\d$')]
-        [string]$PatchVersion = "0"
+        [string]$PatchVersion = "0",
+
+        [Parameter()]
+        [bool]$OnlyMostRecentHostingBundlePackage = $false,
+
+        [Parameter()]
+        [bool]$SkipRuntimePackages = $false
     )
 
     begin
@@ -163,6 +177,7 @@ function Install-OSServerPreReqs
                     $installDotNetCoreHostingBundle2 = $false
                     $installDotNetCoreHostingBundle3 = $false
                     $installDotNetHostingBundle6 = $true
+                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['6']['Version']
                 }
                 elseif ($fullVersion -ge [version]"11.12.2.0")
                 {
@@ -171,6 +186,7 @@ function Install-OSServerPreReqs
                     $installDotNetCoreHostingBundle2 = $false
                     $installDotNetCoreHostingBundle3 = $true
                     $installDotNetHostingBundle6 = $false
+                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']
                 }
                 else
                 {
@@ -179,6 +195,7 @@ function Install-OSServerPreReqs
                     $installDotNetCoreHostingBundle2 = $true
                     $installDotNetCoreHostingBundle3 = $false
                     $installDotNetHostingBundle6 = $false
+                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']
                 }
 
                 foreach ($version in GetDotNetCoreHostingBundleVersions)
@@ -196,7 +213,7 @@ function Install-OSServerPreReqs
                 foreach ($version in GetDotNetHostingBundleVersions)
                 {
                     # Check .NET 6.0
-                    if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
+                    if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['6']['Version']) {
                         $installDotNetHostingBundle6 = $false
                     }
                 }
@@ -452,7 +469,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 6.0 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetHostingBundle -MajorVersion '6' -Sources $SourcePath
+                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '6' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
             }
             catch [System.IO.FileNotFoundException]
             {
@@ -501,6 +518,54 @@ function Install-OSServerPreReqs
 
                     return $installResult
                 }
+            }
+        }
+
+        if ($mostRecentHostingBundleVersion -and $OnlyMostRecentHostingBundlePackage)
+        {
+            $isInstalled = IsDotNetCoreUninstallToolInstalled
+            if (-not $isInstalled)
+            {
+                try
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Uninstall Tool"
+                    $exitCode = InstallDotNetCoreUninstallTool -MajorVersion '1.5' -Sources $SourcePath
+                }
+                catch [System.IO.FileNotFoundException]
+                {
+                    return LogErrorMessage -InstallResult $installResult -Message '.NET Uninstall Tool installer not found'
+                }
+                catch
+                {
+                    return LogErrorMessage -InstallResult $installResult -Message 'Error downloading or starting the .NET Uninstall Tool installation'
+                }
+            }
+            else
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Uninstall Tool found"
+            }
+
+            $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous ASP.NET Core Runtime packages"
+            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--aspnet-runtime' -Version $mostRecentHostingBundleVersion
+            if (-not $isUninstalled)
+            {
+                return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous ASP.NET Core Runtime packages'
+            }
+
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous .NET Core Runtime packages"
+            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--runtime' -Version $mostRecentHostingBundleVersion
+            if (-not $isUninstalled)
+            {
+                return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous .NET Core Runtime packages'
+            }
+
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous .NET Hosting Bundle packages"
+            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--hosting-bundle' -Version $mostRecentHostingBundleVersion
+            if (-not $isUninstalled)
+            {
+                return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous .NET Hosting Bundle packages'
             }
         }
 

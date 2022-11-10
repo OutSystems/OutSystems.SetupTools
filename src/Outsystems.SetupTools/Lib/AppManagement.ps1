@@ -101,7 +101,7 @@ function AppMgmt_GetPublishResults([string]$SCHost, [int]$PublishId, [pscredenti
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Errors count: $($resultsCount.Errors)"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Warnings count: $($resultsCount.Warnings)"
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "LastMessageId: $($resultsCount.LastMessageId)"
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returnig publish results"
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning publish results"
 
     # Return results. The calling function should know what to do with this
     return $resultsCount

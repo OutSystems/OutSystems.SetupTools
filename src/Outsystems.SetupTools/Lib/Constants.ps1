@@ -125,15 +125,20 @@ $OSDotNetCoreHostingBundleReq = @{
         ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/bdc70151-74f7-427c-a368-716d5f1840c5/6186889f6c784bae224eb15fb94c45fe/dotnet-hosting-3.1.14-win.exe'
         InstallerName = 'DotNetCore_WindowsHosting_31.exe'
     }
-}
-
-# .NET Hosting Bundle related
-[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
-$OSDotNetHostingBundleReq = @{
     '6' = @{
         Version = '6.0.6'
         ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/0d000d1b-89a4-4593-9708-eb5177777c64/cfb3d74447ac78defb1b66fd9b3f38e0/dotnet-hosting-6.0.6-win.exe'
         InstallerName = 'DotNet_WindowsHosting_6.exe'
+    }
+}
+
+# .NET Core Uninstall Tool related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSDotNetCoreUninstallReq = @{
+    '1.5' = @{
+        Version = '1.5.255402'
+        ToInstallDownloadURL = 'https://github.com/dotnet/cli-lab/releases/download/1.5.255402/dotnet-core-uninstall-1.5.255402.msi'
+        InstallerName = 'DotNetCore_Uninstall_15.msi'
     }
 }
 
