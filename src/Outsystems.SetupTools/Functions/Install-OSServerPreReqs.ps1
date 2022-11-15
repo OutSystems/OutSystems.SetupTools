@@ -27,13 +27,13 @@ function Install-OSServerPreReqs
     .PARAMETER SourcePath
     Specifies a local path having the pre-requisites binaries.
 
-    .PARAMETER OnlyMostRecentHostingBundlePackage
+    .PARAMETER RemovePreviousHostingBundlePackages
     Specifies whether the installer should remove previous installations of the Hosting Bundle.
     Accepted values: $false and $true. By default this is set to $false.
 
     .PARAMETER SkipRuntimePackages
     Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime.
-    Accepted values: $false and $true. By default this is set to $false.
+    Accepted values: $false and $true. By default this is set to $true.
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10"
@@ -73,10 +73,10 @@ function Install-OSServerPreReqs
         [string]$PatchVersion = "0",
 
         [Parameter()]
-        [bool]$OnlyMostRecentHostingBundlePackage = $false,
+        [bool]$RemovePreviousHostingBundlePackages = $false,
 
         [Parameter()]
-        [bool]$SkipRuntimePackages = $false
+        [bool]$SkipRuntimePackages = $true
     )
 
     begin
@@ -521,7 +521,7 @@ function Install-OSServerPreReqs
             }
         }
 
-        if ($mostRecentHostingBundleVersion -and $OnlyMostRecentHostingBundlePackage)
+        if ($mostRecentHostingBundleVersion -and $RemovePreviousHostingBundlePackages)
         {
             $isInstalled = IsDotNetCoreUninstallToolInstalled
             if (-not $isInstalled)
