@@ -184,7 +184,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Install-OSPlatformServiceCenter | Out-Null
 
             It 'Should run the RunSCInstaller with specific parameters' {
-                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif" }}
+                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif CentralizedPlatformLogs.xif" }}
                 Assert-MockCalled @assParams
             }
         }
