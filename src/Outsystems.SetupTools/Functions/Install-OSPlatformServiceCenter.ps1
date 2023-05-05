@@ -91,6 +91,10 @@ function Install-OSPlatformServiceCenter
                 { ($_  -as [int]) -ge 11}
                 {
                     $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif'
+                    if ($(([version]$osVersion).Major -gt 11) -or $(([version]$osVersion).Minor -gt 18) -or ($(([version]$osVersion).Minor -eq 18) -and $(([version]$osVersion).Build -ge 1)))
+                    {
+                        $scInstallerArguments += ' CentralizedPlatformLogs.xif'
+                    }
                 }
                 default
                 {

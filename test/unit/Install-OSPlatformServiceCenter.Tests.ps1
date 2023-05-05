@@ -176,6 +176,19 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
         }
 
+        Context 'When the platform is the version 11.18.1' {
+
+            Mock GetServerVersion { return '11.18.1.1' }
+            Mock GetSCCompiledVersion { return $null }
+
+            Install-OSPlatformServiceCenter | Out-Null
+
+            It 'Should run the RunSCInstaller with specific parameters' {
+                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif CentralizedPlatformLogs.xif" }}
+                Assert-MockCalled @assParams
+            }
+        }
+
         Context 'When the platform is the version 12' {
 
             Mock GetServerVersion { return '12.0.0.1' }
@@ -184,7 +197,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Install-OSPlatformServiceCenter | Out-Null
 
             It 'Should run the RunSCInstaller with specific parameters' {
-                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif" }}
+                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif CentralizedPlatformLogs.xif" }}
                 Assert-MockCalled @assParams
             }
         }
