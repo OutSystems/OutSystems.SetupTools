@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 3.16.3.0  
+
+- Added CentralizedPlatformLogs extension to installer arguments for versions above 11.18.1
+
 ## 3.16.2.1
 
 - Implement flag to uninstall previous .NET Core packages when installing the hosting bundle
