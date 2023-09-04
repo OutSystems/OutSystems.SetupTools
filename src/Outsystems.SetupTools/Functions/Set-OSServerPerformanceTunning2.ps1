@@ -253,7 +253,7 @@ function Set-OSServerPerformanceTunning2
                     # Build an array with all matching Apps.
                     foreach ($appMatchPattern in $($Config.Match))
                     {
-                        $interestingApps += $DefaultWebSiteApps | Where-Object -FilterScript { $_ -like $appMatchPattern }
+                        $interestingApps += $DefaultWebSiteApps | Where-Object -FilterScript { ($_ -like $appMatchPattern) -and ($_ -notin $OSIISConfigExcludedApps) }
                     }
                 }
 

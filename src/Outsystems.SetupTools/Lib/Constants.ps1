@@ -189,6 +189,8 @@ $OSIISConfig = @(
         'Match'            = @('/LT*', '/lifet*', '/LifeT*', 'PerformanceMonitor')
     }
 )
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSIISConfigExcludedApps = ( '/server.api', '/server.identity' )
 
 # Performance Tuning
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
