@@ -75,27 +75,27 @@ function Get-OSRepoAvailableVersions
             'PlatformServer'
             {
                 $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
-                $AppVersions_Strings = $AppFiles -replace 'PlatformServer-', '' -replace '.exe', ''
+                $AppVersions_Strings = $AppFiles -replace 'PlatformServer-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'Lifetime'
             {
                 $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
-                $AppVersions_Strings = $AppFiles -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe', ''
+                $AppVersions_Strings = $AppFiles -replace 'LifeTimeWithPlatformServer-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'DevelopmentEnvironment'
             {
                 $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
-                $AppVersions_Strings = $AppFiles -replace 'DevelopmentEnvironment-', '' -replace '.exe', ''
+                $AppVersions_Strings = $AppFiles -replace 'DevelopmentEnvironment-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'ServiceStudio'
             {
                 $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "ServiceStudio-*" }
-                $AppVersions_Strings = $AppFiles -replace 'ServiceStudio-', '' -replace '.exe', ''
+                $AppVersions_Strings = $AppFiles -replace 'ServiceStudio-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'IntegrationStudio'
             {
                 $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "IntegrationStudio-*" }
-                $AppVersions_Strings = $AppFiles -replace 'IntegrationStudio-', '' -replace '.exe', ''
+                $AppVersions_Strings = $AppFiles -replace 'IntegrationStudio-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
         }
 
