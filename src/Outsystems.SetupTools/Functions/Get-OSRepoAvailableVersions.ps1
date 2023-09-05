@@ -10,7 +10,7 @@ function Get-OSRepoAvailableVersions
 
     .PARAMETER Application
     Specifies which application to retrieve the version
-    This can be 'PlatformServer', 'ServiceStudio', 'Lifetime'
+    This can be 'PlatformServer', 'Lifetime', 'DevelopmentEnvironment', 'ServiceStudio', 'IntegrationStudio'
 
     .PARAMETER MajorVersion
     Specifies the platform major version
@@ -24,7 +24,7 @@ function Get-OSRepoAvailableVersions
     Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10'
 
     .EXAMPLE
-    Get the latest available version of the OutSystems 11 development environment
+    Get the latest available version of the OutSystems 11 Service Studio
     Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11' -Latest
 
     #>
@@ -33,7 +33,7 @@ function Get-OSRepoAvailableVersions
     [OutputType('String')]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('PlatformServer', 'ServiceStudio', 'Lifetime')]
+        [ValidateSet('PlatformServer', 'Lifetime', 'DevelopmentEnvironment', 'ServiceStudio', 'IntegrationStudio')]
         [string]$Application,
 
         [Parameter(Mandatory = $true)]
@@ -59,7 +59,7 @@ function Get-OSRepoAvailableVersions
 
         try
         {
-            $files = GetAzStorageFileList
+            $RepoFiles = GetAzStorageFileList
         }
         catch
         {
@@ -74,33 +74,43 @@ function Get-OSRepoAvailableVersions
         {
             'PlatformServer'
             {
-                $files = $files | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
-                $versions = $files -replace 'PlatformServer-', '' -replace '.exe', ''
-            }
-            'ServiceStudio'
-            {
-                $files = $files | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
-                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe', ''
+                $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
+                $AppVersions_Strings = $AppFiles -replace 'PlatformServer-', '' -replace '.exe', ''
             }
             'Lifetime'
             {
-                $files = $files | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
-                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe', ''
+                $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
+                $AppVersions_Strings = $AppFiles -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe', ''
+            }
+            'DevelopmentEnvironment'
+            {
+                $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
+                $AppVersions_Strings = $AppFiles -replace 'DevelopmentEnvironment-', '' -replace '.exe', ''
+            }
+            'ServiceStudio'
+            {
+                $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "ServiceStudio-*" }
+                $AppVersions_Strings = $AppFiles -replace 'ServiceStudio-', '' -replace '.exe', ''
+            }
+            'IntegrationStudio'
+            {
+                $AppFiles = $RepoFiles | Where-Object -FilterScript { $_ -like "IntegrationStudio-*" }
+                $AppVersions_Strings = $AppFiles -replace 'IntegrationStudio-', '' -replace '.exe', ''
             }
         }
 
         # Filter only major version and sort desc
-        $versions = [System.Version[]]($versions | Where-Object -FilterScript { $_ -like "$MajorVersion.*" }) | Sort-Object -Descending
+        $AppVersions = [System.Version[]]($AppVersions_Strings | Where-Object -FilterScript { $_ -like "$MajorVersion.*" }) | Sort-Object -Descending
 
         if ($Latest.IsPresent)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning the latest version"
-            return $versions[0].ToString()
+            return $AppVersions[0].ToString()
         }
         else
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($versions.Count) versions"
-            return $versions | ForEach-Object -Process { $_.ToString() }
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($AppVersions.Count) versions"
+            return $AppVersions | ForEach-Object -Process { $_.ToString() }
         }
     }
 
