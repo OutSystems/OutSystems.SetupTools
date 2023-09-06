@@ -102,15 +102,19 @@ function Get-OSRepoAvailableVersions
         # Filter only major version and sort desc
         $AppVersions = [System.Version[]]($AppVersions_Strings | Where-Object -FilterScript { $_ -like "$MajorVersion.*" }) | Sort-Object -Descending
 
-        if ($Latest.IsPresent)
+        if ( ($AppVersions.Count -gt 0) -and $Latest.IsPresent)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning the latest version"
             return $AppVersions[0].ToString()
         }
-        else
+        elseif ($AppVersions.Count -gt 0)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Returning $($AppVersions.Count) versions"
             return $AppVersions | ForEach-Object -Process { $_.ToString() }
+        }
+        else {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "No versions returned."
+            return $null
         }
     }
 
