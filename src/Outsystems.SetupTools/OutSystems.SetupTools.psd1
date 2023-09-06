@@ -51,7 +51,7 @@ Description = 'Tools for installing and manage the OutSystems platform installat
 ProcessorArchitecture = 'Amd64'
 
 # Modules that must be imported into the global environment prior to importing this module
-RequiredModules = @('AzureRM.Storage')
+RequiredModules = @('Az.Storage')
 
 # Assemblies that must be loaded prior to importing this module
 RequiredAssemblies = @(
