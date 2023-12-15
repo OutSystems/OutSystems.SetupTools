@@ -173,6 +173,15 @@ function Get-OSServerPreReqs
                     $requireDotNetCoreHostingBundle3 = $true
                     $requireDotNetHostingBundle6 = $true
                 }
+                elseif ($fullVersion -ge [version]"11.26.0.0")  # TODO: DECIDE WHICH VERSION!!!!!
+                {
+                    # Here means that minor and patch version were specified and we are equal or above version 11.26.0.0
+                    # We install .NET 8.0 only
+                    $requireDotNetCoreHostingBundle2 = $false
+                    $requireDotNetCoreHostingBundle3 = $false
+                    $requireDotNetHostingBundle6 = $false
+                    $requireDotNetHostingBundle8 = $true
+                }
                 elseif ($fullVersion -ge [version]"11.17.1.0")
                 {
                     # Here means that minor and patch version were specified and we are equal or above version 11.17.1.0
@@ -292,6 +301,46 @@ function Get-OSServerPreReqs
                                                                         }
                                                                         $OKMessages = @("Minimum .NET 6.0.6 Windows Server Hosting found.")
                                                                         $NOKMessages = @("Minimum .NET 6.0.6 Windows Server Hosting not found.")
+                                                                        $IISStatus = $True
+
+                                                                        if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
+                                                                        {
+                                                                            $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
+                                                                            if ($Status)
+                                                                            {
+                                                                                # Check if IIS can find ASP.NET modules
+                                                                                if ($aspModules.Count -lt 1)
+                                                                                {
+                                                                                    $Status = $False
+                                                                                    $IISStatus = $False
+                                                                                    $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    $IISStatus = $True
+                                                                                }
+                                                                            }
+                                                                        }
+
+
+                                                                        return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                                    }
+                }
+
+                if ($requireDotNetHostingBundle8) {
+                    $RequirementStatuses += CreateRequirementStatus -Title ".NET 8.0 Windows Server Hosting" `
+                                                                    -ScriptBlock `
+                                                                    {
+                                                                        $Status = $False
+                                                                        foreach ($version in GetDotNetHostingBundleVersions)
+                                                                        {
+                                                                            # Check version 8.0
+                                                                            if (([version]$version).Major -eq 8 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['8']['Version']) {
+                                                                                $Status = $True
+                                                                            }
+                                                                        }
+                                                                        $OKMessages = @("Minimum .NET 8.0.0 Windows Server Hosting found.")
+                                                                        $NOKMessages = @("Minimum .NET 8.0.0 Windows Server Hosting not found.")
                                                                         $IISStatus = $True
 
                                                                         if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
