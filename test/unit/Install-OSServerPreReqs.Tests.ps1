@@ -30,6 +30,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $assNotRunInstallBuildTools = @{ 'CommandName' = 'InstallBuildTools'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunInstallWindowsFeatures = @{ 'CommandName' = 'InstallWindowsFeatures'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
+        $assRunInstallDotNetHostingBundle8 = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "8" }}
+        $assNotRunInstallDotNetHostingBundle8  = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "8" }}
         $assRunInstallDotNetHostingBundle = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
         $assNotRunInstallDotNetHostingBundle  = @{ 'CommandName' = 'InstallDotNetCoreHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
         $assRunInstallDotNetCoreUninstallTool = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
@@ -59,6 +61,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET 2.1 core installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -87,6 +90,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -112,6 +116,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -132,7 +137,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
             Mock GetDotNetCoreHostingBundleVersions { return @('3.1.14', '2.1.12') }
-            Mock GetDotNetHostingBundleVersions { return @('6.0.6') }
+            Mock GetDotNetHostingBundleVersions { return @('6.0.6', '8.0.0') }
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -142,6 +147,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -167,6 +173,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -187,7 +194,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
             Mock GetDotNetCoreHostingBundleVersions { return @('3.1.14', '2.1.12') }
-            Mock GetDotNetHostingBundleVersions { return @('6.0.6') }
+            Mock GetDotNetHostingBundleVersions { return @('6.0.6', '8.0.0') }
 
             $result = Install-OSServerPreReqs -MajorVersion '12' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -197,6 +204,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -604,6 +612,35 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '10' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When .NET 8.0 installation fails to start' {
+
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { throw 'Big error' }
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetCore21
+                Assert-MockCalled @assRunInstallDotNetCore
+                Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
+                Assert-MockCalled @assNotRunConfigureServiceWMI
+                Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assNotRunDisableFIPS
+                Assert-MockCalled @assNotRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Error downloading or starting the .NET 8.0 installation'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the .NET 8.0 installation' }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When .NET 6.0 installation fails to start' {
 
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw 'Big error' }
@@ -688,6 +725,35 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When .NET 8.0 installer not found' {
+
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 8.0 installer not found' }
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetCore21
+                Assert-MockCalled @assRunInstallDotNetCore
+                Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
+                Assert-MockCalled @assNotRunConfigureServiceWMI
+                Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assNotRunDisableFIPS
+                Assert-MockCalled @assNotRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be '.NET 8.0 installer not found'
+            }
+            It 'Should output an error' { $err[-1] | Should Be '.NET 8.0 installer not found' }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When .NET 6.0 installer not found' {
 
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 6.0 installer not found' }
@@ -700,6 +766,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -728,6 +795,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -756,6 +824,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -772,6 +841,35 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When .NET 8.0 reports a reboot' {
+
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { return 3010 }
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run every action' {
+                Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetCore21
+                Assert-MockCalled @assRunInstallDotNetCore
+                Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
+                Assert-MockCalled @assRunConfigureServiceWMI
+                Assert-MockCalled @assRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assRunDisableFIPS
+                Assert-MockCalled @assRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $true
+                $result.ExitCode | Should Be 3010
+                $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When .NET 6.0 reports a reboot' {
 
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 3010 }
@@ -784,6 +882,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
@@ -812,6 +911,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
@@ -840,6 +940,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
@@ -856,6 +957,35 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When .NET 8.0 reports an error' {
+
+            Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { return 10 }
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
+                Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetCore21
+                Assert-MockCalled @assRunInstallDotNetCore
+                Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
+                Assert-MockCalled @assNotRunConfigureServiceWMI
+                Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
+                Assert-MockCalled @assNotRunDisableFIPS
+                Assert-MockCalled @assNotRunConfigureWindowsEventLog
+                Assert-MockCalled @assNotRunConfigureMSMQDomainServer
+            }
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 10
+                $result.Message | Should Be 'Error installing .NET 8.0 Windows Server Hosting bundle'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 8.0 Windows Server Hosting bundle. Exit code: 10' }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
         Context 'When .NET 6.0 reports an error' {
 
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 10 }
@@ -868,6 +998,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -896,6 +1027,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -924,6 +1056,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -951,6 +1084,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -979,6 +1113,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
@@ -1007,6 +1142,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
@@ -1036,6 +1172,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
@@ -1064,6 +1201,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
@@ -1091,6 +1229,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should run the .NET core 3.1 installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1116,6 +1255,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
             It 'Should not run the .NET core 3.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1141,6 +1281,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1166,6 +1307,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1191,6 +1333,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core 3.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1217,6 +1360,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should run the .NET core 3.1 installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1243,6 +1387,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1269,6 +1414,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core 3.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1295,6 +1441,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should run the .NET core 3.1 installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1321,6 +1468,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
             It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1347,6 +1495,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21}
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1373,6 +1522,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21}
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
