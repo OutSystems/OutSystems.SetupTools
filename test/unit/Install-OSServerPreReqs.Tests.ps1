@@ -253,10 +253,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallDotNet { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -281,10 +284,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallDotNet { throw [System.IO.FileNotFoundException] '.NET installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -309,19 +315,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallDotNet { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
-                Assert-MockCalled @assNotRunInstallDotNetCore21
-                Assert-MockCalled @assNotRunInstallDotNetCore
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
                 Assert-MockCalled @assRunConfigureMSMQDomainServer
             }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetCore21
+                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+            }
+
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -337,10 +347,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallDotNet { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -421,10 +434,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallBuildTools { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -449,10 +465,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallBuildTools { throw [System.IO.FileNotFoundException] 'Build Tools installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -477,19 +496,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallBuildTools { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
-                Assert-MockCalled @assNotRunInstallDotNetCore21
-                Assert-MockCalled @assNotRunInstallDotNetCore
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
                 Assert-MockCalled @assRunConfigureMSMQDomainServer
             }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetCore21
+                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+            }
+
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -505,10 +528,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallBuildTools { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -533,11 +559,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallWindowsFeatures { throw 'Some error' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
+                Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallBuildTools
                 Assert-MockCalled @assNotRunInstallDotNetCore21
-                Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunConfigureServiceWMI
@@ -561,19 +590,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 0 }; 'RestartNeeded' = @{ 'value__' = 2 }; 'Success' = $true} }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
-                Assert-MockCalled @assNotRunInstallDotNetCore21
-                Assert-MockCalled @assNotRunInstallDotNetCore
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
                 Assert-MockCalled @assRunConfigureMSMQDomainServer
             }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetCore21
+                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+            }
+
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -589,10 +622,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock InstallWindowsFeatures { return @{ 'Output' = 'All good'; 'ExitCode' = @{ 'value__' = 10 }; 'RestartNeeded' = @{ 'value__' = 1 }; 'Success' = $false} }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+
+            It 'Should run the next actions' {
+                Assert-MockCalled @assRunInstallWindowsFeatures
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallBuildTools
-                Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
@@ -617,14 +654,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
                 Assert-MockCalled @assRunInstallDotNetHostingBundle8
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -646,13 +686,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -674,13 +718,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -702,13 +750,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { throw 'Big error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -730,14 +782,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 8.0 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
                 Assert-MockCalled @assRunInstallDotNetHostingBundle8
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -759,13 +814,16 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 6.0 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -788,12 +846,15 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { throw [System.IO.FileNotFoundException] '.NET Core 3.1 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
@@ -817,11 +878,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { throw [System.IO.FileNotFoundException] '.NET Core 2.1 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
@@ -846,7 +910,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -858,6 +922,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
             }
             It 'Should return the right result' {
@@ -875,7 +942,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -887,8 +954,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
             }
+
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -904,7 +975,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -916,8 +987,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
             }
+
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -933,7 +1008,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { return 3010 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run every action' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -945,8 +1020,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
             }
+
             It 'Should return the right result' {
                 $result.Success | Should Be $true
                 $result.RebootNeeded | Should Be $true
@@ -962,14 +1041,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
                 Assert-MockCalled @assRunInstallDotNetHostingBundle8
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -991,13 +1073,16 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "6" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
@@ -1020,12 +1105,15 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "3" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
                 Assert-MockCalled @assRunInstallDotNetCore
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
@@ -1049,11 +1137,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock -CommandName InstallDotNetCoreHostingBundle -ParameterFilter { $MajorVersion -eq "2" } -MockWith { return 10 }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNet
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetCore21
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
@@ -1078,7 +1169,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock ConfigureServiceWMI { throw 'Big Error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetCore21
@@ -1087,6 +1178,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
@@ -1107,7 +1201,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock ConfigureServiceWindowsSearch { throw 'Big Error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetCore21
@@ -1117,6 +1211,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
@@ -1136,7 +1233,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock DisableFIPS { throw 'Big Error' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetCore21
@@ -1147,6 +1244,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
             }
@@ -1166,7 +1266,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $assRunConfigureWindowsEventLog = @{ 'CommandName' = 'ConfigureWindowsEventLog'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetCore21
@@ -1178,6 +1278,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureMSMQDomainServer
             }
             It 'Should return the right result' {
@@ -1195,19 +1298,22 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock ConfigureMSMQDomainServer { throw 'Big Error' }
             $result = Install-OSServerPreReqs -MajorVersion '10' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the next actions' {
+            It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
-                Assert-MockCalled @assNotRunInstallDotNetCore21
-                Assert-MockCalled @assNotRunInstallDotNetCore
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
                 Assert-MockCalled @assRunConfigureMSMQDomainServer
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetCore21
+                Assert-MockCalled @assNotRunInstallDotNetCore
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
             It 'Should return the right result' {
                 $result.Success | Should Be $false
