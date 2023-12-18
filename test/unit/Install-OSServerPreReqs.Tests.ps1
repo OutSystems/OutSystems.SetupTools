@@ -232,6 +232,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -263,6 +264,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -294,6 +296,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -330,6 +333,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
 
             It 'Should return the right result' {
@@ -357,6 +361,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -444,6 +449,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -475,6 +481,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -511,6 +518,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
 
             It 'Should return the right result' {
@@ -538,6 +546,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -569,6 +578,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -605,6 +615,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
 
             It 'Should return the right result' {
@@ -633,6 +644,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
