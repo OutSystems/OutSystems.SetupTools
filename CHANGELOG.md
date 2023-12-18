@@ -1,6 +1,10 @@
 # OutSystems.SetupTools Release History
 
-## 3.16.3.0  
+## 3.17.0.0
+
+- Upgrade the hosting bundle to .NET 8.0
+
+## 3.16.3.0
 
 - Added CentralizedPlatformLogs extension to installer arguments for versions above 11.18.1
 
