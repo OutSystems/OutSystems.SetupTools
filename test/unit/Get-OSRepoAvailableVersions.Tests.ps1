@@ -28,5 +28,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should return at least one version' { $result.Count | Should BeGreaterThan 0 }
         }
 
+        Context 'When getting Lifetime versions' {
+
+            $result = Get-OSRepoAvailableVersions -Application 'Lifetime' -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not have errors' { $err.Count | Should Be 0 }
+            It 'Should return at least one version' { $result.Count | Should BeGreaterThan 0 }
+        }
+
     }
 }

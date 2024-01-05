@@ -12,6 +12,7 @@ install:
       Install-Module psake -Scope CurrentUser -Force -RequiredVersion 4.7.4
       Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
       Install-Module platyPS -Scope CurrentUser -Force
+      Uninstall-Module AzureRM -Force
       Install-Module Az.Storage -Scope CurrentUser -Force -AllowClobber
 
 build_script:
