@@ -172,6 +172,7 @@ function Get-OSServerPreReqs
                     $requireDotNetCoreHostingBundle2 = $true
                     $requireDotNetCoreHostingBundle3 = $true
                     $requireDotNetHostingBundle6 = $true
+                    $requireDotNetHostingBundle8 = $true
                 }
                 elseif ($fullVersion -ge [version]"11.25.1.0")  # TODO: DECIDE WHICH VERSION!!!!!
                 {
