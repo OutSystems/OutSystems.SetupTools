@@ -130,6 +130,11 @@ $OSDotNetCoreHostingBundleReq = @{
         ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/0d000d1b-89a4-4593-9708-eb5177777c64/cfb3d74447ac78defb1b66fd9b3f38e0/dotnet-hosting-6.0.6-win.exe'
         InstallerName = 'DotNet_WindowsHosting_6.exe'
     }
+    '8' = @{
+        Version = '8.0.0'
+        ToInstallDownloadURL = 'https://download.visualstudio.microsoft.com/download/pr/2a7ae819-fbc4-4611-a1ba-f3b072d4ea25/32f3b931550f7b315d9827d564202eeb/dotnet-hosting-8.0.0-win.exe'
+        InstallerName = 'DotNet_WindowsHosting_8.exe'
+    }
 }
 
 # .NET Core Uninstall Tool related
