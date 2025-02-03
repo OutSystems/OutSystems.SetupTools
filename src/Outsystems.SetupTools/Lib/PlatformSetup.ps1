@@ -1004,10 +1004,10 @@ function GetAzStorageFileList()
     $stoContainer = ([System.Uri]$OSRepoURL).Segments[1]
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting file list from storage account $stoAccountName container $stoContainer"
 
-    $stoCtx = New-AzureStorageContext -StorageAccountName $stoAccountName -Anonymous -ErrorAction Stop
+    $stoCtx = New-AzStorageContext -StorageAccountName $stoAccountName -Anonymous -ErrorAction Stop
 
     $ProgressPreference = "SilentlyContinue"
-    $sources = $(Get-AzureStorageBlob -Container $stoContainer -Context $stoCtx -ErrorAction Stop).Name
+    $sources = $(Get-AzStorageBlob -Container $stoContainer -Context $stoCtx -ErrorAction Stop).Name
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $($sources.Count)"
 
