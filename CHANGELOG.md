@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 3.17.1.0
+- Exclude Server.API and Server.Identity from being moved to another app pool (#122)
+
+- Exclude Server.API and Server.Identity IIS apps from being moved to the OutSystemsApplications app pool by Set-OSServerPerformanceTunning and Set-OSServerPerformanceTunning2
+
 ## 3.17.0.0
 
 - Upgrade the hosting bundle to .NET 8.0
