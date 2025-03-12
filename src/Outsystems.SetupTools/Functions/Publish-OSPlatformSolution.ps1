@@ -18,10 +18,16 @@ function Publish-OSPlatformSolution
     Username or PSCredential object with credentials for Service Center. If not specified defaults to admin/admin
 
     .PARAMETER Wait
-    Will waits for the deployment to finish and reports back the deployment result
+    Will wait for the deployment to finish and reports back the deployment result
 
     .PARAMETER StopOnWarnings
     Treat warnings as errors. Deployment will stop on compilation warnings and return success false
+
+    .PARAMETER TwoStepMode
+    Enable 2-Stage Deployment of solution. First step compiles and prepares apps, second step deploys.
+
+    .PARAMETER StartSecondStep
+    Automatically start second step of solution publish to deploy apps. Requires the TwoStepMode parameter.
 
     .EXAMPLE
     $Credential = Get-Credential
@@ -35,6 +41,10 @@ function Publish-OSPlatformSolution
     .EXAMPLE
     $Credential = Get-Credential
     Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -StopOnWarnings
+
+    .EXAMPLE
+    $Credential = Get-Credential
+    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -Wait -TwoStepMode
 
     .NOTES
     You can run this cmdlet on any machine with HTTP access to Service Center.
@@ -50,28 +60,40 @@ function Publish-OSPlatformSolution
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Default')]
     [OutputType('Outsystems.SetupTools.PublishResult')]
     param (
-        [Parameter()]
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TwoStep")]
         [ValidateNotNullOrEmpty()]
         [Alias('Host', 'Environment','ServiceCenterHost')]
         [string]$ServiceCenter = '127.0.0.1',
 
-        [Parameter(ValueFromPipeline)]
+        [Parameter(ParameterSetName = "Default", ValueFromPipeline)]
+        [Parameter(ParameterSetName = "TwoStep", ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [string]$Solution,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TwoStep")]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
         [System.Management.Automation.PSCredential]$Credential = $OSSCCred,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = "TwoStep")]
+        [Parameter(ParameterSetName = "Default")]
         [switch]$Wait,
 
-        [Parameter()]
-        [switch]$StopOnWarnings
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TwoStep")]
+        [switch]$StopOnWarnings,
+
+        [Parameter(ParameterSetName = "Default")]
+        [Parameter(ParameterSetName = "TwoStep", Mandatory = $true)]
+        [switch]$TwoStepMode,
+
+        [Parameter(ParameterSetName = "TwoStep")]
+        [switch]$StartSecondStep
     )
 
     begin
@@ -89,6 +111,7 @@ function Publish-OSPlatformSolution
             ExitCode   = 0
             Message    = ''
         }
+
     }
 
     process
@@ -107,13 +130,26 @@ function Publish-OSPlatformSolution
 
             return $publishResult
         }
+
+        # Check if StartSecondStep swtich was enabled but TwoStepMode was not
+        if ( ($StartSecondStep -eq $true) -and ($TwoStepMode -eq $false) ) 
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error in parameters provided. StartSecondStep enabled requires that TwoStepMode is also enabled." -Exception $_.Exception
+            WriteNonTerminalError -Message "Error in parameters provided"
+
+            $publishResult.Success = $false
+            $publishResult.ExitCode = -1
+            $publishResult.Message = "Error in parameters provided"
+
+            return $publishResult
+        }
         #endregion
 
         #region start publish step 1
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uploading solution $Solution"
         try
         {
-            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -TwoStepMode $Wait -CallingFunction $($MyInvocation.Mycommand)
+            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -TwoStepMode $TwoStepMode -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -201,24 +237,40 @@ function Publish-OSPlatformSolution
             return $publishResult
         }
         #endregion
+        
+        #region handle two step publishing enabled
+        if ( ($TwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $false) ) {
 
-        #region start publish step 2
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Continuing to the deployment..."
-        try
-        {
-            AppMgmt_SolutionPublishContinue -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while starting to deploy the solution" -Exception $_.Exception
-            WriteNonTerminalError -Message "Error while starting to deploy the solution"
-
-            $publishResult.Success = $false
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "First step of solution publish successfully completed. Will wait for second step to be be started in Service Center to finish deployment"
+            $publishResult.Message = "First step of solution publish successfully completed"
             $publishResult.PublishId = $publishId
-            $publishResult.ExitCode = -1
-            $publishResult.Message = "Error while starting to deploy the solution"
 
             return $publishResult
+
+        }
+
+        elseif ( ($TwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $true) ) {
+
+            #region start publish step 2
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Continuing to the deployment..."
+            try
+            {
+                AppMgmt_SolutionPublishContinue -SCHost $ServiceCenter -PublishId $publishId -Credential $Credential -CallingFunction $($MyInvocation.Mycommand)
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error while starting to deploy the solution" -Exception $_.Exception
+                WriteNonTerminalError -Message "Error while starting to deploy the solution"
+
+                $publishResult.Success = $false
+                $publishResult.PublishId = $publishId
+                $publishResult.ExitCode = -1
+                $publishResult.Message = "Error while starting to deploy the solution"
+
+                return $publishResult
+            }
+            #endregion
+
         }
         #endregion
 
@@ -276,13 +328,15 @@ function Publish-OSPlatformSolution
 
             return $publishResult
         }
-        #endregion
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Solution successfully published"
         $publishResult.Message = "Solution successfully published"
         $publishResult.PublishId = $publishId
 
         return $publishResult
+
+        #endregion
+
     }
 
     end
