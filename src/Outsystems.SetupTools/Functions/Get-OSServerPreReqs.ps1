@@ -444,15 +444,15 @@ function Get-OSServerPreReqs
         {
             $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
                 -ScriptBlock `
-            {
-                $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
+                {
+                    $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
 
-                $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
-                $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
-                $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
+                    $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
+                    $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
+                    $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
 
-                return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
-            }
+                    return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                }
         }
 
 

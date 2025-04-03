@@ -165,6 +165,7 @@ function Install-OSServerPreReqs
             }
             default
             {
+                # Deprecated no longer required
                 if ($InstallMSBuildTools)
                 {
                     $installBuildTools = ValidateMSBuildTools
@@ -336,7 +337,6 @@ function Install-OSServerPreReqs
             return $installResult
         }
 
-        # Deprecated no longer required
         # Install build tools 2015
         if ($installBuildTools)
         {
