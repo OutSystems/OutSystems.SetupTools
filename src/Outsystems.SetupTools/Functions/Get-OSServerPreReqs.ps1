@@ -60,9 +60,9 @@ function Get-OSServerPreReqs
 
             $RequirementStatus = @{}
             $RequirementStatus.Title = $Title
-            $RequirementStatus.Status = $Result.Status || -not $($Result.Mandatory)
-            $RequirementStatus.OptionalsStatus = $Result.OptionalsStatus || -not $($Result.Mandatory)
-            $RequirementStatus.IISStatus = $Result.IISStatus || -not $($Result.Mandatory)
+            $RequirementStatus.Status = $Result.Status -or $(-not $($Result.Mandatory))
+            $RequirementStatus.OptionalsStatus = $Result.OptionalsStatus -or $(-not $($Result.Mandatory))
+            $RequirementStatus.IISStatus = $Result.IISStatus -or $(-not $($Result.Mandatory))
             $RequirementStatus.Installed = $Result.Status
 
             $TextStatus = "OK"
