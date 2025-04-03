@@ -161,7 +161,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When installing OS 11 on a clean machine and everything succeed with InstallMSBuildTools enabled' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue -InstallMSBuildTools $true
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -310,11 +310,11 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
+                Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
             }
 
             It 'Should NOT run the next actions' {
-                Assert-MockCalled @assNotRunInstallBuildTools
                 Assert-MockCalled @assNotRunInstallDotNetCore21
                 Assert-MockCalled @assNotRunInstallDotNetCore
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
