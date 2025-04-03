@@ -60,10 +60,9 @@ function Get-OSServerPreReqs
 
             $RequirementStatus = @{}
             $RequirementStatus.Title = $Title
-            $RequirementStatus.Status = $Result.Status -or $(-not $($Result.Mandatory))
-            $RequirementStatus.OptionalsStatus = $Result.OptionalsStatus -or $(-not $($Result.Mandatory))
-            $RequirementStatus.IISStatus = $Result.IISStatus -or $(-not $($Result.Mandatory))
-            $RequirementStatus.Installed = $Result.Status
+            $RequirementStatus.Status = $Result.Status
+            $RequirementStatus.OptionalsStatus = $Result.OptionalsStatus
+            $RequirementStatus.IISStatus = $Result.IISStatus
 
             $TextStatus = "OK"
             if (-not $($Result.Status))
@@ -100,17 +99,13 @@ function Get-OSServerPreReqs
 
                 [Parameter(Mandatory = $true)]
                 [AllowEmptyCollection()]
-                [String[]]$NOKMessages,
-
-                [Parameter(Mandatory = $false)]
-                [Bool]$Mandatory = $true
+                [String[]]$NOKMessages
             )
 
             $Result = @{}
             $Result.Status = $Status
             $Result.OptionalsStatus = $OptionalsStatus
             $Result.IISStatus = $IISStatus
-            $Result.Mandatory = $Mandatory
 
 
             if ($Result.Status -and $Result.OptionalsStatus)
@@ -165,9 +160,14 @@ function Get-OSServerPreReqs
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
+
+                $requireMSBuildTools = $true
             }
             default
             {
+                # Deprecated Build Tools is no longer mandatory in system requirements
+                $requireMSBuildTools = $false
+
                 # Check .NET Core / .NET Windows Server Hosting version
                 $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
                 if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
@@ -440,19 +440,21 @@ function Get-OSServerPreReqs
 
                                                             return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
-        # Deprecated Build Tools is no longer mandatory in system requirements
-        $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
-                                                        -ScriptBlock `
-                                                        {
-                                                            $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
+        if ($requireMSBuildTools)
+        {
+            $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
+                -ScriptBlock `
+            {
+                $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
 
-                                                            $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
-                                                            $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
-                                                            $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
-                                                            $Mandatory = $false
+                $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
+                $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
+                $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
 
-                                                            return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages -Mandatory $Mandatory)
-                                                        }
+                return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+            }
+        }
+
 
         $RequirementStatuses += CreateRequirementStatus -Title "Windows Search Service" `
                                                         -ScriptBlock `
