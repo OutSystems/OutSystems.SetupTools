@@ -160,6 +160,19 @@ function Get-OSServerPreReqs
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
+
+                $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
+                                                                -ScriptBlock `
+                                                                {
+                                                                    $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
+
+                                                                    $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
+                                                                    $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
+                                                                    $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
+
+                                                                    return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                                }
+
             }
             default
             {
@@ -432,18 +445,6 @@ function Get-OSServerPreReqs
                                                             $Status = $(GetDotNet4Version) -ge $script:OSDotNetReqForMajor[$MajorVersion]['Value']
                                                             $OKMessages = @("Minimum .NET version $($script:OSDotNetReqForMajor[$MajorVersion]['Version']) found.")
                                                             $NOKMessages = @("Minimum .NET version $($script:OSDotNetReqForMajor[$MajorVersion]['Version']) not found.")
-
-                                                            return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                        }
-
-        $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
-                                                        -ScriptBlock `
-                                                        {
-                                                            $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
-
-                                                            $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
-                                                            $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
-                                                            $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
 
                                                             return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }

@@ -76,7 +76,10 @@ function Install-OSServerPreReqs
         [bool]$RemovePreviousHostingBundlePackages = $false,
 
         [Parameter()]
-        [bool]$SkipRuntimePackages = $true
+        [bool]$SkipRuntimePackages = $true,
+
+        [Parameter(Mandatory = $false)]
+        [bool]$InstallMSBuildTools = $false
     )
 
     begin
@@ -128,26 +131,51 @@ function Install-OSServerPreReqs
         # MS Buld Tools minimum version is different depending on the Platform Major Version
         # 10 : 2015 and 2015 Update 3 are allowed but 2017 is not
         # 11 : All the above three are allowed
-        $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
-
-        if (-not $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo))
+        function ValidateMSBuildTools
         {
-            if ($MSBuildInstallInfo.LatestVersionInstalled)
+            $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
+
+            if (-not $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo))
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$($MSBuildInstallInfo.LatestVersionInstalled) found but this version is not supported by OutSystems. We will try to download and install MS Build Tools 2015."
+                if ($MSBuildInstallInfo.LatestVersionInstalled)
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$($MSBuildInstallInfo.LatestVersionInstalled) found but this version is not supported by OutSystems. We will try to download and install MS Build Tools 2015."
+                }
+                else
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "No valid MS Build Tools version found, this is an OutSystems requirement. We will try to download and install MS Build Tools 2015."
+                }
+                return $true
             }
             else
             {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "No valid MS Build Tools version found, this is an OutSystems requirement. We will try to download and install MS Build Tools 2015."
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$($MSBuildInstallInfo.LatestVersionInstalled) found"
+
+                $installResult.RebootNeeded = $MSBuildInstallInfo.RebootNeeded
             }
 
-            $installBuildTools = $true
+            return $false
         }
-        else
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "$($MSBuildInstallInfo.LatestVersionInstalled) found"
 
-            $installResult.RebootNeeded = $MSBuildInstallInfo.RebootNeeded
+        switch ($MajorVersion)
+        {
+            '10'
+            {
+                $installBuildTools = ValidateMSBuildTools
+            }
+            default
+            {
+                # Deprecated no longer required
+                if ($InstallMSBuildTools)
+                {
+                    $installBuildTools = ValidateMSBuildTools
+                }
+                # Skip validation
+                else
+                {
+                    $installBuildTools = $false
+                }
+            }
         }
 
         # Version specific pre-reqs checks.
