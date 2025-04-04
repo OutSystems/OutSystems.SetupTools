@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 3.18.0.0
+
+- Make MS Build Tools installation optional for Platform Server versions 11 or greater. Platform Server version 10 still installs MS Build Tools.
+- Fix for "Set-OSServerConfig fails if value of setting includes an ampersand (&) character" #127
+
 ## 3.17.1.0
 - Exclude Server.API and Server.Identity from being moved to another app pool (#122)
 
