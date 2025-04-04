@@ -333,7 +333,7 @@ function Set-OSServerConfig
                     }
                 }
 
-                $hsConf.EnvironmentConfiguration.$SettingSection.SelectSingleNode($Setting).InnerXML = $Value
+                $hsConf.EnvironmentConfiguration.$SettingSection.SelectSingleNode($Setting).InnerText = $Value
 
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Saving configuration"
                 try
