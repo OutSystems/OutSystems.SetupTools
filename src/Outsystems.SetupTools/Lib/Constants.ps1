@@ -191,7 +191,7 @@ $OSIISConfig = @(
     @{
         'PoolName'         = 'LifeTimeAppPool';
         'MemoryPercentage' = 60;
-        'Match'            = @('/LT*', '/lifet*', '/LifeT*', 'PerformanceMonitor')
+        'Match'            = @('/LT*', '/lifet*', '/LifeT*', '/PerformanceMonitor')
     }
 )
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
