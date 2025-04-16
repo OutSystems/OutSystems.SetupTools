@@ -136,7 +136,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '35' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
