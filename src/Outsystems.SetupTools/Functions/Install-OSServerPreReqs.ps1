@@ -165,12 +165,11 @@ function Install-OSServerPreReqs
             }
             default
             {
-                # Deprecated no longer required
-                if ($InstallMSBuildTools)
+                $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
+                if (($fullVersion -lt [version]"11.35.0.0") -or $InstallMSBuildTools)
                 {
                     $installBuildTools = ValidateMSBuildTools
                 }
-                # Skip validation
                 else
                 {
                     $installBuildTools = $false

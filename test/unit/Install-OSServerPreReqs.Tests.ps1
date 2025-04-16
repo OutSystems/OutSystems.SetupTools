@@ -161,6 +161,32 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When installing OS 11 on a clean machine and everything succeed with InstallMSBuildTools enabled' {
 
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '34' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
+            It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
+            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
+            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
+            It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
+            It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
+            It 'Should not configure the MSMQ' { Assert-MockCalled @assNotRunConfigureMSMQDomainServer }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.RebootNeeded | Should Be $false
+                $result.ExitCode | Should Be 0
+                $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '34' -ErrorAction SilentlyContinue } | Should Not throw }
+        }
+
+        Context 'When installing OS 11 on a clean machine and everything succeed with InstallMSBuildTools enabled' {
+
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue -InstallMSBuildTools $true
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }

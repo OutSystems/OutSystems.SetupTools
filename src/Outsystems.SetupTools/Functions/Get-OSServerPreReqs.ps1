@@ -154,6 +154,19 @@ function Get-OSServerPreReqs
         # Base Windows Features
         $winFeatures = $OSWindowsFeaturesBase
 
+
+        $MSBuildToolsRequirementStatus = CreateRequirementStatus -Title "Microsoft Build Tools" `
+                                                                 -ScriptBlock `
+                                                                 {
+                                                                     $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
+
+                                                                     $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
+                                                                     $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
+                                                                     $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
+
+                                                                     return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                                 }
+
         switch ($MajorVersion)
         {
             '10'
@@ -161,17 +174,7 @@ function Get-OSServerPreReqs
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
                 $winFeatures += "MSMQ"
 
-                $RequirementStatuses += CreateRequirementStatus -Title "Microsoft Build Tools" `
-                                                                -ScriptBlock `
-                                                                {
-                                                                    $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
-
-                                                                    $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
-                                                                    $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
-                                                                    $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
-
-                                                                    return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                                }
+                $RequirementStatuses += $MSBuildToolsRequirementStatus
 
             }
             default
@@ -220,6 +223,12 @@ function Get-OSServerPreReqs
                     $requireDotNetCoreHostingBundle3 = $false
                     $requireDotNetHostingBundle6 = $false
                 }
+
+                if ($fullVersion -lt [version]"11.35.0.0")
+                {
+                    $RequirementStatuses += $MSBuildToolsRequirementStatus
+                }
+
 
                 if($requireDotNetCoreHostingBundle2) {
                     $RequirementStatuses += CreateRequirementStatus -Title ".NET Core 2.1 Windows Server Hosting" `
