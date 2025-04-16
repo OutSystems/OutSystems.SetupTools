@@ -136,12 +136,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '35' -ErrorVariable err -ErrorAction SilentlyContinue
 
-            It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
+            It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
-            It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
-            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
-            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
+            It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
+            It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
             It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -165,9 +165,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
-            It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
-            It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
-            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
+            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
+            It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
+            It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
             It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -220,7 +220,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $result = Install-OSServerPreReqs -MajorVersion '12' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
-            It 'Should run the BuildToold installation' { Assert-MockCalled @assRunInstallBuildTools }
+            It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should run the .NET core 2.1 installation' { Assert-MockCalled @assRunInstallDotNetCore21 }
             It 'Should run the .NET core installation' { Assert-MockCalled @assRunInstallDotNetCore }
