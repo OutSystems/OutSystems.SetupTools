@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 3.18.0.1
+
+- Ensure MS Build Tools is installed for first installs of Platform Server versions < 11.35.0
+- Fix Set-OSServerPerformanceTunning2 not moving PerformanceMonitor to LifeTimeAppPool (#132)
+
 ## 3.18.0.0
 
 - Make MS Build Tools installation optional for Platform Server versions 11 or greater. Platform Server version 10 still installs MS Build Tools.
