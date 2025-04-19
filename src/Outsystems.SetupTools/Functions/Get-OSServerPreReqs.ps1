@@ -190,7 +190,7 @@ function Get-OSServerPreReqs
                     $requireDotNetHostingBundle6 = $true
                     $requireDotNetHostingBundle8 = $true
                 }
-                elseif ($fullVersion -ge [version]"11.25.1.0")  # TODO: DECIDE WHICH VERSION!!!!!
+                elseif ($fullVersion -ge [version]"11.27.0.0")
                 {
                     # Here means that minor and patch version were specified and we are equal or above version 11.25.1.0
                     # We install .NET 8.0 only
