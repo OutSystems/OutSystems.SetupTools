@@ -906,6 +906,7 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process.StartInfo = $ProcessInfo
         $Process.Start() | Out-Null
         $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle
+        $Output = $Process.StandardOutput.ReadToEnd()
 
         if ($OnLogEvent)
         {
@@ -921,6 +922,7 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
 
         Return [PSCustomObject]@{
             ExitCode = $Process.ExitCode
+            Output = $Output
         }
     }
     Catch
