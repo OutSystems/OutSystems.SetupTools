@@ -1682,9 +1682,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '17' -PatchVersion '1' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When trying to install prerequisites for a OS 11 version in Minor version 25 and Patch version 0 (11.25.1) with RemovePreviousHostingBundlePackages flag active' {
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 27 and Patch version 0 (11.27.0) with RemovePreviousHostingBundlePackages flag active' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '25' -PatchVersion '1' -RemovePreviousHostingBundlePackages $true -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -PatchVersion '0' -RemovePreviousHostingBundlePackages $true -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
@@ -1706,7 +1706,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be 0
                 $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
             }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '25' -PatchVersion '1' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When trying to install prerequisites for a OS 11 version without passing the optional Minor and Patch Versions' {
