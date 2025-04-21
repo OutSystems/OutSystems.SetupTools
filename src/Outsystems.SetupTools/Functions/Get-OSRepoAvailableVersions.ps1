@@ -75,27 +75,27 @@ function Get-OSRepoAvailableVersions
             'PlatformServer'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
-                $versions = $files -replace 'PlatformServer-', '' -replace '.exe', ''
+                $versions = $files -replace 'PlatformServer-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'DevelopmentEnvironment'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
-                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe', ''
+                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'Lifetime'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
-                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe', ''
+                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'IntegrationStudio'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "IntegrationStudio-*" }
-                $versions = $files -replace 'IntegrationStudio-', '' -replace '.exe', ''
+                $versions = $files -replace 'IntegrationStudio-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'ServiceStudio'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "ServiceStudio-*" }
-                $versions = $files -replace 'ServiceStudio-', '' -replace '.exe', ''
+                $versions = $files -replace 'ServiceStudio-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
         }
 
