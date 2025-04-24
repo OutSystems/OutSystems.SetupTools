@@ -4,6 +4,32 @@ Import-Module $PSScriptRoot\..\..\src\Outsystems.SetupTools -Force -ArgumentList
 InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSRepoAvailableVersions Tests' {
 
+        $AzRepoFiles = (
+            'DevelopmentEnvironment-11.14.3.56735.exe',
+            'DevelopmentEnvironment-11.14.14.59923.exe',
+            'DevelopmentEnvironment-11.14.16.60354.exe',
+            'IntegrationStudio-11.14.22.112.exe',
+            'IntegrationStudio-11.14.23.119.exe',
+            'IntegrationStudio-11.14.24.121.exe',
+            'LifeTimeWithPlatformServer-11.10.3.1469.0.exe',
+            'LifeTimeWithPlatformServer-11.14.0.2131..exe',
+            'LifeTimeWithPlatformServer-11.26.2.3750.exe',
+            'PlatformServer-11.33.1.44835.exe',
+            'PlatformServer-11.34.0.44828.exe',
+            'PlatformServer-11.34.1.45035.exe',
+            'SQLServer2017-SSEI-Expr.exe',
+            'SSMS-Setup-ENU.exe',
+            'ServiceStudio-11.55.16.64072.exe',
+            'ServiceStudio-11.55.17.64089.exe',
+            'ServiceStudio-11.55.18.64106.exe',
+            'imagebuilder.exe',
+            'license.lic',
+            'license10.lic'
+        )
+
+        # Global mocks
+        Mock GetAzStorageFileList { return $AzRepoFiles }
+
         Context 'When getting Platform Server versions' {
 
             $result = Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
