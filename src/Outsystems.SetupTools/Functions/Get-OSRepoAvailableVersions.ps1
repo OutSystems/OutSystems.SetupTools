@@ -10,7 +10,7 @@ function Get-OSRepoAvailableVersions
 
     .PARAMETER Application
     Specifies which application to retrieve the version
-    This can be 'PlatformServer', 'ServiceStudio', 'Lifetime'
+    This can be 'PlatformServer', 'Lifetime', 'DevelopmentEnvironment', 'ServiceStudio', 'IntegrationStudio'
 
     .PARAMETER MajorVersion
     Specifies the platform major version
@@ -24,7 +24,7 @@ function Get-OSRepoAvailableVersions
     Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10'
 
     .EXAMPLE
-    Get the latest available version of the OutSystems 11 development environment
+    Get the latest available version of the OutSystems 11 Service Studio
     Get-OSRepoAvailableVersions -Application 'ServiceStudio' -MajorVersion '11' -Latest
 
     #>
@@ -33,7 +33,7 @@ function Get-OSRepoAvailableVersions
     [OutputType('String')]
     param (
         [Parameter(Mandatory = $true)]
-        [ValidateSet('PlatformServer', 'ServiceStudio', 'Lifetime')]
+        [ValidateSet('PlatformServer', 'Lifetime', 'DevelopmentEnvironment', 'ServiceStudio', 'IntegrationStudio')]
         [string]$Application,
 
         [Parameter(Mandatory = $true)]
@@ -75,17 +75,27 @@ function Get-OSRepoAvailableVersions
             'PlatformServer'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "PlatformServer-*" }
-                $versions = $files -replace 'PlatformServer-', '' -replace '.exe', ''
+                $versions = $files -replace 'PlatformServer-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
-            'ServiceStudio'
+            'DevelopmentEnvironment'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "DevelopmentEnvironment-*" }
-                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '.exe', ''
+                $versions = $files -replace 'DevelopmentEnvironment-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
             'Lifetime'
             {
                 $files = $files | Where-Object -FilterScript { $_ -like "LifeTimeWithPlatformServer-*" }
-                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '.exe', ''
+                $versions = $files -replace 'LifeTimeWithPlatformServer-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
+            }
+            'IntegrationStudio'
+            {
+                $files = $files | Where-Object -FilterScript { $_ -like "IntegrationStudio-*" }
+                $versions = $files -replace 'IntegrationStudio-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
+            }
+            'ServiceStudio'
+            {
+                $files = $files | Where-Object -FilterScript { $_ -like "ServiceStudio-*" }
+                $versions = $files -replace 'ServiceStudio-', '' -replace '(?<=\d+\.\d+\.\d+\.\d+)\D.*exe', ''
             }
         }
 
