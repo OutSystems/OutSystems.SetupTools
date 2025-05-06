@@ -90,7 +90,7 @@ function Publish-OSPlatformSolution
 
         [Parameter(ParameterSetName = "Default")]
         [Parameter(ParameterSetName = "TwoStep", Mandatory = $true)]
-        [switch]$TwoStepMode,
+        [switch]$UseTwoStepMode,
 
         [Parameter(ParameterSetName = "TwoStep")]
         [switch]$StartSecondStep
@@ -131,8 +131,8 @@ function Publish-OSPlatformSolution
             return $publishResult
         }
 
-        # Check if StartSecondStep swtich was enabled but TwoStepMode was not
-        if ( ($StartSecondStep -eq $true) -and ($TwoStepMode -eq $false) ) 
+        # Check if StartSecondStep switch was enabled but TwoStepMode was not
+        if ( ($StartSecondStep -eq $true) -and ($UseTwoStepMode -eq $false) ) 
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error in parameters provided. StartSecondStep enabled requires that TwoStepMode is also enabled." -Exception $_.Exception
             WriteNonTerminalError -Message "Error in parameters provided"
@@ -149,7 +149,7 @@ function Publish-OSPlatformSolution
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uploading solution $Solution"
         try
         {
-            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -TwoStepMode $TwoStepMode -CallingFunction $($MyInvocation.Mycommand)
+            $publishAsyncResult = AppMgmt_SolutionPublish -SCHost $ServiceCenter -Solution $Solution -Credential $Credential -TwoStepMode $UseTwoStepMode -CallingFunction $($MyInvocation.Mycommand)
         }
         catch
         {
@@ -239,7 +239,7 @@ function Publish-OSPlatformSolution
         #endregion
         
         #region handle two step publishing enabled
-        if ( ($TwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $false) ) {
+        if ( ($UseTwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $false) ) {
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "First step of solution publish successfully completed. Will wait for second step to be be started in Service Center to finish deployment"
             $publishResult.Message = "First step of solution publish successfully completed"
@@ -249,7 +249,7 @@ function Publish-OSPlatformSolution
 
         }
 
-        elseif ( ($TwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $true) ) {
+        elseif ( ($UseTwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $true) ) {
 
             #region start publish step 2
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Continuing to the deployment..."
