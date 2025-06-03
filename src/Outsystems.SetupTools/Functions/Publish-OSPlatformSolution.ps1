@@ -134,7 +134,7 @@ function Publish-OSPlatformSolution
         # Check if StartSecondStep switch was enabled but TwoStepMode was not
         if ( ($StartSecondStep -eq $true) -and ($UseTwoStepMode -eq $false) ) 
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error in parameters provided. StartSecondStep enabled requires that TwoStepMode is also enabled." -Exception $_.Exception
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error in parameters provided. StartSecondStep enabled requires that UseTwoStepMode is also enabled" -Exception $_.Exception
             WriteNonTerminalError -Message "Error in parameters provided"
 
             $publishResult.Success = $false
