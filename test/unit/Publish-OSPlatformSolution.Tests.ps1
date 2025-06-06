@@ -5,7 +5,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformSolution Tests' {
 
         # Global mocks
-        Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+        #Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
 
         Context 'When the solution file does not exist' {
 
@@ -15,7 +15,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             # Path to solution that doesn't exist
             $Solution = 'C:\Solution.osp'
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution $Solution -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution $Solution -Credential $Credential -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -32,7 +32,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -StartSecondStep -UseTwoStepMode:$false
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -StartSecondStep -UseTwoStepMode:$false -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -51,7 +51,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -70,7 +70,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $true
@@ -90,7 +90,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -112,7 +112,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -134,7 +134,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -StopOnWarnings -Wait
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -StopOnWarnings -Wait -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -156,7 +156,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $true
@@ -177,7 +177,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$false
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$false -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $true
@@ -198,7 +198,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -221,7 +221,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $true
@@ -244,7 +244,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $true
@@ -267,7 +267,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true -ErrorAction SilentlyContinue -ErrorVariable err
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
