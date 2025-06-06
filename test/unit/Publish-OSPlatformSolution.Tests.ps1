@@ -5,9 +5,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformSolution Tests' {
 
         # Global mocks
-        #Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+        Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
+        Mock Test-Path { return $true }
 
         Context 'When the solution file does not exist' {
+
+            Mock Test-Path { return $false }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
