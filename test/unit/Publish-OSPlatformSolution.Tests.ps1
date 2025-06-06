@@ -12,6 +12,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
+            # Path to solution that doesn't exist
             $Solution = 'C:\Solution.osp'
 
             $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution $Solution -Credential $Credential
@@ -24,7 +25,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When StartSecondStep switch was enabled but UseTwoStepMode was not' {
+        Context 'When the StartSecondStep switch was enabled but UseTwoStepMode was not' {
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
@@ -41,12 +42,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When there is an error launching the solution publish' {
+        Context 'When the solution publish fails to launch' {
 
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     ExitCode = -1
-                                                                     Message = 'Error while starting to compile the solution'}
-                                          }
+            Mock AppMgmt_SolutionPublish { throw }
             
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
@@ -63,12 +61,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When solution publish is launched sucessfully and we do not wait for the result' {
+        Context 'When the solution publish is launched sucessfully and we do not wait for the results' {
 
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     PublishId = 567
-                                                                     Message = 'Solution successfully uploaded. Compilation started on the deployment controller'}
-                                          }
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
@@ -78,7 +73,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
 
             It 'Should return the right result' {
-                $Result.Success | Should Be $false
+                $Result.Success | Should Be $true
                 $Result.PublishId | Should Be 567
                 $Result.Message | Should Be 'Solution successfully uploaded. Compilation started on the deployment controller'
             }
@@ -87,18 +82,15 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When errors occur checking the status of the solution publish' {
             
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     PublishId = 567
-                                                                     ExitCode = -1
-                                                                     Message = 'Error checking the publication status'}
-                                          }
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { throw }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -109,20 +101,18 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When errors occur compiling the solution' {
+        Context 'When errors occur in the solution publish' {
             
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     PublishId = 567
-                                                                     ExitCode = 2
-                                                                     Message = 'Errors found while compiling the solution'}
-                                          }
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 1 } }
+            Mock AppMgmt_SolutionPublishStop { return $true }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -133,20 +123,18 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When warnings occur compiling the solution and StopOnWarnings is enabled' {
+        Context 'When warnings occur in the solution publish and StopOnWarnings is enabled' {
             
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     PublishId = 567
-                                                                     ExitCode = 2
-                                                                     Message = 'Warnings found while compiling the solution'}
-                                          }
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 1; Errors = 0 } }
+            Mock AppMgmt_SolutionPublishStop { return $true }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -StopOnWarnings
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -StopOnWarnings -Wait
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
@@ -157,45 +145,109 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When solution publishes successfully in one step' {
-
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     ExitCode = -1
-                                                                     Message = 'Solution successfully uploaded. Compilation started on the deployment controller'}
-                                          }
+        Context 'When the solution publish is sucessfull' {
+            
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0 } }
+            Mock AppMgmt_SolutionPublishStop { return $true }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait
 
             It 'Should return the right result' {
-                $Result.Success | Should Be $false
-                $Result.ExitCode | Should Be -1
-                $Result.Message | Should Be 'Solution successfully uploaded. Compilation started on the deployment controller'
+                $Result.Success | Should Be $true
+                $Result.ExitCode | Should Be 0
+                $Result.PublishId | Should Be 567
+                $Result.Message | Should Be 'Solution successfully published'
             }
 
         }
 
-        Context 'When solution publishes successfully but with warnings' {
+        Context 'When the first step of solution publish ends successfully and the second step is not started' {
 
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     ExitCode = 1
-                                                                     PublishId = 567
-                                                                     Message = 'Solution successfully published with warnings!!'}
-                                          }
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0 } }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$false
+
+            It 'Should return the right result' {
+                $Result.Success | Should Be $true
+                $Result.PublishId | Should Be 567
+                $Result.Message | Should Be 'First step of solution publish successfully completed. Will wait for second step to be be started in Service Center to finish deployment.'
+            }
+
+        }
+
+        Context 'When the first step of solution publish ends successfully and the second step fails to start.' {
+
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0 } }
+            Mock AppMgmt_SolutionPublishContinue { throw }
+
+            $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
+            $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
+
+            $PSInstallPath = Get-OSServerInstallDir
+
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false
+                $Result.ExitCode | Should Be -1
+                $Result.PublishId | Should Be 567
+                $Result.Message | Should Be 'Error while starting to deploy the solution'
+            }
+
+        }
+
+        Context 'When the second step of solution publish finishes successfully' {
+
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0; LastMessageId = 230 } }
+            Mock AppMgmt_SolutionPublishContinue { return $true }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0 } } -ParameterFilter { $AfterMessageId.Equals(230) }
+
+            $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
+            $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
+
+            $PSInstallPath = Get-OSServerInstallDir
+
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
+
+            It 'Should return the right result' {
+                $Result.Success | Should Be $true
+                $Result.ExitCode | Should Be 0
+                $Result.PublishId | Should Be 567
+                $Result.Message | Should Be 'Solution successfully published'
+            }
+
+        }
+
+        Context 'When the second step of solution publish finishes successfully but with warnings' {
+
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0; LastMessageId = 230 } }
+            Mock AppMgmt_SolutionPublishContinue { return $true }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 1; Errors = 0 } } -ParameterFilter { $AfterMessageId.Equals(230) }
+
+            $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
+            $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
+
+            $PSInstallPath = Get-OSServerInstallDir
+
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
+
+            It 'Should return the right result' {
+                $Result.Success | Should Be $true
                 $Result.ExitCode | Should Be 1
                 $Result.PublishId | Should Be 567
                 $Result.Message | Should Be 'Solution successfully published with warnings!!'
@@ -203,20 +255,19 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         }
 
-        Context 'When errors occur in the solution publish' {
+        Context 'When the second step of solution publish fails with errors' {
 
-            Mock Publish-OSPlatformSolution { return [pscustomobject]@{ Success = $false
-                                                                     PublishId = 567
-                                                                     ExitCode = 2
-                                                                     Message = 'Error publishing the solution'}
-                                          }
+            Mock AppMgmt_SolutionPublish { return @{ publishId = 567 } }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 0; LastMessageId = 230 } }
+            Mock AppMgmt_SolutionPublishContinue { return $true }
+            Mock AppMgmt_GetPublishResults { return @{ Warnings = 0; Errors = 1 } } -ParameterFilter { $AfterMessageId.Equals(230) }
 
             $Password = ConvertTo-SecureString 'admin' -AsPlainText -Force
             $Credential = New-Object System.Management.Automation.PSCredential ('admin', $Password)
 
             $PSInstallPath = Get-OSServerInstallDir
 
-            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential
+            $Result = Publish-OSPlatformSolution -ServiceCenterHost "localhost" -Solution "$PSInstallPath\System_Components.osp" -Credential $Credential -Wait -UseTwoStepMode:$true -StartSecondStep:$true
 
             It 'Should return the right result' {
                 $Result.Success | Should Be $false

@@ -242,7 +242,7 @@ function Publish-OSPlatformSolution
         if ( ($UseTwoStepMode.IsPresent -eq $true) -and ($StartSecondStep.IsPresent -eq $false) ) {
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "First step of solution publish successfully completed. Will wait for second step to be be started in Service Center to finish deployment"
-            $publishResult.Message = "First step of solution publish successfully completed"
+            $publishResult.Message = "First step of solution publish successfully completed. Will wait for second step to be be started in Service Center to finish deployment."
             $publishResult.PublishId = $publishId
 
             return $publishResult
