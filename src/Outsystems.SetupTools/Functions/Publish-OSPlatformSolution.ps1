@@ -23,11 +23,11 @@ function Publish-OSPlatformSolution
     .PARAMETER StopOnWarnings
     Treat warnings as errors. Deployment will stop on compilation warnings and return success false
 
-    .PARAMETER TwoStepMode
+    .PARAMETER UseTwoStepMode
     Enable 2-Stage Deployment of solution. First step compiles and prepares apps, second step deploys.
 
     .PARAMETER StartSecondStep
-    Automatically start second step of solution publish to deploy apps. Requires the TwoStepMode parameter.
+    Automatically start second step of solution publish to deploy apps. Requires the UseTwoStepMode parameter.
 
     .EXAMPLE
     $Credential = Get-Credential
@@ -44,7 +44,7 @@ function Publish-OSPlatformSolution
 
     .EXAMPLE
     $Credential = Get-Credential
-    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -Wait -TwoStepMode
+    Publish-OSPlatformSolution -ServiceCenterHost "8.8.8.8" -Solution 'c:\solution.osp' -Credential $Credential -Wait -UseTwoStepMode
 
     .NOTES
     You can run this cmdlet on any machine with HTTP access to Service Center.
@@ -131,7 +131,7 @@ function Publish-OSPlatformSolution
             return $publishResult
         }
 
-        # Check if StartSecondStep switch was enabled but TwoStepMode was not
+        # Check if StartSecondStep switch was enabled but UseTwoStepMode was not
         if ( ($StartSecondStep -eq $true) -and ($UseTwoStepMode -eq $false) ) 
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error in parameters provided. StartSecondStep enabled requires that UseTwoStepMode is also enabled" -Exception $_.Exception
