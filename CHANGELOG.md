@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 3.18.1.2
+
+- RabbitMQ/Erlang are not installed by default. Installing RabbitMQ/Erlang requires use of the new -InstallRabbitMQ Parameter.
+
 ## 3.18.0.1
 
 - Ensure MS Build Tools is installed for first installs of Platform Server versions < 11.35.0

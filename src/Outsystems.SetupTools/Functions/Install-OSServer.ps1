@@ -20,8 +20,11 @@ function Install-OSServer
     .PARAMETER Version
     The version to be installed.
 
+    .PARAMETER InstallRabbitMQ
+    If specified, the cmdlet will install RabbitMQ installation. RabbitMQ's Management Plugin will be activated (only accessible from localhost).
+
     .PARAMETER SkipRabbitMQ
-    If specified, the cmdlet will skip RabbitMQ installation.
+    Is deprecated. If specified, the cmdlet will always skip RabbitMQ installation (even if -InstallRabbitMQ is set).
 
     .PARAMETER WithLifetime
     If specified, the cmdlet will install the platform server with lifetime.
@@ -74,6 +77,9 @@ function Install-OSServer
 
         [Parameter()]
         [string]$AdditionalParameters,
+
+        [Parameter()]
+        [switch]$InstallRabbitMQ,
 
         [Parameter()]
         [switch]$SkipRabbitMQ,
@@ -202,7 +208,7 @@ function Install-OSServer
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ installation will be skipped"
             }
-            else
+            elseif ($InstallRabbitMQ.IsPresent)
             {
                 if (-not $(GetErlangInstallDir))
                 {
