@@ -154,6 +154,14 @@ function Set-OSServerPerformanceTunning2
             return
         }
 
+        if ( $null -eq (Get-OSPlatformVersion -ErrorAction Ignore) ) {
+        
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center is not installed or not accessible"
+            WriteNonTerminalError -Message "Service Center is not installed or not accessible"
+
+            return
+        }
+
         if (-not $SkipProcessSchedulingConfig)
         {
             # Configure process scheduling -- http://technet.microsoft.com/library/Cc976120

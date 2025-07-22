@@ -60,6 +60,14 @@ function Set-OSServerPerformanceTunning
             return
         }
 
+        if ( $null -eq (Get-OSPlatformVersion -ErrorAction Ignore) ) {
+        
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center is not installed or not accessible"
+            WriteNonTerminalError -Message "Service Center is not installed or not accessible"
+
+            return
+        }
+        
         # Configure process scheduling -- http://technet.microsoft.com/library/Cc976120
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring Windows processor scheduling priority to background services"
         try
