@@ -204,6 +204,10 @@ function Install-OSServer
 
         if ($Version -ge '11.0.0.0')
         {
+            if (-not $SkipRabbitMQ.IsPresent -and -not $InstallRabbitMQ.IsPresent) {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SetupTools no longer installs RabbitMQ by default"
+            }
+
             if ($SkipRabbitMQ.IsPresent)
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ installation will be skipped"
