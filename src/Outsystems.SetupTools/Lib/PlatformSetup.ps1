@@ -584,7 +584,7 @@ function InstallRabbitMQ([string]$InstallDir, [string]$Sources)
     return $intReturnCode
 }
 
-function InstallRabbitMQPreReqs([string]$RabbitBaseDir)
+function InstallRabbitMQPreReqs([string]$RabbitBaseDir, [bool]$EnableManagementPlugin)
 {
     # Create the rabbitMQ base dir if doesnt exist
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Creating rabbitMQ base dir: $RabbitBaseDir"
@@ -598,12 +598,14 @@ function InstallRabbitMQPreReqs([string]$RabbitBaseDir)
     [System.Environment]::SetEnvironmentVariable('RABBITMQ_BASE', $RabbitBaseDir, "Machine")
     $ENV:RABBITMQ_BASE = $RabbitBaseDir
 
-    # Enable the REST API for configuration
-    Set-Content "$RabbitBaseDir\enabled_plugins" -Value '[rabbitmq_management].' -Force -ErrorAction Stop
+    if ($EnableManagementPlugin) {
+        # Enable the REST API for configuration
+        Set-Content "$RabbitBaseDir\enabled_plugins" -Value '[rabbitmq_management].' -Force -ErrorAction Stop
 
-    # Restrict management to localhost
-    Set-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.port = 15672' -Force -ErrorAction Stop
-    Add-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.ip   = 127.0.0.1' -Force -ErrorAction Stop
+        # Restrict management to localhost
+        Set-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.port = 15672' -Force -ErrorAction Stop
+        Add-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.ip   = 127.0.0.1' -Force -ErrorAction Stop
+    }
 }
 
 function GetErlangInstallDir()

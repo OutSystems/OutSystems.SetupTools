@@ -21,7 +21,10 @@ function Install-OSServer
     The version to be installed.
 
     .PARAMETER InstallRabbitMQ
-    If specified, the cmdlet will install RabbitMQ installation. RabbitMQ's Management Plugin will be activated (only accessible from localhost).
+    If specified, the cmdlet will install RabbitMQ.
+
+    .PARAMETER EnableRabbitMQManagementPlugin
+    If specified with the InstallRabbitMQ parameter, RabbitMQ's Management Plugin will be enabled (only accessible from localhost).
 
     .PARAMETER SkipRabbitMQ
     Is deprecated. If specified, the cmdlet will always skip RabbitMQ installation (even if -InstallRabbitMQ is set).
@@ -45,7 +48,10 @@ function Install-OSServer
     Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     .EXAMPLE
-    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
+    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -InstallRabbitMQ -FullPathInstallDir
+
+    .EXAMPLE
+    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -InstallRabbitMQ -EnableRabbitMQManagementPlugin -FullPathInstallDir
 
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0" -Force
@@ -80,6 +86,9 @@ function Install-OSServer
 
         [Parameter()]
         [switch]$InstallRabbitMQ,
+
+        [Parameter()]
+        [switch]$EnableRabbitMQManagementPlugin,
 
         [Parameter()]
         [switch]$SkipRabbitMQ,
@@ -204,8 +213,12 @@ function Install-OSServer
 
         if ($Version -ge '11.0.0.0')
         {
-            if (-not $SkipRabbitMQ.IsPresent -and -not $InstallRabbitMQ.IsPresent) {
+            if (-not $InstallRabbitMQ.IsPresent) {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "SetupTools no longer installs RabbitMQ by default"
+            }
+
+            if (-not $InstallRabbitMQ.IsPresent -and $EnableRabbitMQManagementPlugin.IsPresent) {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "'EnableRabbitMQManagementPlugin' must be used with 'InstallRabbitMQ' or it will have no effect"
             }
 
             if ($SkipRabbitMQ.IsPresent)
@@ -381,7 +394,7 @@ function Install-OSServer
         {
             try
             {
-                InstallRabbitMQPreReqs -RabbitBaseDir $OSRabbitMQBaseDir
+                InstallRabbitMQPreReqs -RabbitBaseDir $OSRabbitMQBaseDir -EnableManagementPlugin $EnableRabbitMQManagementPlugin.IsPresent
             }
             catch
             {
