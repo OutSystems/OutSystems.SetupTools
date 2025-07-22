@@ -136,7 +136,9 @@ function SCWS_SolutionPack_GetPublicationMessages([string]$SCHost, [string]$SCUs
     $lastMessageId = 0
     $finished = $false
 
-    $platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    if ( ($platformServicesWS -eq $null) -or ($platformServicesWS.Url.Contains($SCHost) -eq $false) ) {
+        $Script:platformServicesWS = SCWS_GetPlatformServicesProxy -SCHost $SCHost
+    }
     $result = $($platformServicesWS).SolutionPack_GetPublishMessages($SCUser, $(GetHashedPassword($SCPass)), $PublishId, $AfterMessageId, [ref]$lastMessageId, [ref]$finished)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning messages"
