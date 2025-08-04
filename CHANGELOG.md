@@ -1,6 +1,6 @@
 # OutSystems.SetupTools Release History
 
-## 3.18.0.2
+## 3.18.2.0
 
 - Add ServiceCenter validation and setting ACLs for IISCompression and NETCompilation folders (#142)
 - Add missing InstallMSBuildTools parameter to comment-based help (#141)
@@ -10,7 +10,7 @@
 - Fix minimum Platform Server version that requires .NET 8.0 Windows Hosting Bundle (#136)
 - Fix Get-OSPlatformDeploymentZone not getting output from ExecuteCommand function (#137)
 
-## 3.18.0.1
+## 3.18.1.0
 
 - Ensure MS Build Tools is installed for first installs of Platform Server versions < 11.35.0
 - Fix Set-OSServerPerformanceTunning2 not moving PerformanceMonitor to LifeTimeAppPool (#132)
