@@ -35,6 +35,10 @@ function Install-OSServerPreReqs
     Specifies whether the installer should skip the installation of .NET Core Runtime and the ASP.NET Runtime.
     Accepted values: $false and $true. By default this is set to $true.
 
+    .PARAMETER InstallMSBuildTools
+    Specifies whether the installer should install Microsoft Build Tools 2015.
+    Accepted values: $false and $true. By default this is set to $false.
+
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "10"
 
