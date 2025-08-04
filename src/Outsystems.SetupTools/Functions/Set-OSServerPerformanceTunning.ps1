@@ -60,6 +60,14 @@ function Set-OSServerPerformanceTunning
             return
         }
 
+        if ( $null -eq (Get-OSPlatformVersion -ErrorAction Ignore) ) {
+        
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center is not installed or not accessible"
+            WriteNonTerminalError -Message "Service Center is not installed or not accessible"
+
+            return
+        }
+        
         # Configure process scheduling -- http://technet.microsoft.com/library/Cc976120
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configuring Windows processor scheduling priority to background services"
         try
@@ -232,6 +240,23 @@ function Set-OSServerPerformanceTunning
                     return
                 }
             }
+
+            # Grant Modify permissions on the directory to the local IIS_IUSRS group
+            try
+            {
+                $Path_ACL = Get-ACL -Path $IISNetCompilationPath
+                $Path_ACLRule = New-Object System.Security.AccessControl.FileSystemAccessRule("IIS_IUSRS","Modify","ContainerInherit, ObjectInherit","None","Allow")
+                $Path_ACL.SetAccessRule($Path_ACLRule)
+                Set-Acl -Path $IISNetCompilationPath -AclObject $Path_ACL
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting permissions on the IIS Net compilation folder"
+                WriteNonTerminalError -Message "Error setting permissions on the IIS Net compilation folder"
+
+                return
+            }
+
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Changing IIS compilation folder to $IISNetCompilationPath"
             try
             {
@@ -264,6 +289,23 @@ function Set-OSServerPerformanceTunning
                     return
                 }
             }
+
+            # Grant Full Control permissions on the directory to the local IIS_IUSRS group
+            try
+            {
+                $Path_ACL = Get-ACL -Path $IISHttpCompressionPath
+                $Path_ACLRule = New-Object System.Security.AccessControl.FileSystemAccessRule("IIS_IUSRS","FullControl","ContainerInherit, ObjectInherit","None","Allow")
+                $Path_ACL.SetAccessRule($Path_ACLRule)
+                Set-Acl -Path $IISHttpCompressionPath -AclObject $Path_ACL
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting permissions on the IIS HTTP compression folder"
+                WriteNonTerminalError -Message "Error setting permissions on the IIS HTTP compression folder"
+
+                return
+            }
+
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Changing IIS HTTP compression folder to $IISHttpCompressionPath"
             try
             {
