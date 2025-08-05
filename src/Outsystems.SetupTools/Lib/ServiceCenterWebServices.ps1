@@ -4,7 +4,11 @@ function SCWS_GetPlatformServicesProxy([string]$SCHost)
     $platformServicesUri = "http://$SCHost/ServiceCenter/PlatformServices_v8_0_0.asmx?WSDL"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $platformServicesUri"
-    $platformServicesWS = New-WebServiceProxy -Uri $platformServicesUri -ErrorAction Stop -Namespace 'OutSystems.PlatformServices'
+
+    if ( ($null -eq $platformServicesWS) -or ($platformServicesWS.Url.Contains($SCHost) -eq $false) ) {
+        $script:platformServicesWS = New-WebServiceProxy -Uri $platformServicesUri -ErrorAction Stop -Namespace 'OutSystems.PlatformServices'
+    }
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
     return $platformServicesWS
@@ -15,7 +19,11 @@ function SCWS_GetSolutionsProxy([string]$SCHost)
     $solutionsUri = "http://$SCHost/ServiceCenter/Solutions.asmx?WSDL"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $solutionsUri"
-    $solutionsWS = New-WebServiceProxy -Uri $solutionsUri -ErrorAction Stop -Namespace 'OutSystems.Solutions'
+
+    if ( ($null -eq $solutionsWS) -or ($solutionsWS.Url.Contains($SCHost) -eq $false) ) {
+        $script:solutionsWS = New-WebServiceProxy -Uri $solutionsUri -ErrorAction Stop -Namespace 'OutSystems.Solutions'
+    }
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
     return $solutionsWS
@@ -26,7 +34,11 @@ function SCWS_GetOutSystemsPlatformProxy([string]$SCHost)
     $platformUri = "http://$SCHost/ServiceCenter/OutSystemsPlatform.asmx?WSDL"
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $platformUri"
-    $platformWS = New-WebServiceProxy -Uri $platformUri -ErrorAction Stop -Namespace 'OutSystems.Platform'
+
+    if ( ($null -eq $platformWS) -or ($platformWS.Url.Contains($SCHost) -eq $false) ) {
+        $script:platformWS = New-WebServiceProxy -Uri $platformUri -ErrorAction Stop -Namespace 'OutSystems.Platform'
+    }
+
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connection successful"
 
     return $platformWS
