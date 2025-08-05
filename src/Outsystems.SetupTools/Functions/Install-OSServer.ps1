@@ -21,6 +21,7 @@ function Install-OSServer
 
     .PARAMETER SkipRabbitMQ
     Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it.
+    Instead, please use Set-OSServerConfig with parameter -ConfigureCacheInvalidationService to install and configure RabbitMQ/Erlang.
 
     .PARAMETER WithLifetime
     If specified, the cmdlet will install the platform server with lifetime.
