@@ -35,7 +35,7 @@ function SCWS_GetOutSystemsPlatformProxy([string]$SCHost)
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Connecting to $platformUri"
 
-    if ( ($null -eq $platformWS) -or ($solutionsWS.Url.Contains($SCHost) -eq $false) ) {
+    if ( ($null -eq $platformWS) -or ($platformWS.Url.Contains($SCHost) -eq $false) ) {
         $script:platformWS = New-WebServiceProxy -Uri $platformUri -ErrorAction Stop -Namespace 'OutSystems.Platform'
     }
 
