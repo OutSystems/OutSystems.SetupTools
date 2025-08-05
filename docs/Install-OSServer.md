@@ -107,7 +107,8 @@ Accept wildcard characters: False
 ```
 
 ### -SkipRabbitMQ
-Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it.
+Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it. 
+Instead, please use Set-OSServerConfig with parameter -ConfigureCacheInvalidationService to install and configure RabbitMQ/Erlang.
 
 ```yaml
 Type: SwitchParameter
