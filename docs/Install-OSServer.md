@@ -14,18 +14,17 @@ Installs or updates the OutSystems Platform server
 
 ### Remote (Default)
 ```
-Install-OSServer [-InstallDir <String>] -Version <Version> [-SkipRabbitMQ] [-WithLifetime] [<CommonParameters>]
+Install-OSServer [-InstallDir <String>] -Version <Version> [-WithLifetime] [<CommonParameters>]
 ```
 
 ### Local
 ```
-Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <Version> [-SkipRabbitMQ] [-WithLifetime]
+Install-OSServer [-InstallDir <String>] -SourcePath <String> -Version <Version> [-WithLifetime]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 This will install or update the OutSystems platform server
-It will also install RabbitMQ on version 11 and later
 If the platform is already installed, the cmdLet will check if version to be installed is higher than the current one and update it
 
 ## EXAMPLES
@@ -47,7 +46,7 @@ Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\
 
 ### EXAMPLE 4
 ```
-Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
+Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -FullPathInstallDir
 ```
 
 ### EXAMPLE 5
@@ -108,7 +107,8 @@ Accept wildcard characters: False
 ```
 
 ### -SkipRabbitMQ
-{{ Fill SkipRabbitMQ Description }}
+Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it. 
+Instead, please use Set-OSServerConfig with parameter -ConfigureCacheInvalidationService to install and configure RabbitMQ/Erlang.
 
 ```yaml
 Type: SwitchParameter

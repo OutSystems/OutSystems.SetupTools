@@ -558,81 +558,6 @@ function LogErrorMessage([pscustomobject]$InstallResult, [string]$Message)
     return $installResult
 }
 
-function InstallErlang([string]$InstallDir, [string]$Sources)
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-
-    $result = Start-Process -FilePath $Sources -ArgumentList "/S", "/D=$InstallDir" -Wait -PassThru -ErrorAction Stop
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
-
-    return $($result.ExitCode)
-}
-
-function InstallRabbitMQ([string]$InstallDir, [string]$Sources)
-{
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
-
-    # This needed to be like this because the rabbit installer is buggy and hangs the Start-Process!!
-    $proc = Start-Process -FilePath $Sources -ArgumentList "/S", "/D=$InstallDir" -Wait:$false -PassThru -ErrorAction Stop
-    Wait-Process $proc.Id
-    $intReturnCode = $proc.ExitCode
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished"
-
-    return $intReturnCode
-}
-
-function InstallRabbitMQPreReqs([string]$RabbitBaseDir)
-{
-    # Create the rabbitMQ base dir if doesnt exist
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Creating rabbitMQ base dir: $RabbitBaseDir"
-    if (-not (Test-Path -Path $RabbitBaseDir))
-    {
-        New-Item -Path $RabbitBaseDir -ItemType directory -Force -ErrorAction Stop | Out-Null
-    }
-
-    # Set rabbitMQ base system wide and for this session
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting rabbitMQ base dir to $RabbitBaseDir"
-    [System.Environment]::SetEnvironmentVariable('RABBITMQ_BASE', $RabbitBaseDir, "Machine")
-    $ENV:RABBITMQ_BASE = $RabbitBaseDir
-
-    # Enable the REST API for configuration
-    Set-Content "$RabbitBaseDir\enabled_plugins" -Value '[rabbitmq_management].' -Force -ErrorAction Stop
-
-    # Restrict management to localhost
-    Set-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.port = 15672' -Force -ErrorAction Stop
-    Add-Content "$RabbitBaseDir\rabbitmq.conf" -Value 'management.listener.ip   = 127.0.0.1' -Force -ErrorAction Stop
-}
-
-function GetErlangInstallDir()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\WOW6432Node\Ericsson\Erlang\<version>\default"
-    try
-    {
-        $output = $(Get-ChildItem "HKLM:SOFTWARE\WOW6432Node\Ericsson\Erlang\" -ErrorAction Stop | Get-ItemProperty -ErrorAction Stop)."(default)"
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
-
-    return $output
-}
-
-function GetRabbitInstallDir()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the registry value HKLM:SOFTWARE\WOW6432Node\VMware, Inc.\RabbitMQ Server\Install_Dir"
-    $output = RegRead -Path "HKLM:SOFTWARE\WOW6432Node\VMware, Inc.\RabbitMQ Server" -Name "Install_Dir"
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
-
-    return $output
-}
-
 function IsMSIInstalled([string]$ProductCode)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking product code $ProductCode"
@@ -1006,7 +931,8 @@ function GetAzStorageFileList()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting file list from storage account $stoAccountName container $stoContainer"
 
     $ProgressPreference = "SilentlyContinue"
-    [xml]$result = (Invoke-RestMethod -Uri $($OSRepoURL+"?restype=container&comp=list")).Substring(3)
+    # The response is a XML but encoded in UTF-8 BOM, which is not correctly handled so the BOM is removed from the beginning of the file
+    [xml]$result = (Invoke-RestMethod -Uri $($OSRepoURL+"?restype=container&comp=list")).TrimStart([char[]](0xEF,0xBB,0xBF,0xFEFF))
 
     $sources = $result.EnumerationResults.Blobs.Blob.Name
 

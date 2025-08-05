@@ -6,7 +6,6 @@ function Install-OSServer
 
     .DESCRIPTION
     This will install or update the OutSystems platform server
-    It will also install RabbitMQ on version 11 and later
     If the platform is already installed, the cmdLet will check if version to be installed is higher than the current one and update it
 
     .PARAMETER InstallDir
@@ -21,7 +20,8 @@ function Install-OSServer
     The version to be installed.
 
     .PARAMETER SkipRabbitMQ
-    If specified, the cmdlet will skip RabbitMQ installation.
+    Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it.
+    Instead, please use Set-OSServerConfig with parameter -ConfigureCacheInvalidationService to install and configure RabbitMQ/Erlang.
 
     .PARAMETER WithLifetime
     If specified, the cmdlet will install the platform server with lifetime.
@@ -42,7 +42,7 @@ function Install-OSServer
     Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     .EXAMPLE
-    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -SkipRabbitMQ -FullPathInstallDir
+    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -FullPathInstallDir
 
     .EXAMPLE
     Install-OSServer -Version "10.0.823.0" -Force
@@ -198,32 +198,7 @@ function Install-OSServer
 
         if ($Version -ge '11.0.0.0')
         {
-            if ($SkipRabbitMQ.IsPresent)
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ installation will be skipped"
-            }
-            else
-            {
-                if (-not $(GetErlangInstallDir))
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang not found. Proceeding with the installation"
-                    $installErlang = $true
-                }
-                else
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang already installed at $(GetErlangInstallDir)"
-                }
-
-                if (-not $(GetRabbitInstallDir))
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ not found. Proceeding with the installation"
-                    $installRabbitMQ = $true
-                }
-                else
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ already installed at $(GetRabbitInstallDir)"
-                }
-            }
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ will no longer be installed via '$($MyInvocation.Mycommand)'"
         }
         #endregion
 
@@ -317,126 +292,12 @@ function Install-OSServer
         }
         #endregion
 
-        # Refresh installdir variable after the installation
-        $osInstallDir = GetServerInstallDir
-
-        #region install erlang
-        if ($installErlang)
-        {
-            try
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Erlang"
-                $exitCode = InstallErlang -Sources "$osInstallDir\thirdparty\erlang.exe" -InstallDir "$osInstallDir\thirdparty\Erlang"
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the Erlang installation"
-                WriteNonTerminalError -Message "Error starting the Erlang installation"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error starting the Erlang installation'
-
-                return $installResult
-            }
-
-            switch ($exitCode)
-            {
-                0
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang successfully installed"
-                }
-                { $_ -in 3010, 3011 }
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Erlang successfully installed but a reboot is needed. Exit code: $exitCode"
-                    $installResult.RebootNeeded = $true
-                }
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Erlang. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing Erlang. Exit code: $exitCode"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing Erlang'
-
-                    return $installResult
-                }
-            }
-        }
-        #endregion
-
-        #region install RabbitMQ
-        if ($installRabbitMQ)
-        {
-            try
-            {
-                InstallRabbitMQPreReqs -RabbitBaseDir $OSRabbitMQBaseDir
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the pre-requisites for RabbitMQ"
-                WriteNonTerminalError -Message "Error configuring the pre-requisites for RabbitMQ"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error configuring the pre-requisites for RabbitMQ'
-
-                return $installResult
-            }
-
-            try
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing RabbitMQ"
-                $exitCode = InstallRabbitMQ -Sources "$osInstallDir\thirdparty\rabbitmq.exe" -InstallDir "$osInstallDir\thirdparty\RabbitMQ Server"
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error starting the RabbitMQ installation"
-                WriteNonTerminalError -Message "Error starting the RabbitMQ installation"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error starting the RabbitMQ installation'
-
-                return $installResult
-            }
-
-            switch ($exitCode)
-            {
-                0
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ successfully installed"
-
-                    # Flag the installation for the configuration tool
-                    $env:OUTSYSTEMS_RABBITMQ = "$osInstallDir\thirdparty\RabbitMQ Server"
-                    [System.Environment]::SetEnvironmentVariable('OUTSYSTEMS_RABBITMQ', "$osInstallDir\thirdparty\RabbitMQ Server", "Machine")
-                }
-                { $_ -in 3010, 3011 }
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "RabbitMQ successfully installed but a reboot is needed. Exit code: $exitCode"
-                    $installResult.RebootNeeded = $true
-                }
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing RabbitMQ. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing RabbitMQ. Exit code: $exitCode"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing RabbitMQ'
-
-                    return $installResult
-                }
-            }
-        }
-        #endregion
-
         if ($installResult.RebootNeeded)
         {
             $installResult.ExitCode = 3010
             $installResult.Message = 'OutSystems platform server successfully installed but a reboot is needed'
         }
+
         return $installResult
     }
 
