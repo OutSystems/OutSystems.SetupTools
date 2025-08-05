@@ -931,7 +931,8 @@ function GetAzStorageFileList()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting file list from storage account $stoAccountName container $stoContainer"
 
     $ProgressPreference = "SilentlyContinue"
-    [xml]$result = (Invoke-RestMethod -Uri $($OSRepoURL+"?restype=container&comp=list")).Substring(3)
+    # The response is a XML but encoded in UTF-8 BOM, which is not correctly handled so the BOM is removed from the beginning of the file
+    [xml]$result = (Invoke-RestMethod -Uri $($OSRepoURL+"?restype=container&comp=list")).TrimStart([char[]](0xEF,0xBB,0xBF,0xFEFF))
 
     $sources = $result.EnumerationResults.Blobs.Blob.Name
 
