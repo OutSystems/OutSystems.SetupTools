@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 3.19.0.0
+
+- Remove RabbitMQ/Erlang automatic installation by default, making SkipRabbitMQ switch obsolete. In order to install and configure RabbitMQ/Erlang, the command Set-OSServerConfig with parameter -ConfigureCacheInvalidationService should be used instead. (#146)
+- Fix issues with Get-OSRepoAvailableVersions (#150)
+
 ## 3.18.2.0
 
 - Add ServiceCenter validation and setting ACLs for IISCompression and NETCompilation folders (#142)
