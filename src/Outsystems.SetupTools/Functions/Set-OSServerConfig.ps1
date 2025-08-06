@@ -287,39 +287,6 @@ function Set-OSServerConfig
                 $newElement = $hsConf.CreateElement($Setting)
                 $hsConf.EnvironmentConfiguration.SelectSingleNode($SettingSection).AppendChild($newElement) | Out-Null
 
-                # Encrypt value
-                # This only works after running the config tool
-                # Will check this later. For now we disabled this option
-                #Cannot find the private key path
-                #    at #0mb.#lp.#MDb.#cp()
-                #    at #0mb.#ep.InnerApplyAlgorithm(String value)
-                #    at OutSystems.RuntimeCommon.Cryptography.VersionedAlgorithms.VersionedCryptographyAlgorithms`1.ApplySpecificAlgorithm(String value, Int32 algorithmIdx)
-                #    at OutSystems.HubEdition.RuntimePlatform.Settings.EncryptString(String text)
-                #    at CallSite.Target(Closure , CallSite , Type , String )
-                if ($Encrypted.IsPresent)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Value will be encrypted"
-
-                    $nodeAttrib = $hsConf.EnvironmentConfiguration.$SettingSection.SelectSingleNode($Setting).OwnerDocument.CreateAttribute('encrypted')
-                    $nodeAttrib.Value = 'true'
-
-                    try
-                    {
-                        $encryptedValue = EncryptSetting -Setting $Value
-                    }
-                    catch
-                    {
-                        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error encrypting value"
-                        WriteNonTerminalError -Message "Error encrypting value"
-
-                        return $null
-                    }
-
-                    # Encrypted value is good
-                    $Value = $encryptedValue
-                    $hsConf.EnvironmentConfiguration.$SettingSection.SelectSingleNode($Setting).Attributes.Append($nodeAttrib) | Out-Null
-                }
-
                 # Writting the value
                 switch($Setting)
                 {
