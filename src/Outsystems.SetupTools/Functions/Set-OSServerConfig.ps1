@@ -104,9 +104,6 @@ function Set-OSServerConfig
         [ValidateNotNullOrEmpty()]
         [string]$Value,
 
-        #[Parameter(ParameterSetName = 'ChangeSettings')]
-        #[switch]$Encrypted,
-
         [Parameter(ParameterSetName = 'ApplyConfig')]
         [ValidateNotNullOrEmpty()]
         [System.Management.Automation.Credential()]
