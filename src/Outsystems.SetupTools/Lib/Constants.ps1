@@ -75,6 +75,10 @@ $OSWinEventLogAutoBackup = "AutoBackupLogFiles"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSDefaultInstallDir = "$Env:ProgramFiles\OutSystems"
 
+# New Key information
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSPrivateKeySize = 16 # Bytes
+
 # Default Service Center credentials
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSSCUser = "admin"

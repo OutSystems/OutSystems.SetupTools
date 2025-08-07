@@ -907,9 +907,7 @@ function SetLifetimeCompiledVersion([string]$LifetimeVersion)
 function GenerateEncryptKey()
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Generating a new encrypted key"
-    $key = [OutSystems.HubEdition.RuntimePlatform.NewRuntime.Authentication.Keys]::GenerateEncryptKey()
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $key"
+    $key = [OutSystems.RuntimeCommon.Cryptography.PasswordHelper]::GenerateStrongPassword($OSPrivateKeySize)
 
     return $key
 }
