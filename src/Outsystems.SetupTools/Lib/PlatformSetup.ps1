@@ -940,3 +940,75 @@ function GetAzStorageFileList()
 
     return $sources
 }
+
+function InstallMSVCppRedist([string]$Sources)
+{
+    if ($Sources)
+    {
+        if (Test-Path "$Sources\VC_Redist.x64.exe")
+        {
+            $installer = "$Sources\VC_Redist.x64.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+        }
+        # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
+        elseif (Test-Path "$Sources\VC_Redist.x64.exe.exe")
+        {
+            $installer = "$Sources\VC_Redist.x64.exe.exe"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+        }
+        else {
+            throw [System.IO.FileNotFoundException] "VC_Redist.x64.exe not found."
+        }
+    }
+    else
+    {
+        $installer = "$ENV:TEMP\VC_Redist.x64.exe"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $OSRepoURLMSVCppRedist"
+        try {
+            DownloadOSSources -URL $OSRepoURLMSVCppRedist -SavePath $installer
+        }
+        catch {
+            WriteNonTerminalError -Message "Failed to download sources from: $OSRepoURLMSVCppRedist"
+            return 1
+        }
+        
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"
+    $result = Start-Process -FilePath $installer -ArgumentList '/install /quiet /norestart' -Wait -PassThru -ErrorAction Stop
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Installation finished. Returning $($result.ExitCode)"
+
+    return $($result.ExitCode)
+}
+
+function GetMSVCppRedistInstallInfo
+{
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if Microsoft Visual C++ 2015-2022 Redistributable is installed"
+
+    if ( $null -eq $(RegRead -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\X64" -Name "Installed") ) {
+
+        $MinimumVersionIsInstalled = $false
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "An installation of Microsoft Visual C++ 2015-2022 Redistributable (x64) (version $($OSReqsMSVCppRedistFirstVersion.ToString()) or later) was not found"
+    }
+    else {
+        $InstalledVersion_Major = RegRead -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\X64" -Name "Major"
+        $InstalledVersion_Minor = RegRead -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\X64" -Name "Minor"
+        $InstalledVersion_Build = RegRead -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\X64" -Name "Bld"
+        $InstalledVersion_RBuild = RegRead -Path "HKLM:SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\X64" -Name "Rbld"
+        [version]$InstalledVersion = "$InstalledVersion_Major.$InstalledVersion_Minor.$InstalledVersion_Build.$InstalledVersion_RBuild"
+
+        if ($InstalledVersion -ge $OSReqsMSVCppRedistFirstVersion)
+        {
+            $MinimumVersionIsInstalled = $true
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Microsoft Visual C++ 2015-2022 Redistributable (version $($InstalledVersion.ToString())) is installed."
+        }
+        else {
+            $MinimumVersionIsInstalled = $false
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "An older version ($($InstalledVersion.ToString())) of Microsoft Visual C++ Redistributable (x64) was found. `
+                                                                                        The minimum version is 2015-2022, version $($OSReqsMSVCppRedistFirstVersion.ToString()) or later)."
+        }
+    }
+
+    return $MinimumVersionIsInstalled
+}
