@@ -88,6 +88,13 @@ $OSSCCred = New-Object System.Management.Automation.PSCredential ($OSSCUser, $(C
 $OSRepoURL = "https://ossetuptools.blob.core.windows.net/sources"
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSRepoURLBuildTools = 'https://download.microsoft.com/download/E/E/D/EEDF18A8-4AED-4CE0-BEBE-70A83094FC5A/BuildTools_Full.exe'
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+$OSRepoURLMSVCppRedist = 'https://download.visualstudio.microsoft.com/download/pr/7ebf5fdb-36dc-4145-b0a0-90d3d5990a61/CC0FF0EB1DC3F5188AE6300FAEF32BF5BEEBA4BDD6E8E445A9184072096B713B/VC_redist.x64.exe'
+
+# Microsoft Visual C++ 2015-2022 Redistributable related
+[System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
+# First version of the 2015-2022 Redistributable
+$OSReqsMSVCppRedistFirstVersion = [version]'14.30.30708.0'
 
 # .NET related
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
@@ -206,4 +213,3 @@ $OSPerfTuningMaxRequestLength = 262144
 $OSPerfTuningMaxAllowedContentLength = 268435456
 [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseDeclaredVarsMoreThanAssigments', '')]
 $OSPerfTuningMaxConnections = 4294967295
-

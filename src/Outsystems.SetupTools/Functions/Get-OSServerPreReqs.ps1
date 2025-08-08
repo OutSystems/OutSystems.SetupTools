@@ -167,6 +167,17 @@ function Get-OSServerPreReqs
                                                                      return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                                  }
 
+        $MSVCppRedistRequirementStatus = CreateRequirementStatus -Title "Microsoft Visual C++ 2015-2022 Redistributable" `
+                                                                 -ScriptBlock `
+                                                                 {
+                                                                     $Status = GetMSVCppRedistInstallInfo
+
+                                                                     $OKMessages = @("Microsoft Visual C++ 2015-2022 Redistributable is installed.")
+                                                                     $NOKMessages = @("Microsoft Visual C++ 2015-2022 Redistributable not found, this is an OutSystems requirement.")
+
+                                                                     return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                                 }
+
         switch ($MajorVersion)
         {
             '10'
@@ -189,6 +200,8 @@ function Get-OSServerPreReqs
                     $requireDotNetCoreHostingBundle3 = $true
                     $requireDotNetHostingBundle6 = $true
                     $requireDotNetHostingBundle8 = $true
+                    # If no minor version is specified Microsoft Visual C++ 2015-2022 Redistributable is assumed as required
+                    $requireMSVCppRedist = $true
                 }
                 elseif ($fullVersion -ge [version]"11.27.0.0")
                 {
@@ -229,6 +242,11 @@ function Get-OSServerPreReqs
                     $RequirementStatuses += $MSBuildToolsRequirementStatus
                 }
 
+                # Check if Microsoft Visual C++ 2015-2022 Redistributable is required
+                if ( ($fullVersion -ge [version]"11.21.1.0") -or $requireMSVCppRedist)
+                {
+                    $RequirementStatuses += $MSVCppRedistRequirementStatus
+                }
 
                 if($requireDotNetCoreHostingBundle2) {
                     $RequirementStatuses += CreateRequirementStatus -Title ".NET Core 2.1 Windows Server Hosting" `

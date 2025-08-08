@@ -48,7 +48,7 @@ function Install-OSServerPreReqs
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false
 
-     .EXAMPLE
+    .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false -SourcePath "c:\downloads"
 
     #>
@@ -201,6 +201,8 @@ function Install-OSServerPreReqs
                     $installDotNetCoreHostingBundle3 = $true
                     $installDotNetHostingBundle6 = $true
                     $installDotNetHostingBundle8 = $true
+                    # If no minor version is specified Microsoft Visual C++ 2015-2022 Redistributable is installed
+                    $installMSVCppRedist = $true
                 }
                 elseif ($fullVersion -ge [version]"11.27.0.0")
                 {
@@ -278,6 +280,12 @@ function Install-OSServerPreReqs
                 }
                 if ($installDotNetHostingBundle8) {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 8.0.0 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
+                }
+
+                # Check if Microsoft Visual C++ 2015-2022 Redistributable is required
+                if ($fullVersion -ge [version]"11.21.1.0")
+                {
+                    $installMSVCppRedist = $true
                 }
             }
         }
@@ -732,6 +740,64 @@ function Install-OSServerPreReqs
                     $installResult.Success = $false
                     $installResult.ExitCode = $exitCode
                     $installResult.Message = "Error installing .NET $($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'])"
+
+                    return $installResult
+                }
+            }
+        }
+
+        # Install Microsoft Visual C++ 2015-2022 Redistributable
+        if ($installMSVCppRedist)
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Microsoft Visual C++ 2015-2022 Redistributable"
+                $exitCode = InstallMSVCppRedist -Sources $SourcePath
+            }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Microsoft Visual C++ 2015-2022 Redistributable installer not found"
+                WriteNonTerminalError -Message "Microsoft Visual C++ 2015-2022 Redistributable installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Microsoft Visual C++ 2015-2022 Redistributable installer not found'
+
+                return $installResult
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the Microsoft Visual C++ 2015-2022 Redistributable installation"
+                WriteNonTerminalError -Message "Error downloading or starting the Microsoft Visual C++ 2015-2022 Redistributable installation"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error downloading or starting the Microsoft Visual C++ 2015-2022 Redistributable installation'
+
+                return $installResult
+            }
+
+            switch ($exitCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Microsoft Visual C++ 2015-2022 Redistributable successfully installed"
+                }
+
+                { $_ -in 3010, 3011 }
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Microsoft Visual C++ 2015-2022 Redistributable successfully installed but a reboot is needed. Exit code: $exitCode"
+                    $installResult.RebootNeeded = $true
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing Microsoft Visual C++ 2015-2022 Redistributable. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing Microsoft Visual C++ 2015-2022 Redistributable. Exit code: $exitCode"
+
+                    $installResult.Success = $false
+                    $installResult.ExitCode = $exitCode
+                    $installResult.Message = "Error installing Microsoft Visual C++ 2015-2022 Redistributable"
 
                     return $installResult
                 }
