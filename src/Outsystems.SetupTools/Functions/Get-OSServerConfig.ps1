@@ -6,7 +6,7 @@ function Get-OSServerConfig
 
     .DESCRIPTION
     This will return the OutSystems server current configuration
-    Encrypted settings are returned un-encrypted
+    It is not possible to access Encrypted settings
 
     .EXAMPLE
     Get-OSServerConfig -SettingSection 'PlatformDatabaseConfiguration' -Setting 'AdminUser'
@@ -106,18 +106,7 @@ function Get-OSServerConfig
 
         if ($xmlNode.encrypted -eq 'true')
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Value is encrypted. Decrypting value"
-            $decryptedResult = DecryptSetting($result)
-
-            if ($($decryptedResult -eq $result) -or $(-not $decryptedResult))
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error decrypting value"
-                WriteNonTerminalError -Message "Error decrypting value"
-
-                return $null
-            }
-            # Value is good
-            $result = $decryptedResult
+            throw  "Unable to get encrypted configuration"
         }
         #endregion
 

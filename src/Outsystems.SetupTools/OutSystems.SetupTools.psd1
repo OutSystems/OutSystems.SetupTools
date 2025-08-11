@@ -56,9 +56,7 @@ ProcessorArchitecture = 'Amd64'
 # Assemblies that must be loaded prior to importing this module
 RequiredAssemblies = @(
     '.\Lib\Assemblies\OutSystems.RuntimeCommon.dll'
-    '.\Lib\Assemblies\OutSystems.HubEdition.RuntimePlatform.dll'
-    '.\Lib\Assemblies\ICSharpCode.SharpZipLib.dll'
-    '.\Lib\Assemblies\OutSystems.Common.dll'
+    '.\Lib\Assemblies\OutSystems.FrameworkExtensions.dll'
     '.\Lib\Assemblies\Microsoft.ApplicationInsights.dll'
 )
 
