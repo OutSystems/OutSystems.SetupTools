@@ -778,22 +778,24 @@ function Install-OSServerPreReqs
             return $installResult
         }
 
-        #Disable FIPS compliant algorithms checks
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling FIPS compliant algorithms checks"
-        try
-        {
-            DisableFIPS
-        }
-        catch
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling FIPS compliant algorithms checks"
-            WriteNonTerminalError -Message "Error disabling FIPS compliant algorithms checks"
+        # Disable FIPS requirement only for versions lower than 11.38.0
+        if ([int]$MajorVersion -lt 11 -or ([int]$MajorVersion -eq 11 -and [int]$MinorVersion -lt 38)) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Disabling FIPS compliant algorithms checks"
+            try
+            {
+                DisableFIPS
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error disabling FIPS compliant algorithms checks"
+                WriteNonTerminalError -Message "Error disabling FIPS compliant algorithms checks"
 
-            $installResult.Success = $false
-            $installResult.ExitCode = -1
-            $installResult.Message = 'Error disabling FIPS compliant algorithms checks'
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error disabling FIPS compliant algorithms checks'
 
-            return $installResult
+                return $installResult
+            }
         }
 
         #Configure event log
