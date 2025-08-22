@@ -127,10 +127,10 @@ function Install-OSServerPreReqs
 
         if (-not $(ValidateVersion -Version ([System.Version]"$($MajorVersion).$($MinorVersion).$($PatchVersion).0") -Major "11" -Minor "23" -Build "0"))
         {
-            WriteNonTerminalError -Message 'Unsupported version installed version'
+            WriteNonTerminalError -Message 'Unsupported version'
             $installResult.Success = $false
             $installResult.ExitCode = -1
-            $installResult.Message = 'Unsupported version installed version'
+            $installResult.Message = 'Unsupported version'
 
             return $installResult
         }

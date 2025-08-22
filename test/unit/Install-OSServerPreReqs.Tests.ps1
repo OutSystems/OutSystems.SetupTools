@@ -118,7 +118,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetDotNet4Version { return 461808 }
             Mock GetDotNetHostingBundleVersions { return @('6.0.6', '8.0.0') }
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -Minor -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
@@ -127,7 +127,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
-            It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
             It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
@@ -146,8 +146,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
-            It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
-            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
+            It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
+            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
@@ -631,12 +631,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
             }
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -684,13 +684,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When .NET 8.0 reports a reboot' {
 
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { return 3010 }
-            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
-                Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
@@ -698,7 +698,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should NOT run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
             }
 
             It 'Should return the right result' {
@@ -708,7 +708,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET 6.0 reports a reboot' {
@@ -744,17 +744,17 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When .NET 8.0 reports an error' {
 
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "8" } -MockWith { return 10 }
-            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
-                Assert-MockCalled @assRunInstallDotNetHostingBundle
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
             }
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -767,7 +767,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error installing .NET 8.0 Windows Server Hosting bundle'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 8.0 Windows Server Hosting bundle. Exit code: 10' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET 6.0 reports an error' {
@@ -928,9 +928,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be -1
-                $result.Message | Should Be 'Unsupported installed version'
+                $result.Message | Should Be 'Unsupported version'
             }
-            It 'Should throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '12' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 27 and Patch version 0 (11.27.0)' {

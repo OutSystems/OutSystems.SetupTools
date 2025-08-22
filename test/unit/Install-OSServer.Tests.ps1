@@ -242,9 +242,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerInstallDir { return '11.23.0.0' }
             Mock GetLifetimeVersion { return '11.19.0.0' }
 
-            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\LifeTimeWithPlatformServer-11.19.0.0.exe" } }
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\LifeTimeWithPlatformServer-11.19.1.0.exe" } }
 
-            $null = Install-OSServer -Version '11.19.0.0' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Install-OSServer -Version '11.19.1.0' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation using the lifetime installer' { Assert-MockCalled @assRunParams }
         }
