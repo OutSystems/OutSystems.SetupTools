@@ -6,7 +6,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         # Global mocks
         Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
-        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.0.0' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
 
         $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "admin" -and $SCPass -eq "admin" } }

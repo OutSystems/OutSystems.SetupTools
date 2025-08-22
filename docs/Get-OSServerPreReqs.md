@@ -24,14 +24,14 @@ IIS features, .NET Framework Version and etc.) for the OutSystems platform serve
 
 ### EXAMPLE 1
 ```
-Get-OSServerPreReqs -MajorVersion "10"
+Get-OSServerPreReqs -MajorVersion "11"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Specifies the platform major version.
-Accepted values: 10 or 11
+Accepted values: 11
 
 ```yaml
 Type: String

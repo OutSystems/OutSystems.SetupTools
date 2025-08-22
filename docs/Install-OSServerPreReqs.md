@@ -25,7 +25,7 @@ You should run first the Test-OSServerSoftwareReqs and the Test-OSServerHardware
 
 ### EXAMPLE 1
 ```
-Install-OSServerPreReqs -MajorVersion "10"
+Install-OSServerPreReqs -MajorVersion "11"
 ```
 
 ### EXAMPLE 2
@@ -42,7 +42,7 @@ Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false -Source
 
 ### -MajorVersion
 Specifies the platform major version.
-Accepted values: 10 or 11.
+Accepted values: 11.
 
 ```yaml
 Type: String

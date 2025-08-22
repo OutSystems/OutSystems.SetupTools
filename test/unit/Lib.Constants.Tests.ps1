@@ -3,21 +3,6 @@
 
 Describe 'Lib Constants Tests' {
 
-    Context 'Check .NET constants for OS12' {
-
-        $MajorVersion = '12'
-        $SavePath = "$env:TEMP\dotnet12.exe"
-        $FileHash = '5CB624B97F9FD6D3895644C52231C9471CD88AACB57D6E198D3024A1839139F6'
-
-        It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.7.2" }
-        It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "461808" }
-        It 'Should have the right "ToInstallVersion"' { $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'] | Should Be "4.7.2" }
-        It '"ToInstallDownloadURL" should be downloadable and have the right file hash' {
-            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL'], $SavePath)
-            $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
-        }
-    }
-
     Context 'Check .NET constants for OS11' {
 
         $MajorVersion = '11'
@@ -29,43 +14,6 @@ Describe 'Lib Constants Tests' {
         It 'Should have the right "ToInstallVersion"' { $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'] | Should Be "4.7.2" }
         It '"ToInstallDownloadURL" should be downloadable and have the right file hash' {
             (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL'], $SavePath)
-            $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
-        }
-    }
-
-    Context 'Check .NET constants for OS10' {
-
-        $MajorVersion = '10'
-        $SavePath = "$env:TEMP\dotnet10.exe"
-        $FileHash = '5CB624B97F9FD6D3895644C52231C9471CD88AACB57D6E198D3024A1839139F6'
-
-        It 'Should have the right "Version"' { $script:OSDotNetReqForMajor[$MajorVersion]['Version'] | Should Be "4.6.1" }
-        It 'Should have the right "Value"' { $script:OSDotNetReqForMajor[$MajorVersion]['Value'] | Should Be "394254" }
-        It 'Should have the right "ToInstallVersion"' { $script:OSDotNetReqForMajor[$MajorVersion]['ToInstallVersion'] | Should Be "4.7.2" }
-        It '"ToInstallDownloadURL" should be downloadable and have the right file hash' {
-            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetReqForMajor[$MajorVersion]['ToInstallDownloadURL'], $SavePath)
-            $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
-        }
-    }
-
-    Context 'Check .NETCore 2.1 constants' {
-
-        $SavePath = "$env:TEMP\dotnetcore21.exe"
-        $FileHash = 'AC74CADB690D3A5A175CEDD0EF02A11ABE41A292F9C9055B28522E3EB7B02726'
-
-        It 'Should be downloadable and have the right file hash' {
-            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetCoreHostingBundleReq['2']['ToInstallDownloadURL'], $SavePath)
-            $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
-        }
-    }
-
-    Context 'Check .NETCore 3.1 constants' {
-
-        $SavePath = "$env:TEMP\dotnetcore.exe"
-        $FileHash = '187179215D0C9DE82F6C6F005E08AC517E34E9689959964053B0F60FEDFD8302'
-
-        It 'Should be downloadable and have the right file hash' {
-            (New-Object System.Net.WebClient).DownloadFile($script:OSDotNetCoreHostingBundleReq['3']['ToInstallDownloadURL'], $SavePath)
             $(Get-FileHash -Path $SavePath).Hash | Should Be $FileHash
         }
     }

@@ -82,32 +82,7 @@ function Install-OSPlatformServiceCenter
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Force switch specified. We will reinstall!!"
             }
 
-            switch ("$(([version]$osVersion).Major)")
-            {
-                '10'
-                {
-                    $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif'
-                }
-                { ($_  -as [int]) -ge 11}
-                {
-                    $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif'
-                    if ($(([version]$osVersion).Major -gt 11) -or $(([version]$osVersion).Minor -gt 18) -or ($(([version]$osVersion).Minor -eq 18) -and $(([version]$osVersion).Build -ge 1)))
-                    {
-                        $scInstallerArguments += ' CentralizedPlatformLogs.xif'
-                    }
-                }
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Unsupported Outsystems platform version"
-                    WriteNonTerminalError -Message "Unsupported Outsystems platform version"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = -1
-                    $installResult.Message = 'Unsupported Outsystems platform version'
-
-                    return $installResult
-                }
-            }
+            $scInstallerArguments = '-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif CentralizedPlatformLogs.xif'
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing Outsystems Service Center. This can take a while..."
 

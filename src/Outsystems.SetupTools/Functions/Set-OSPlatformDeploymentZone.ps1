@@ -68,14 +68,6 @@ function Set-OSPlatformDeploymentZone
 
             return
         }
-
-        if ($osVersion -lt '11.0.0.0')
-        {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "This cmdLet is only supported on OutSystems 11 or higher"
-            WriteNonTerminalError -Message "This cmdLet is only supported on OutSystems 11 or higher"
-
-            return
-        }
         #endregion
 
         #region do things

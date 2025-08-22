@@ -9,10 +9,10 @@ function Test-OSServerSoftwareReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    Accepted values: 10 or 11
+    Accepted values: 11
 
     .EXAMPLE
-    Test-OSServerSoftwareReqs -MajorVersion "10"
+    Test-OSServerSoftwareReqs -MajorVersion "11"
 
     #>
 
@@ -20,7 +20,7 @@ function Test-OSServerSoftwareReqs
     [OutputType('Outsystems.SetupTools.TestResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('\d\d+(\.0)?$')]   # We changed the versioning of the product but we still support the old versioning
+        [ValidatePattern('11(\.0)?$')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion
     )
 
@@ -53,34 +53,15 @@ function Test-OSServerSoftwareReqs
             return $testResult
         }
 
-        switch ($MajorVersion)
+        if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS11ReqsMinOSVersion)
         {
-            '10'
-            {
-                if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS10ReqsMinOSVersion)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "This operating system version is not supported for Outsystems $MajorVersion"
-                    WriteNonTerminalError -Message "This operating system version is not supported for Outsystems $MajorVersion"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "This operating system version is not supported for Outsystems $MajorVersion"
+            WriteNonTerminalError -Message "This operating system version is not supported for Outsystems $MajorVersion"
 
-                    $testResult.Result = $false
-                    $testResult.Message = "This operating system version is not supported for Outsystems $MajorVersion"
+            $testResult.Result = $false
+            $testResult.Message = "This operating system version is not supported for Outsystems $MajorVersion"
 
-                    return $testResult
-                }
-            }
-            default
-            {
-                if ([System.Version]$(GetOperatingSystemVersion) -lt [System.Version]$OS11ReqsMinOSVersion)
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "This operating system version is not supported for Outsystems $MajorVersion"
-                    WriteNonTerminalError -Message "This operating system version is not supported for Outsystems $MajorVersion"
-
-                    $testResult.Result = $false
-                    $testResult.Message = "This operating system version is not supported for Outsystems $MajorVersion"
-
-                    return $testResult
-                }
-            }
+            return $testResult
         }
 
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Operating system validated for Outsystems $MajorVersion"

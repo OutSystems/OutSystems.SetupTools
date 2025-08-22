@@ -6,9 +6,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         # Global mocks
         Mock IsAdmin { return $true }
-        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
-        Mock GetSCCompiledVersion { return '10.0.0.1' }
+        Mock GetSCCompiledVersion { return '11.23.0.1' }
         Mock RunSCInstaller { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
         Mock SetSCCompiledVersion {}
 
@@ -52,7 +52,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When service center and the platform dont have the same version' {
 
-            Mock GetSCCompiledVersion { return '10.0.0.0' }
+            Mock GetSCCompiledVersion { return '11.23.0.0' }
 
             $result = Install-OSPlatformServiceCenter -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -150,48 +150,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When the platform is the version 10' {
-
-            Mock GetServerVersion { return '10.0.0.1' }
-            Mock GetSCCompiledVersion { return $null }
-
-            Install-OSPlatformServiceCenter | Out-Null
-
-            It 'Should run the RunSCInstaller with specific parameters' {
-                $assMParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif" }}
-                Assert-MockCalled @assMParams
-            }
-        }
-
         Context 'When the platform is the version 11' {
 
-            Mock GetServerVersion { return '11.0.0.1' }
-            Mock GetSCCompiledVersion { return $null }
-
-            Install-OSPlatformServiceCenter | Out-Null
-
-            It 'Should run the RunSCInstaller with specific parameters' {
-                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif" }}
-                Assert-MockCalled @assParams
-            }
-        }
-
-        Context 'When the platform is the version 11.18.1' {
-
-            Mock GetServerVersion { return '11.18.1.1' }
-            Mock GetSCCompiledVersion { return $null }
-
-            Install-OSPlatformServiceCenter | Out-Null
-
-            It 'Should run the RunSCInstaller with specific parameters' {
-                $assParams = @{ 'CommandName' = 'RunSCInstaller'; 'Times' = 1; 'Exactly' = $true;'Scope' = 'Context'; 'ParameterFilter' = { $Arguments -eq "-file ServiceCenter.oml -extension OMLProcessor.xif IntegrationStudio.xif PlatformLogs.xif CentralizedPlatformLogs.xif" }}
-                Assert-MockCalled @assParams
-            }
-        }
-
-        Context 'When the platform is the version 12' {
-
-            Mock GetServerVersion { return '12.0.0.1' }
+            Mock GetServerVersion { return '11.23.0.1' }
             Mock GetSCCompiledVersion { return $null }
 
             Install-OSPlatformServiceCenter | Out-Null

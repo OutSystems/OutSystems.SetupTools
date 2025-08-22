@@ -5,7 +5,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Get-OSServerVersion Tests' {
 
         # Global mocks
-        Mock GetServerVersion { return '10.0.0.0' }
+        Mock GetServerVersion { return '11.23.0' }
 
         Context 'When platform is not installed' {
 
@@ -19,7 +19,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When the platform server is installed' {
 
-            It 'Should return the version' { Get-OSServerVersion | Should Be '10.0.0.0' }
+            It 'Should return the version' { Get-OSServerVersion | Should Be '11.23.0' }
             It 'Should call the GetServerVersion only once' {
 
                 $assMParams = @{

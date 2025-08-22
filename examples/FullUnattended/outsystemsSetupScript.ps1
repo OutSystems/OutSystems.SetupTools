@@ -88,17 +88,7 @@ switch ($OSRole)
     }
     'FE'
     {
-        switch ($majorVersion)
-        {
-            '11.0'
-            {
-                Install-OSServer -Version $OSServerVersion -InstallDir $OSInstallDir -ErrorAction Stop | Out-Null
-            }
-            '10.0'
-            {
-                Install-OSServer -Version $OSServerVersion -InstallDir $OSInstallDir -ErrorAction Stop | Out-Null
-            }
-        }
+        Install-OSServer -Version $OSServerVersion -InstallDir $OSInstallDir -ErrorAction Stop | Out-Null
         Get-Service -Name "OutSystems Deployment Controller Service" | Stop-Service -WarningAction SilentlyContinue | Out-Null
         Set-Service -Name "OutSystems Deployment Controller Service" -StartupType "Disabled" | Out-Null
     }
@@ -143,55 +133,37 @@ Set-OSServerConfig -SettingSection 'ServiceConfiguration' -Setting 'CompilerServ
 Set-OSServerConfig -SettingSection 'OtherConfigurations' -Setting 'DBTimeout' -Value '60' -ErrorAction Stop | Out-Null
 
 # -- Configure platform according to major version
-switch ($majorVersion)
+
+# -- Configure version specific platform settings
+# **** Cache invalidation service config ****
+Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceHost' -Value $OSRabbitMQHost -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceUsername' -Value $OSRabbitMQUser -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServicePassword' -Value $OSRabbitMQPass -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'VirtualHost' -Value $OSRabbitMQVHost -ErrorAction Stop | Out-Null
+
+# **** Logging database ****
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'UsedAuthenticationMode' -Value $OSDBAuth -ErrorAction Stop | Out-Null #!!!
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'Server' -Value $OSDBLogServer -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'Catalog' -Value $OSDBLogCatalog -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'AdminUser' -Value $OSDBAdminUser -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'AdminPassword' -Value $OSDBAdminPass -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'RuntimeUser' -Value $OSDBRuntimeUser -ErrorAction Stop | Out-Null
+Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'RuntimePassword' -Value $OSDBRuntimePass -ErrorAction Stop | Out-Null
+
+# -- Apply the configuration
+switch ($OSRole)
 {
-    '11.0'
+    {$_ -in 'DC','LT'}
     {
-        # -- Configure version specific platform settings
-        # **** Cache invalidation service config ****
-        Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceHost' -Value $OSRabbitMQHost -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceUsername' -Value $OSRabbitMQUser -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServicePassword' -Value $OSRabbitMQPass -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'VirtualHost' -Value $OSRabbitMQVHost -ErrorAction Stop | Out-Null
-
-        # **** Logging database ****
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'UsedAuthenticationMode' -Value $OSDBAuth -ErrorAction Stop | Out-Null #!!!
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'Server' -Value $OSDBLogServer -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'Catalog' -Value $OSDBLogCatalog -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'AdminUser' -Value $OSDBAdminUser -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'AdminPassword' -Value $OSDBAdminPass -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'RuntimeUser' -Value $OSDBRuntimeUser -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'LoggingDatabaseConfiguration' -Setting 'RuntimePassword' -Value $OSDBRuntimePass -ErrorAction Stop | Out-Null
-
-        # -- Apply the configuration
-        switch ($OSRole)
-        {
-            {$_ -in 'DC','LT'}
-            {
-                Set-OSServerConfig -Apply -PlatformDBCredential $OSDBSACred -SessionDBCredential $OSDBSessionCred -LogDBCredential $OSDBLogCred -ConfigureCacheInvalidationService -ErrorAction Stop | Out-Null
-            }
-            'FE'
-            {
-                Set-OSServerConfig -Apply -PlatformDBCredential $OSDBSACred -SessionDBCredential $OSDBSessionCred -LogDBCredential $OSDBLogCred -ErrorAction Stop | Out-Null
-            }
-        }
-        # -- Configure windows firewall with rabbit
-        Set-OSServerWindowsFirewall -IncludeRabbitMQ -ErrorAction Stop | Out-Null
+        Set-OSServerConfig -Apply -PlatformDBCredential $OSDBSACred -SessionDBCredential $OSDBSessionCred -LogDBCredential $OSDBLogCred -ConfigureCacheInvalidationService -ErrorAction Stop | Out-Null
     }
-    '10.0'
+    'FE'
     {
-        # -- Configure version specific platform settings
-        # **** Logging database ****
-        Set-OSServerConfig -SettingSection 'PlatformDatabaseConfiguration' -Setting 'LogUser' -Value $OSDBLogUser -ErrorAction Stop | Out-Null
-        Set-OSServerConfig -SettingSection 'PlatformDatabaseConfiguration' -Setting 'LogPassword' -Value $OSDBLogPass -ErrorAction Stop | Out-Null
-
-        # -- Apply the configuration
-        Set-OSServerConfig -Apply -PlatformDBCredential $OSDBSACred -SessionDBCredential $OSDBSessionCred
-
-        # -- Configure windows firewall without rabbit
-        Set-OSServerWindowsFirewall -ErrorAction Stop | Out-Null
+        Set-OSServerConfig -Apply -PlatformDBCredential $OSDBSACred -SessionDBCredential $OSDBSessionCred -LogDBCredential $OSDBLogCred -ErrorAction Stop | Out-Null
     }
 }
+# -- Configure windows firewall with rabbit
+Set-OSServerWindowsFirewall -IncludeRabbitMQ -ErrorAction Stop | Out-Null
 
 # -- If this is a frontend, disable the controller service and wait for the service center to be published by the controller before running the system tunning
 if ($OSRole -ne "FE")

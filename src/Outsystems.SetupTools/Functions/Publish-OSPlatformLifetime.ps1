@@ -105,6 +105,16 @@ function Publish-OSPlatformLifetime
             return $installResult
         }
 
+        if (-not (ValidateMinimumRequiredVersion))
+        {
+            WriteNonTerminalError -Message 'Unsupported version installed version'
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Unsupported version installed version'
+
+            return $installResult
+        }
+
         $SCVersion = GetSCCompiledVersion
         if (-not $SCVersion)
         {

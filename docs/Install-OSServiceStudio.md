@@ -30,22 +30,22 @@ if the development environment is already installed it will check if version to 
 
 ### EXAMPLE 1
 ```
-Install-OSServiceStudio -Version "10.0.823.0"
+Install-OSServiceStudio -Version "11.55.35"
 ```
 
 ### EXAMPLE 2
 ```
-Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
+Install-OSServiceStudio -Version "11.55.35" -InstallDir D:\Outsystems
 ```
 
 ### EXAMPLE 3
 ```
-Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+Install-OSServiceStudio -Version "11.55.35" -InstallDir D:\Outsystems -SourcePath c:\temp
 ```
 
 ### EXAMPLE 4
 ```
-Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp -FullPathInstallDir
+Install-OSServiceStudio -Version "11.55.35" -InstallDir D:\Outsystems -SourcePath c:\temp -FullPathInstallDir
 ```
 
 ## PARAMETERS

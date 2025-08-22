@@ -23,14 +23,14 @@ This will check if the server has a supported operating system to run the Outsys
 
 ### EXAMPLE 1
 ```
-Test-OSServerSoftwareReqs -MajorVersion "10"
+Test-OSServerSoftwareReqs -MajorVersion "11"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Specifies the platform major version.
-Accepted values: 10 or 11
+Accepted values: 11
 
 ```yaml
 Type: String

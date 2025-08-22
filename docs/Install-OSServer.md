@@ -31,22 +31,22 @@ If the platform is already installed, the cmdLet will check if version to be ins
 
 ### EXAMPLE 1
 ```
-Install-OSServer -Version "10.0.823.0"
+Install-OSServer -Version "11.23.0"
 ```
 
 ### EXAMPLE 2
 ```
-Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
+Install-OSServer -Version "11.23.0" -InstallDir D:\Outsystems
 ```
 
 ### EXAMPLE 3
 ```
-Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+Install-OSServer -Version "11.23.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 ```
 
 ### EXAMPLE 4
 ```
-Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -FullPathInstallDir
+Install-OSServer -Version "11.23.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -FullPathInstallDir
 ```
 
 ### EXAMPLE 5
@@ -107,7 +107,7 @@ Accept wildcard characters: False
 ```
 
 ### -SkipRabbitMQ
-Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it. 
+Deprecated. This script no longer installs RabbitMQ/Erlang. Parameter was kept to not break compatibility with scripts making use of it.
 Instead, please use Set-OSServerConfig with parameter -ConfigureCacheInvalidationService to install and configure RabbitMQ/Erlang.
 
 ```yaml

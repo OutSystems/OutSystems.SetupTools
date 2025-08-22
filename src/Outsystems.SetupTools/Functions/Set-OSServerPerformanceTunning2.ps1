@@ -155,7 +155,7 @@ function Set-OSServerPerformanceTunning2
         }
 
         if ( $null -eq (Get-OSPlatformVersion -ErrorAction Ignore) ) {
-        
+
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Service Center is not installed or not accessible"
             WriteNonTerminalError -Message "Service Center is not installed or not accessible"
 
@@ -311,18 +311,7 @@ function Set-OSServerPerformanceTunning2
 
                     $AppPoolItem.recycling.periodicRestart.privateMemory = [int]($(GetInstalledRAM) * 1MB * ($($Config.MemoryPercentage) / 100))
 
-                    # Version specific config
-                    switch ("$(([version]$osVersion).Major)")
-                    {
-                        '10'
-                        {
-                            $AppPoolItem.managedPipelineMode = "Classic"
-                        }
-                        default
-                        {
-                            $AppPoolItem.managedPipelineMode = "Integrated"
-                        }
-                    }
+                    $AppPoolItem.managedPipelineMode = "Integrated"
 
                     $AppPoolItem | Set-Item
 

@@ -9,7 +9,7 @@ function Get-OSServerPreReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    Accepted values: 10 or 11
+    Accepted values: 11
 
     .PARAMETER MinorVersion
     Specifies the platform minor version.
@@ -20,17 +20,14 @@ function Get-OSServerPreReqs
     Accepted values: single digits only.
 
     .EXAMPLE
-    Get-OSServerPreReqs -MajorVersion "10"
-
-    .EXAMPLE
-    Get-OSServerPreReqs -MajorVersion "11" -MinorVersion "12" -PatchVersion "3"
+    Get-OSServerPreReqs -MajorVersion "11" -MinorVersion "23" -PatchVersion "0"
     #>
 
     [CmdletBinding()]
     [OutputType('System.Collections.Hashtable')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('1[0-1]{1}(\.0)?')]
+        [ValidatePattern('11(\.0)?')]
         [string]$MajorVersion,
 
         [Parameter()]
@@ -134,6 +131,14 @@ function Get-OSServerPreReqs
         $GlobalRequirementsResults.IISStatus = $True
 
         $RequirementStatuses = @()
+
+        #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
+        $MajorVersion = $MajorVersion.replace(".0", "")
+
+        if ($MinorVersion -lt 23)
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified or it was less than 23. Minimum version will be set to 23."
+        }
     }
 
     process
@@ -160,237 +165,122 @@ function Get-OSServerPreReqs
                                                                  {
                                                                      $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
 
-                                                                     $Status = $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo)
+                                                                     $Status = $(IsMSBuildToolsVersionValid -InstallInfo $MSBuildInstallInfo)
                                                                      $OKMessages = @("$($MSBuildInstallInfo.LatestVersionInstalled) is installed.")
                                                                      $NOKMessages = @("No valid MS Build Tools version found, this is an OutSystems requirement.")
 
                                                                      return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                                  }
 
-        switch ($MajorVersion)
+
+        # Check .NET Core / .NET Windows Server Hosting version
+        $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
+        if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
         {
-            '10'
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
-                $winFeatures += "MSMQ"
-
-                $RequirementStatuses += $MSBuildToolsRequirementStatus
-
-            }
-            default
-            {
-                # Check .NET Core / .NET Windows Server Hosting version
-                $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-                if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
-                {
-                    # Here means that no specific minor and patch version were specified
-                    # So we install all versions
-                    $requireDotNetCoreHostingBundle2 = $true
-                    $requireDotNetCoreHostingBundle3 = $true
-                    $requireDotNetHostingBundle6 = $true
-                    $requireDotNetHostingBundle8 = $true
-                }
-                elseif ($fullVersion -ge [version]"11.27.0.0")
-                {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
-                    # We install .NET 8.0 only
-                    $requireDotNetCoreHostingBundle2 = $false
-                    $requireDotNetCoreHostingBundle3 = $false
-                    $requireDotNetHostingBundle6 = $false
-                    $requireDotNetHostingBundle8 = $true
-                }
-                elseif ($fullVersion -ge [version]"11.17.1.0")
-                {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.17.1.0
-                    # We install .NET 6.0 only
-                    $requireDotNetCoreHostingBundle2 = $false
-                    $requireDotNetCoreHostingBundle3 = $false
-                    $requireDotNetHostingBundle6 = $true
-                }
-                elseif ($fullVersion -ge [version]"11.12.2.0")
-                {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.12.2.0
-                    # We install .NET Core 3.1 only
-                    $requireDotNetCoreHostingBundle2 = $false
-                    $requireDotNetCoreHostingBundle3 = $true
-                    $requireDotNetHostingBundle6 = $false
-                }
-                else
-                {
-                    # Here means that minor and patch version were specified and we are below version 11.12.2.0
-                    # We install .NET Core 2.1 only
-                    $requireDotNetCoreHostingBundle2 = $true
-                    $requireDotNetCoreHostingBundle3 = $false
-                    $requireDotNetHostingBundle6 = $false
-                }
-
-                if ($fullVersion -lt [version]"11.35.0.0")
-                {
-                    $RequirementStatuses += $MSBuildToolsRequirementStatus
-                }
-
-
-                if($requireDotNetCoreHostingBundle2) {
-                    $RequirementStatuses += CreateRequirementStatus -Title ".NET Core 2.1 Windows Server Hosting" `
-                                                                    -ScriptBlock `
-                                                                    {
-                                                                        $Status = $False
-                                                                        foreach ($version in GetDotNetCoreHostingBundleVersions)
-                                                                        {
-                                                                            # Check .NET Core 2.1
-                                                                            if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
-                                                                                $Status = $True
-                                                                            }
-                                                                        }
-                                                                        $OKMessages = @("Minimum .NET Core 2.1 Windows Server Hosting found.")
-                                                                        $NOKMessages = @("Minimum .NET Core 2.1 Windows Server Hosting not found.")
-                                                                        $IISStatus = $True
-
-                                                                        if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
-                                                                        {
-                                                                            $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -like "aspnetcoremodule*" }
-                                                                            if ($Status)
-                                                                            {
-                                                                                # Check if IIS can find ASP.NET modules
-                                                                                if ($aspModules.Count -lt 1)
-                                                                                {
-                                                                                    $Status = $False
-                                                                                    $IISStatus = $False
-                                                                                    $NOKMessages = @("IIS can't find ASP.NET modules")
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $IISStatus = $True
-                                                                                }
-                                                                            }
-                                                                        }
-
-
-                                                                        return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                                    }
-                }
-
-                if($requireDotNetCoreHostingBundle3) {
-                    $RequirementStatuses += CreateRequirementStatus -Title ".NET Core 3.1 Windows Server Hosting" `
-                                                                    -ScriptBlock `
-                                                                    {
-                                                                        $Status = $False
-                                                                        foreach ($version in GetDotNetCoreHostingBundleVersions)
-                                                                        {
-                                                                            # Check .NET Core 3.1
-                                                                            if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
-                                                                                $Status = $True
-                                                                            }
-                                                                        }
-                                                                        $OKMessages = @("Minimum .NET Core 3.1 Windows Server Hosting found.")
-                                                                        $NOKMessages = @("Minimum .NET Core 3.1 Windows Server Hosting not found.")
-                                                                        $IISStatus = $True
-
-                                                                        if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
-                                                                        {
-                                                                            $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
-                                                                            if ($Status)
-                                                                            {
-                                                                                # Check if IIS can find ASP.NET modules
-                                                                                if ($aspModules.Count -lt 1)
-                                                                                {
-                                                                                    $Status = $False
-                                                                                    $IISStatus = $False
-                                                                                    $NOKMessages = @("IIS can't find ASP.NET modules")
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $IISStatus = $True
-                                                                                }
-                                                                            }
-                                                                        }
-
-
-                                                                        return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                                    }
-                }
-
-                if ($requireDotNetHostingBundle6) {
-                    $RequirementStatuses += CreateRequirementStatus -Title ".NET 6.0 Windows Server Hosting" `
-                                                                    -ScriptBlock `
-                                                                    {
-                                                                        $Status = $False
-                                                                        foreach ($version in GetDotNetHostingBundleVersions)
-                                                                        {
-                                                                            # Check version 6.0
-                                                                            if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['6']['Version']) {
-                                                                                $Status = $True
-                                                                            }
-                                                                        }
-                                                                        $OKMessages = @("Minimum .NET 6.0.6 Windows Server Hosting found.")
-                                                                        $NOKMessages = @("Minimum .NET 6.0.6 Windows Server Hosting not found.")
-                                                                        $IISStatus = $True
-
-                                                                        if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
-                                                                        {
-                                                                            $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
-                                                                            if ($Status)
-                                                                            {
-                                                                                # Check if IIS can find ASP.NET modules
-                                                                                if ($aspModules.Count -lt 1)
-                                                                                {
-                                                                                    $Status = $False
-                                                                                    $IISStatus = $False
-                                                                                    $NOKMessages = @("IIS can't find ASP.NET modules")
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $IISStatus = $True
-                                                                                }
-                                                                            }
-                                                                        }
-
-
-                                                                        return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                                    }
-                }
-
-                if ($requireDotNetHostingBundle8) {
-                    $RequirementStatuses += CreateRequirementStatus -Title ".NET 8.0 Windows Server Hosting" `
-                                                                    -ScriptBlock `
-                                                                    {
-                                                                        $Status = $False
-                                                                        foreach ($version in GetDotNetHostingBundleVersions)
-                                                                        {
-                                                                            # Check version 8.0
-                                                                            if (([version]$version).Major -eq 8 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['8']['Version']) {
-                                                                                $Status = $True
-                                                                            }
-                                                                        }
-                                                                        $OKMessages = @("Minimum .NET 8.0.0 Windows Server Hosting found.")
-                                                                        $NOKMessages = @("Minimum .NET 8.0.0 Windows Server Hosting not found.")
-                                                                        $IISStatus = $True
-
-                                                                        if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
-                                                                        {
-                                                                            $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
-                                                                            if ($Status)
-                                                                            {
-                                                                                # Check if IIS can find ASP.NET modules
-                                                                                if ($aspModules.Count -lt 1)
-                                                                                {
-                                                                                    $Status = $False
-                                                                                    $IISStatus = $False
-                                                                                    $NOKMessages = @("IIS can't find ASP.NET modules")
-                                                                                }
-                                                                                else
-                                                                                {
-                                                                                    $IISStatus = $True
-                                                                                }
-                                                                            }
-                                                                        }
-
-
-                                                                        return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                                    }
-                }
-            }
+            # Here means that no specific minor and patch version were specified
+            # So we install all versions
+            $requireDotNetHostingBundle6 = $true
+            $requireDotNetHostingBundle8 = $true
         }
+        elseif ($fullVersion -ge [version]"11.27.0.0")
+        {
+            # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
+            # We install .NET 8.0 only
+            $requireDotNetHostingBundle6 = $false
+            $requireDotNetHostingBundle8 = $true
+        }
+        else
+        {
+            # Here means that minor and patch version were specified and we are below version 11.27.0.0
+            $requireDotNetHostingBundle6 = $true
+            $requireDotNetHostingBundle8 = $true
+        }
+
+        if ($fullVersion -lt [version]"11.35.0.0")
+        {
+            $RequirementStatuses += $MSBuildToolsRequirementStatus
+        }
+
+        if ($requireDotNetHostingBundle6) {
+            $RequirementStatuses += CreateRequirementStatus -Title ".NET 6.0 Windows Server Hosting" `
+                                                            -ScriptBlock `
+                                                            {
+                                                                $Status = $False
+                                                                foreach ($version in GetDotNetHostingBundleVersions)
+                                                                {
+                                                                    # Check version 6.0
+                                                                    if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
+                                                                        $Status = $True
+                                                                    }
+                                                                }
+                                                                $OKMessages = @("Minimum .NET 6.0.6 Windows Server Hosting found.")
+                                                                $NOKMessages = @("Minimum .NET 6.0.6 Windows Server Hosting not found.")
+                                                                $IISStatus = $True
+
+                                                                if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
+                                                                {
+                                                                    $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
+                                                                    if ($Status)
+                                                                    {
+                                                                        # Check if IIS can find ASP.NET modules
+                                                                        if ($aspModules.Count -lt 1)
+                                                                        {
+                                                                            $Status = $False
+                                                                            $IISStatus = $False
+                                                                            $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $IISStatus = $True
+                                                                        }
+                                                                    }
+                                                                }
+
+
+                                                                return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                            }
+        }
+
+        if ($requireDotNetHostingBundle8) {
+            $RequirementStatuses += CreateRequirementStatus -Title ".NET 8.0 Windows Server Hosting" `
+                                                            -ScriptBlock `
+                                                            {
+                                                                $Status = $False
+                                                                foreach ($version in GetDotNetHostingBundleVersions)
+                                                                {
+                                                                    # Check version 8.0
+                                                                    if (([version]$version).Major -eq 8 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['8']['Version']) {
+                                                                        $Status = $True
+                                                                    }
+                                                                }
+                                                                $OKMessages = @("Minimum .NET 8.0.0 Windows Server Hosting found.")
+                                                                $NOKMessages = @("Minimum .NET 8.0.0 Windows Server Hosting not found.")
+                                                                $IISStatus = $True
+
+                                                                if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
+                                                                {
+                                                                    $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
+                                                                    if ($Status)
+                                                                    {
+                                                                        # Check if IIS can find ASP.NET modules
+                                                                        if ($aspModules.Count -lt 1)
+                                                                        {
+                                                                            $Status = $False
+                                                                            $IISStatus = $False
+                                                                            $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $IISStatus = $True
+                                                                        }
+                                                                    }
+                                                                }
+
+
+                                                                return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                            }
+        }
+
 
         $RequirementStatuses += CreateRequirementStatus -Title "Windows Features" `
                                                         -ScriptBlock `

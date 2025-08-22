@@ -24,14 +24,14 @@ Since we can have multiple development environments installed, you need to speci
 
 ### EXAMPLE 1
 ```
-Get-OSServiceStudioInfo -MajorVersion "10"
+Get-OSServiceStudioInfo -MajorVersion "11"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Major version.
-9.0, 9.1, 10, 11, ...
+11, ...
 
 ```yaml
 Type: String

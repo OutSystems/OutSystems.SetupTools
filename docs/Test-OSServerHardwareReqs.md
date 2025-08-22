@@ -24,14 +24,14 @@ Checks available RAM and the number of available CPUs.
 
 ### EXAMPLE 1
 ```
-Test-OSServerSoftwareReqs -MajorVersion "10.0"
+Test-OSServerSoftwareReqs -MajorVersion "11.0"
 ```
 
 ## PARAMETERS
 
 ### -MajorVersion
 Specifies the platform major version.
-Accepted values: 10 or 11
+Accepted values: 11
 
 ```yaml
 Type: String

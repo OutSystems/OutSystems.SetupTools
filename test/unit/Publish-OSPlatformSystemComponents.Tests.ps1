@@ -5,10 +5,10 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformSystemComponents Tests' {
 
         # Global mocks
-        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
-        Mock GetSCCompiledVersion { return '10.0.0.1' }
-        Mock GetSysComponentsCompiledVersion { return '10.0.0.1' }
+        Mock GetSCCompiledVersion { return '11.23.0.1' }
+        Mock GetSysComponentsCompiledVersion { return '11.23.0.1' }
         Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
         Mock SetSysComponentsCompiledVersion {}
 
@@ -52,7 +52,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When system components and the platform dont have the same version' {
 
-            Mock GetSysComponentsCompiledVersion { return '10.0.0.0' }
+            Mock GetSysComponentsCompiledVersion { return '11.23.0.0' }
 
             $result = Publish-OSPlatformSystemComponents -ErrorVariable err -ErrorAction SilentlyContinue
 

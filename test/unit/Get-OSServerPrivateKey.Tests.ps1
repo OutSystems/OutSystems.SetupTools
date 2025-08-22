@@ -14,7 +14,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $filecontent = $filecontent.Split('#')
 
         # Global mocks
-        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
         Mock Test-Path { return $true }
         Mock Get-Content { return $filecontent }

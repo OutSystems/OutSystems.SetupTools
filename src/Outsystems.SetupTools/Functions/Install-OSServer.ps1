@@ -33,19 +33,19 @@ function Install-OSServer
     Forces the reinstallation if already installed.
 
     .EXAMPLE
-    Install-OSServer -Version "10.0.823.0"
+    Install-OSServer -Version "11.23.0"
 
     .EXAMPLE
-    Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems
+    Install-OSServer -Version "11.23.0" -InstallDir D:\Outsystems
 
     .EXAMPLE
-    Install-OSServer -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+    Install-OSServer -Version "11.23.0" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     .EXAMPLE
-    Install-OSServer -Version "11.0.108.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -FullPathInstallDir
+    Install-OSServer -Version "11.23.0" -InstallDir 'D:\Outsystems\Platform Server' -SourcePath c:\temp -FullPathInstallDir
 
     .EXAMPLE
-    Install-OSServer -Version "10.0.823.0" -Force
+    Install-OSServer -Version "11.23.0" -Force
 
     .EXAMPLE
     To install the latest 11 version
@@ -146,6 +146,32 @@ function Install-OSServer
 
             return $installResult
         }
+
+        if ($WithLifetime.IsPresent)
+        {
+            # PS 11.23.0
+            if (-not $(ValidateVersion -Version $Version -Major "11" -Minor "19" -Build "0"))
+            {
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Unsupported version'
+
+                return $installResult
+            }
+        }
+        else
+        {
+            if (-not $(ValidateVersion -Version $Version -Major "11" -Minor "23" -Build "0"))
+            {
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Unsupported version'
+
+                return $installResult
+            }
+        }
+
+
 
         if (-not $osVersion)
         {
