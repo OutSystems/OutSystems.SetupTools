@@ -573,6 +573,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
             }
 
             It 'Should NOT run the next actions' {
