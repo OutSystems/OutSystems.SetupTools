@@ -30,7 +30,7 @@ Describe 'ValidateVersion Tests' {
         }
 
         It 'Minor version is less than required' {
-            ValidateVersion -Version "11.23.0" -Major "11" -Minor "12" -Build "0" | Should Be $false
+            ValidateVersion -Version "11.12.0" -Major "11" -Minor "23" -Build "0" | Should Be $false
         }
 
         It 'Build version is less than required' {
