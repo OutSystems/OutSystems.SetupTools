@@ -135,9 +135,9 @@ function Get-OSServerPreReqs
         #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
         $MajorVersion = $MajorVersion.replace(".0", "")
 
-        if ($MinorVersion -lt 23)
+        if ($MinorVersion -eq "0")
         {
-            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified or it was less than 23. Minimum version will be set to 23."
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified. Minimum version will be set to 23."
             $MinorVersion = "23"
         }
     }
@@ -153,6 +153,16 @@ function Get-OSServerPreReqs
             $installResult.Success = $False
             $installResult.ExitCode = -1
             $installResult.Message = 'The current user is not Administrator or not running this script in an elevated session'
+
+            return $installResult
+        }
+
+        if (-not $(ValidateVersion -Version ([System.Version]"$($MajorVersion).$($MinorVersion).$($PatchVersion).0") -Major "11" -Minor "23" -Build "0"))
+        {
+            WriteNonTerminalError -Message 'Unsupported version installed version'
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Unsupported version installed version'
 
             return $installResult
         }
