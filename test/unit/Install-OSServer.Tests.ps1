@@ -265,9 +265,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\PlatformServer-11.0.0.1.exe" } }
+            $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\PlatformServer-11.23.0.0.exe" } }
 
-            $null = Install-OSServer -Version '11.19.0.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Install-OSServer -Version '11.23.0.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation using the normal installer' { Assert-MockCalled @assRunParams }
         }

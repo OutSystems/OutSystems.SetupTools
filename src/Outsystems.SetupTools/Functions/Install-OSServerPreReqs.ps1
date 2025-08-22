@@ -187,14 +187,7 @@ function Install-OSServerPreReqs
             $installBuildTools = $false
         }
 
-        if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
-        {
-            # Here means that no specific minor and patch version were specified
-            # So we install all versions
-            $installDotNetHostingBundle6 = $true
-            $installDotNetHostingBundle8 = $true
-        }
-        elseif ($fullVersion -ge [version]"11.27.0.0")
+        if ($fullVersion -ge [version]"11.27.0.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
             # We install .NET 8.0 only

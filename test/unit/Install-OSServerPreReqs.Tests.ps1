@@ -51,7 +51,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
-            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -127,7 +127,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
-            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
+            It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
             It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
@@ -147,7 +147,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
-            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
@@ -162,13 +162,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When installing OS 11 with all prereqs installed' {
+        Context 'When installing OS 11.38 with all prereqs installed' {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
             Mock GetDotNetHostingBundleVersions { return @('6.0.6', '8.0.0') }
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '38' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should not run the .NET installation' { Assert-MockCalled @assNotRunInstallDotNet }
             It 'Should not run the BuildToold installation' { Assert-MockCalled @assNotRunInstallBuildTools }
@@ -177,7 +177,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
-            It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
+            It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
             It 'Should configure the windows event log' { Assert-MockCalled @assRunConfigureWindowsEventLog }
             It 'Should return the right result' {
                 $result.Success | Should Be $true
@@ -186,7 +186,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '38' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When user is not admin' {
@@ -574,11 +574,11 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
             }
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -632,11 +632,11 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
             }
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -720,11 +720,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
 
             It 'Should return the right result' {
@@ -747,11 +750,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
 
             It 'Should return the right result' {
@@ -773,11 +779,11 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
             }
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -831,12 +837,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
             }
 
             It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
@@ -861,13 +867,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
             }
 
             It 'Should NOT run the next actions' {
+                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
             }
@@ -891,7 +897,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
@@ -899,8 +904,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-
             }
 
             It 'Should return the right result' {
@@ -923,12 +928,15 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assRunInstallDotNet
                 Assert-MockCalled @assRunInstallBuildTools
                 Assert-MockCalled @assRunInstallDotNetHostingBundle
-                Assert-MockCalled @assRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assRunInstallWindowsFeatures
                 Assert-MockCalled @assRunConfigureServiceWMI
                 Assert-MockCalled @assRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assRunDisableFIPS
                 Assert-MockCalled @assRunConfigureWindowsEventLog
+            }
+
+            It 'Should NOT run the next actions' {
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
             }
 
             It 'Should return the right result' {
@@ -1010,7 +1018,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
-            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1034,7 +1042,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
             It 'Should run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle }
-            It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
@@ -1057,8 +1065,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should not run the BuildTools installation' { Assert-MockCalled @assNotRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
-            It 'Should not run the .NET core 2.1 installation' { Assert-MockCalled @assNotRunInstallDotNetCore21 }
-            It 'Should not run the .NET core installation' { Assert-MockCalled @assNotRunInstallDotNetCore }
             It 'Should not run the .NET 6.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle }
             It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assNotRunInstallDotNetCoreUninstallTool }

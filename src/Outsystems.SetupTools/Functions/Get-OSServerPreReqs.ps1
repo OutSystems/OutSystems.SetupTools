@@ -176,14 +176,7 @@ function Get-OSServerPreReqs
 
         # Check .NET Core / .NET Windows Server Hosting version
         $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-        if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
-        {
-            # Here means that no specific minor and patch version were specified
-            # So we install all versions
-            $requireDotNetHostingBundle6 = $true
-            $requireDotNetHostingBundle8 = $true
-        }
-        elseif ($fullVersion -ge [version]"11.27.0.0")
+        if ($fullVersion -ge [version]"11.27.0.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
             # We install .NET 8.0 only
