@@ -419,15 +419,19 @@ function Get-OSServerPreReqs
                                                             return $(CreateResult -Status $Status -OptionalsStatus $OptionalsStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
                                                         }
 
-        $RequirementStatuses += CreateRequirementStatus -Title "FIPS Compliant Algorithms" `
-                                                        -ScriptBlock `
-                                                        {
-                                                            $Status = $(IsFIPSDisabled)
-                                                            $OKMessages = @("FIPS Compliant Algorithms are disabled.")
-                                                            $NOKMessages = @("FIPS Compliant Algorithms are enabled.")
+# Add FIPS requirement only for versions lower than 11.38.0
+if ([int]$MajorVersion -lt 11 -or ([int]$MajorVersion -eq 11 -and [int]$MinorVersion -lt 38)) {
 
-                                                            return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
-                                                        }
+    $RequirementStatuses += CreateRequirementStatus -Title "FIPS Compliant Algorithms" `
+                                                    -ScriptBlock `
+                                                    {
+                                                        $Status = $(IsFIPSDisabled)
+                                                        $OKMessages = @("FIPS Compliant Algorithms are disabled.")
+                                                        $NOKMessages = @("FIPS Compliant Algorithms are enabled.")
+
+                                                        return $(CreateResult -Status $Status -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                    }
+}
 
         foreach ($RequirementStatus in $RequirementStatuses)
         {
