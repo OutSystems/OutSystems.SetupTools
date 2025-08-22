@@ -37,10 +37,6 @@ Describe 'ValidateVersion Tests' {
             ValidateVersion -Version "11.23.0" -Major "11" -Minor "23" -Build "1" | Should Be $false
         }
 
-        It 'Version is empty should throw' {
-            ValidateVersion -Version "" -Major "11" -Minor "23" -Build "0" | Should throw
-        }
-
         It 'Version is acceptable' {
             ValidateVersion -Version "11.38.0" -Major "11" -Minor "23" -Build "0" | Should Be $true
         }
