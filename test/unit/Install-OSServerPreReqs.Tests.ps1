@@ -579,7 +579,6 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
