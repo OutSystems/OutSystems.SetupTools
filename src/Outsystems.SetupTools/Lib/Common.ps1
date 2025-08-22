@@ -326,13 +326,24 @@ function MaskKey([String]$Text)
 
 function ValidateVersion($Version, [string]$Major, [string]$Minor, [string]$Build)
 {
-    $osVersion = ([System.Version]$Version)
-    # Version is not null or empty and is not $Major and minor is less than $Minor
-    if ($osVersion -and $($osVersion.Major -ne $Major -or $osVersion.Minor -lt $Minor -or $osVersion.Build -lt $Build))
-    {
-        $message = "Required version is $($Major).$($Minor).$($Build)"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message $message
-        return $false
+    # Version not null or empty
+    if($Version){
+        try
+        {
+            $osVersion = ([System.Version]$Version)
+        } catch
+        {
+            #Invalid version read, assume correct
+            return $true
+        }
+
+        # Version is not null or empty and is not $Major and minor is less than $Minor
+        if ($osVersion -and $($osVersion.Major -ne $Major -or $osVersion.Minor -lt $Minor -or $osVersion.Build -lt $Build))
+        {
+            $message = "Required version is $($Major).$($Minor).$($Build)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message $message
+            return $false
+        }
     }
 
     return $true
