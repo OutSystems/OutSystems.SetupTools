@@ -175,9 +175,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Success | Should Be $false
                 $result.RebootNeeded | Should Be $false
                 $result.ExitCode | Should Be -1
-                $result.Message | Should Be 'Unsupported Outsystems platform version'
+                $result.Message | Should Be 'Unsupported version installed version'
             }
-            It 'Should output an error' { $err[-1] | Should Be 'Unsupported Outsystems platform version' }
+            It 'Should output an error' { $err[-1] | Should Be 'Unsupported version installed version' }
             It 'Should not throw' { { Install-OSPlatformServiceCenter -ErrorAction SilentlyContinue } | Should Not throw }
         }
 

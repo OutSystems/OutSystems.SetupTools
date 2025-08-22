@@ -22,3 +22,27 @@ Describe 'MaskKey Tests' {
         }
     }
 }
+
+Describe 'ValidateVersion Tests' {
+    Context 'Normal' {
+        It 'Major version does not match' {
+            ValidateVersion -Version "12.0.0" -Major "11" -Minor "12" -Build "0" | Should Be $false
+        }
+
+        It 'Minor version is less than required' {
+            ValidateVersion -Version "11.23.0" -Major "11" -Minor "12" -Build "0" | Should Be $false
+        }
+
+        It 'Build version is less than required' {
+            ValidateVersion -Version "11.23.0" -Major "11" -Minor "23" -Build "1" | Should Be $false
+        }
+
+        It 'Version is empty' {
+            ValidateVersion -Version "" -Major "11" -Minor "23" -Build "0" | Should Be $true
+        }
+
+        It 'Version is acceptable' {
+            ValidateVersion -Version "11.38.0" -Major "11" -Minor "23" -Build "0" | Should Be $true
+        }
+    }
+}

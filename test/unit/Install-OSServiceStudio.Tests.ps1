@@ -122,7 +122,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $ArgumentList -eq "/S /D=C:\Program Files\Outsystems\Development Environment 11" } }
 
-            $result = Install-OSServiceStudio -Version '11.55.35.0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServiceStudio -Version '11.45.35.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation' { Assert-MockCalled @assRunParams }
             It 'Should return the right result' {

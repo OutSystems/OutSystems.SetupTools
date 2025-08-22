@@ -35,7 +35,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When service center and the platform dont have the same version' {
 
-            Mock GetSCCompiledVersion { return '11.23.0.0' }
+            Mock GetSCCompiledVersion { return '11.24.0.0' }
 
             Install-OSPlatformLicense -ErrorAction SilentlyContinue -ErrorVariable err
 

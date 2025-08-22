@@ -239,14 +239,25 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerVersion { return $null }
 
             # Here we are testing also that the version used to compare is the lifetime version and not the platform server version
-            Mock GetServerInstallDir { return '11.1.0.0' }
-            Mock GetLifetimeVersion { return '11.0.0.0' }
+            Mock GetServerInstallDir { return '11.23.0.0' }
+            Mock GetLifetimeVersion { return '11.19.0.0' }
 
             $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\LifeTimeWithPlatformServer-11.0.0.1.exe" } }
 
-            $null = Install-OSServer -Version '11.0.0.1' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Install-OSServer -Version '11.19.0.0' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation using the lifetime installer' { Assert-MockCalled @assRunParams }
+        }
+
+        Context 'When lifetime switch is specified with an unsupported version' {
+
+            Mock GetServerVersion { return $null }
+
+            $assNotRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\LifeTimeWithPlatformServer-11.18.0.0.exe" } }
+
+            $null = Install-OSServer -Version '11.18.0.0' -WithLifeTime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation using the lifetime installer' { Assert-MockCalled @assNotRunParams }
         }
 
         Context 'When lifetime switch is NOT specified' {
@@ -256,9 +267,21 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             $assRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\PlatformServer-11.0.0.1.exe" } }
 
-            $null = Install-OSServer -Version '11.0.0.1' -ErrorVariable err -ErrorAction SilentlyContinue
+            $null = Install-OSServer -Version '11.19.0.0' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the installation using the normal installer' { Assert-MockCalled @assRunParams }
+        }
+
+        Context 'When lifetime switch is NOT specified but unsupported version for Platform' {
+
+            Mock GetServerVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+
+            $assNotRunParams = @{ 'CommandName' = 'Start-Process'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $FilePath -eq "$ENV:TEMP\PlatformServer-11.18.1.0.exe" } }
+
+            $null = Install-OSServer -Version '11.18.1.0' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the installation using the normal installer' { Assert-MockCalled @assNotRunParams }
         }
     }
 }
