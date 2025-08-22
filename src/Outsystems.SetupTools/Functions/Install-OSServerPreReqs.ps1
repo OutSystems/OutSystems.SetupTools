@@ -106,6 +106,7 @@ function Install-OSServerPreReqs
         if ($MinorVersion -lt 23)
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified or it was less than 23. Minimum version will be set to 23."
+            $MinorVersion = "23"
         }
     }
 
