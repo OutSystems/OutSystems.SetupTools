@@ -132,8 +132,6 @@ Set-OSServerConfig -SettingSection 'ServiceConfiguration' -Setting 'CompilerServ
 # **** Other config ****
 Set-OSServerConfig -SettingSection 'OtherConfigurations' -Setting 'DBTimeout' -Value '60' -ErrorAction Stop | Out-Null
 
-# -- Configure platform according to major version
-
 # -- Configure version specific platform settings
 # **** Cache invalidation service config ****
 Set-OSServerConfig -SettingSection 'CacheInvalidationConfiguration' -Setting 'ServiceHost' -Value $OSRabbitMQHost -ErrorAction Stop | Out-Null

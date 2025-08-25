@@ -68,10 +68,10 @@ function Install-OSPlatformServiceCenter
 
         if (-not $(ValidateMinimumRequiredVersion))
         {
-            WriteNonTerminalError -Message 'Unsupported version installed version'
+            WriteNonTerminalError -Message 'Unsupported version'
             $installResult.Success = $false
             $installResult.ExitCode = -1
-            $installResult.Message = 'Unsupported version installed version'
+            $installResult.Message = 'Unsupported version'
 
             return $installResult
         }

@@ -223,6 +223,8 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServiceStudioVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
+            $result = Install-OSServiceStudio -Version '10.0.0.0' -ErrorVariable err -ErrorAction SilentlyContinue
+
             It 'Should return the right result' {
                 $result.Success = $false
                 $result.ExitCode = -1
