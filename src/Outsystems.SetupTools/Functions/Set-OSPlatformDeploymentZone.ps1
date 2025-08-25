@@ -74,7 +74,7 @@ function Set-OSPlatformDeploymentZone
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "This cmdLet is only supported on OutSystems 11 or higher"
             WriteNonTerminalError -Message "This cmdLet is only supported on OutSystems 11 or higher"
 
-            return $null
+            return
         }
         #endregion
 
