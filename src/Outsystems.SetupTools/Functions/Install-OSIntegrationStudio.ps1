@@ -107,6 +107,17 @@ function Install-OSIntegrationStudio
             return $installResult
         }
 
+        if (-not $(ValidateVersion -Version $(([System.Version]$Version)) -Major "11" -Minor "0" -Build "0"))
+        {
+            WriteNonTerminalError -Message 'Unsupported version'
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Unsupported version'
+
+            return $installResult
+        }
+
+
         if (-not $osVersion )
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "OutSystems Integration Studio is not installed"
@@ -166,7 +177,6 @@ function Install-OSIntegrationStudio
                     try
                     {
                         DownloadOSSources -URL "$OSRepoURL\IntegrationStudio-$Version.exe" -SavePath $Installer
-                        
                     }
                     catch
                     {

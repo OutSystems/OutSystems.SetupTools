@@ -202,5 +202,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should throw an exception' { { Install-OSIntegrationStudio -Version '11.14.17.61' -ErrorAction Stop } | Should throw }
         }
 
+        Context 'When asked to install an unsupported version' {
+
+            Mock GetIntegrationStudioVersion { return $null }
+            Mock GetServerInstallDir { return $null }
+
+            It 'Should throw' { { Install-OSIntegrationStudio -Version '10.0.0.0' -ErrorAction SilentlyContinue } | Should throw }
+        }
     }
 }

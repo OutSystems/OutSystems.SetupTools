@@ -108,6 +108,16 @@ function Install-OSServiceStudio
             return $installResult
         }
 
+        if (-not $(ValidateVersion -Version $(([System.Version]$Version)) -Major "11" -Minor "0" -Build "0"))
+        {
+            WriteNonTerminalError -Message 'Unsupported version'
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Unsupported version'
+
+            return $installResult
+        }
+
         if ([Version]"$Version" -gt [Version]"11.50.0.0")
         {
             $InstallerNamePrefix = "ServiceStudio"
