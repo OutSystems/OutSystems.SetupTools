@@ -212,5 +212,22 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should run the installation with other parameters' { Assert-MockCalled @assRunPublishSolution }
         }
+
+        Context 'When the lifetime is not supported' {
+
+            Mock GetServerVersion { return '11.10.0.1' }
+            Mock GetLifetimeVersion { return '11.10.0.1' }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Unsupported version'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Unsupported version' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
+        }
     }
 }
