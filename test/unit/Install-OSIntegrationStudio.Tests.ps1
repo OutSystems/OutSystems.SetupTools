@@ -207,7 +207,14 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetIntegrationStudioVersion { return $null }
             Mock GetServerInstallDir { return $null }
 
-            It 'Should throw' { { Install-OSIntegrationStudio -Version '10.0.0.0' -ErrorAction SilentlyContinue } | Should throw }
+            It 'Should return the right result' {
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Unsupported version'
+            }
+
+            It 'Should output an error' { $err[-1] | Should Be 'Error starting the service center installation' }
+            It 'Should not throw' { { Install-OSServiceStudio -Version '11.55.35.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
     }
 }
