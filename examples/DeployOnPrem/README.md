@@ -66,7 +66,7 @@ To create the bundle:
 
 4. Run the script ( .\\CreateOfflineBundle.ps1> [parameters] ).
     * The scripts takes one parameters. *-MajorVersion*.
-    * *MajorVersion* is the major OutSystems version that will be downloaded to the bundle. This can be "11"and its a mandatory parameter.
+    * *MajorVersion* is the major OutSystems version that will be downloaded to the bundle. This must be "11" and it is a mandatory parameter.
 
 5. When the script finish you will have a file named *OfflineBundle.zip* in the same path where you ran the script with everything inside needed to install OutSystems.
 
