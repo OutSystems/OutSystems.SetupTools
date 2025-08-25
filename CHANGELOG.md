@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 4.0.1.0
+
+- Fix Set-OSServerConfig missing osVersion (#156)
+
 ## 4.0.0.0
 
 - Remove support for O10
