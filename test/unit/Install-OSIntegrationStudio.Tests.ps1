@@ -208,13 +208,13 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Mock GetServerInstallDir { return $null }
 
             It 'Should return the right result' {
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Unsupported version'
+                $result.Success = $false
+                $result.ExitCode = -1
+                $result.Message = 'Unsupported version'
             }
 
-            It 'Should output an error' { $err[-1] | Should Be 'Error starting the service center installation' }
-            It 'Should not throw' { { Install-OSServiceStudio -Version '11.55.35.0' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should output an error' { $err[-1] | Should Be 'Unsupported version' }
+            It 'Should not throw' { { Install-OSServiceStudio -Version '10.0.0.0' -ErrorAction SilentlyContinue } | Should Not throw }
         }
     }
 }
