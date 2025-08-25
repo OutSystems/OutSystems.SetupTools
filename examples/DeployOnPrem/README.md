@@ -31,7 +31,7 @@ Use this scripts if your machine is connected to Internet.
 
 4. Run the script ( .\\<scriptName.ps1> [parameters] )
     * The scripts takes two parameters. *-MajorVersion* and *-InstallDir*.
-    * *MajorVersion* is the major OutSystems version you want to install. This can be "11" and its a mandatory parameter.
+    * *MajorVersion* is the major OutSystems version you want to install. This must be "11" and it is a mandatory parameter.
     * *InstallDir* is the place where you want to install OutSystems. If not specified, the installation will default to %ProgramFiles%\OutSystems.
     * Example:
     ```powershell
