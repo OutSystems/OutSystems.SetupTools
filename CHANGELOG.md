@@ -1,5 +1,12 @@
 # OutSystems.SetupTools Release History
 
+## 4.0.0.0
+
+- Remove support for O10
+- Install command lines for development environments (Service Studio and Integration Studio) now only accept O11 major versions
+- Install command lines for Platform Server and LifeTime now have set minimum version for 11.23.0. If the minor version is not specified it will now target minor 23 instead of the latest
+- FIPS will only be disabled automatically for versions below 11.38.0
+
 ## 3.19.0.0
 
 - Remove RabbitMQ/Erlang automatic installation by default, making SkipRabbitMQ switch obsolete. In order to install and configure RabbitMQ/Erlang, the command Set-OSServerConfig with parameter -ConfigureCacheInvalidationService should be used instead. (#146)
