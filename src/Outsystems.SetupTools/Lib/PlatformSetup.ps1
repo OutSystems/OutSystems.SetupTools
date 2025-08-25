@@ -70,12 +70,6 @@ function DisableFIPS
     RegWrite -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\FIPSAlgorithmPolicy" -Name "Enabled" -Value 0 -Type "DWORD"
 }
 
-function ConfigureMSMQDomainServer
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Writting on registry HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup\AlwaysWithoutDS = 1"
-    RegWrite -Path "HKLM:\SOFTWARE\Microsoft\MSMQ\Parameters\Setup" -Name "AlwaysWithoutDS" -Value 1 -Type "DWORD"
-}
-
 function ConfigureWindowsEventLog([string]$LogName, [string]$LogSize, [string]$LogOverflowAction)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Setting event log $LogName with maxsize of $LogSize and $LogOverflowAction"
@@ -105,32 +99,6 @@ function GetDotNet4Version()
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $output"
 
     return $output
-}
-
-function GetDotNetCoreHostingBundleVersions()
-{
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Getting the contents of the registry key HKLM:SOFTWARE\WOW6432Node\Microsoft\Updates\.NET Core\Microsoft .Net Core<*>Windows Server Hosting<*>\PackageVersion"
-
-    $rootPath = 'HKLM:\SOFTWARE\Wow6432Node\Microsoft\Updates\.NET Core'
-    $filter = 'Microsoft .Net Core*Windows Server Hosting*'
-
-    try
-    {
-        $version = $(Get-ChildItem -Path $rootPath -ErrorAction Stop | Where-Object { $_.PSChildName -like $filter } | Get-ItemProperty -ErrorAction Stop).PackageVersion | Sort-Object -Descending
-    }
-    catch
-    {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message $($_.Exception.Message)
-    }
-
-    if (-not $version)
-    {
-        $version = '0.0.0.0'
-    }
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Returning $version"
-
-    return $version
 }
 
 function GetDotNetHostingBundleVersions()
@@ -306,29 +274,10 @@ function GetMSBuildToolsInstallInfo
     return $InstallInfo
 }
 
-function IsMSBuildToolsVersionValid([string]$MajorVersion, [object]$InstallInfo)
+function IsMSBuildToolsVersionValid([object]$InstallInfo)
 {
-    # Determines if we have a required version for the Major Version.
-    switch ($MajorVersion)
-    {
-        '10'
-        {
-            # Has either MSBuildTools 2015
-            # But _DOES NOT HAVE_ MSBuildTools 2017
-            return ($InstallInfo.HasMSBuild2015) -and (-not $InstallInfo.HasMSBuild2017)
-        }
-
-        { ($_  -as [int]) -ge 11}
-        {
-            # Has either MSBuildTools 2015 or MSBuildTools 2017
-            return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2017)
-        }
-
-        default
-        {
-            return $False
-        }
-    }
+    # Has either MSBuildTools 2015 or MSBuildTools 2017
+    return ($InstallInfo.HasMSBuild2015 -or $InstallInfo.HasMSBuild2017)
 }
 
 function GetMSBuildToolsInstallInfoWithVSWhere([string]$MinVersion, [string]$MaxVersion, [string]$PropertyFilter)
@@ -423,19 +372,19 @@ function InstallBuildTools([string]$Sources)
     return $($result.ExitCode)
 }
 
-function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources, [bool]$SkipRuntimePackages)
+function InstallDotNetHostingBundle([string]$MajorVersion, [string]$Sources, [bool]$SkipRuntimePackages)
 {
     if ($Sources)
     {
-        if (Test-Path "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])")
+        if (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])")
         {
-            $installer = "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
+            $installer = "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']).exe")
+        elseif (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe")
         {
-            $installer = "$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName']).exe"
+            $installer = "$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
         }
         else {
@@ -444,9 +393,9 @@ function InstallDotNetCoreHostingBundle([string]$MajorVersion, [string]$Sources,
     }
     else
     {
-        $installer = "$ENV:TEMP\$($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['InstallerName'])"
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
-        DownloadOSSources -URL $($script:OSDotNetCoreHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
+        $installer = "$ENV:TEMP\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Downloading sources from: $($script:OSDotNetHostingBundleReq[$MajorVersion]['ToInstallDownloadURL'])"
+        DownloadOSSources -URL $($script:OSDotNetHostingBundleReq[$MajorVersion]['ToInstallDownloadURL']) -SavePath $installer
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Starting the installation"

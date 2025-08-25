@@ -14,14 +14,14 @@ function Get-OSRepoAvailableVersions
 
     .PARAMETER MajorVersion
     Specifies the platform major version
-    Accepted values: 10 or 11
+    Accepted values: 11
 
     .PARAMETER Latest
     If specified, will only return the latest version
 
     .EXAMPLE
-    Get all available versions of the OutSystems 10 platform server
-    Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10'
+    Get all available versions of the OutSystems 11 platform server
+    Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '11'
 
     .EXAMPLE
     Get the latest available version of the OutSystems 11 Service Studio
@@ -37,7 +37,7 @@ function Get-OSRepoAvailableVersions
         [string]$Application,
 
         [Parameter(Mandatory = $true)]
-        [ValidateSet('10.0', '11.0', '10', '11')]   # We changed the versioning of the product but we still support the old versioning
+        [ValidatePattern('11(\.0)?')]   # We changed the versioning of the product but we still support the old versioning
         [string]$MajorVersion,
 
         [Parameter()]

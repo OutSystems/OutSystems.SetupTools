@@ -9,17 +9,18 @@ function Get-OSServiceStudioInfo
     Since we can have multiple development environments installed, you need to specify the major version to get.
 
     .PARAMETER MajorVersion
-    Major version. 9.0, 9.1, 10, 11, ...
+    Major version. 11, ...
 
     .EXAMPLE
-    Get-OSServiceStudioInfo -MajorVersion "10"
+    Get-OSServiceStudioInfo -MajorVersion "11"
 
     #>
 
     [CmdletBinding()]
     [OutputType('Outsystems.SetupTools.ServiceStudioInfo')]
     param (
-        [Parameter(Mandatory = $true, HelpMessage = "10")]
+        [Parameter(Mandatory = $true, HelpMessage = "11")]
+        [ValidatePattern('11(\.0)?')]
         [string]$MajorVersion
     )
 

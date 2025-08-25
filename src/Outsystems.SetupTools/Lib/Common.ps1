@@ -323,3 +323,47 @@ function MaskKey([String]$Text)
     $right = "**********$($Text.SubString($startchar ,[math]::min($Text.length, 4)))"
     return $right
 }
+
+function ValidateVersion($Version, [string]$Major, [string]$Minor, [string]$Build)
+{
+    # Version not null or empty
+    if($Version){
+        try
+        {
+            $osVersion = ([System.Version]$Version)
+        } catch
+        {
+            #Invalid version read, assume correct
+            return $true
+        }
+
+        # Version is not null or empty and is not $Major and minor is less than $Minor
+        if ($osVersion -and $($osVersion.Major -ne $Major -or $osVersion.Minor -lt $Minor -or $osVersion.Build -lt $Build))
+        {
+            $message = "Required version is $($Major).$($Minor).$($Build)"
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message $message
+            return $false
+        }
+    }
+
+    return $true
+}
+
+function ValidateMinimumRequiredVersion()
+{
+    $psVersion = [System.Version]$(GetServerVersion)
+    $ltVersion = [System.Version]$(GetLifetimeVersion)
+
+    #If there is LifeTime
+    if ($ltVersion)
+    {
+        # PS 11.23.0
+        return ValidateVersion -Version $ltVersion -Major "11" -Minor "19" -Build "0"
+    }
+    elseif ($psVersion)
+    {
+        return ValidateVersion -Version $psVersion -Major "11" -Minor "23" -Build "0"
+    }
+
+    return $true
+}

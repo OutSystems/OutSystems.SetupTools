@@ -6,7 +6,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         # Global mocks
         Mock IsAdmin { return $true }
-        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
         Mock RegWrite {}
         Mock SetWebConfigurationProperty { }

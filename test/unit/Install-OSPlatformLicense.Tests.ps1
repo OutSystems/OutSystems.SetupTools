@@ -6,9 +6,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         # Global mocks
         Mock IsAdmin { return $true }
-        Mock GetServerVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.0.0' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
-        Mock GetSCCompiledVersion { return '10.0.0.1' }
+        Mock GetSCCompiledVersion { return '11.23.0.0' }
         Mock DownloadOSSources {}
         Mock RunConfigTool { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
 
@@ -35,7 +35,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When service center and the platform dont have the same version' {
 
-            Mock GetSCCompiledVersion { return '10.0.0.0' }
+            Mock GetSCCompiledVersion { return '11.24.0.0' }
 
             Install-OSPlatformLicense -ErrorAction SilentlyContinue -ErrorVariable err
 

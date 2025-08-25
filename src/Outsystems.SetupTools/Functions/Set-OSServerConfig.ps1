@@ -125,61 +125,43 @@ function Set-OSServerConfig
     {
         $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
 
-        # Get the platform major version
-        $osVersion = GetServerVersion
+        $ConfigureCacheInvalidationServiceAttrib = New-Object System.Management.Automation.ParameterAttribute
+        $ConfigureCacheInvalidationServiceAttrib.ParameterSetName = 'ApplyConfig'
+        $ConfigureCacheInvalidationServiceAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        $ConfigureCacheInvalidationServiceAttribCollection.Add($ConfigureCacheInvalidationServiceAttrib)
+        $ConfigureCacheInvalidationServiceParam = New-Object System.Management.Automation.RuntimeDefinedParameter('ConfigureCacheInvalidationService', [switch], $ConfigureCacheInvalidationServiceAttribCollection)
 
-        if ($osVersion)
-        {
-            $osMajorVersion = "$(([version]$osVersion).Major)"
+        $LogDBCredentialAttrib = New-Object System.Management.Automation.ParameterAttribute
+        $LogDBCredentialAttrib.ParameterSetName = 'ApplyConfig'
+        $LogDBCredentialAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        $LogDBCredentialAttribCollection.Add($LogDBCredentialAttrib)
+        $LogDBCredentialParam = New-Object System.Management.Automation.RuntimeDefinedParameter('LogDBCredential', [System.Management.Automation.PSCredential], $LogDBCredentialAttribCollection)
 
-            # Version specific parameters
-            switch ($osMajorVersion)
-            {
-                '10'
-                {
-                    #do nothing
-                }
-                default
-                {
-                    $ConfigureCacheInvalidationServiceAttrib = New-Object System.Management.Automation.ParameterAttribute
-                    $ConfigureCacheInvalidationServiceAttrib.ParameterSetName = 'ApplyConfig'
-                    $ConfigureCacheInvalidationServiceAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-                    $ConfigureCacheInvalidationServiceAttribCollection.Add($ConfigureCacheInvalidationServiceAttrib)
-                    $ConfigureCacheInvalidationServiceParam = New-Object System.Management.Automation.RuntimeDefinedParameter('ConfigureCacheInvalidationService', [switch], $ConfigureCacheInvalidationServiceAttribCollection)
+        $UpgradeEnvironmentAttrib = New-Object System.Management.Automation.ParameterAttribute
+        $UpgradeEnvironmentAttrib.ParameterSetName = 'ApplyConfig'
+        $UpgradeEnvironmentAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        $UpgradeEnvironmentAttribCollection.Add($UpgradeEnvironmentAttrib)
+        $UpgradeEnvironmentParam = New-Object System.Management.Automation.RuntimeDefinedParameter('UpgradeEnvironment', [switch], $UpgradeEnvironmentAttribCollection)
 
-                    $LogDBCredentialAttrib = New-Object System.Management.Automation.ParameterAttribute
-                    $LogDBCredentialAttrib.ParameterSetName = 'ApplyConfig'
-                    $LogDBCredentialAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-                    $LogDBCredentialAttribCollection.Add($LogDBCredentialAttrib)
-                    $LogDBCredentialParam = New-Object System.Management.Automation.RuntimeDefinedParameter('LogDBCredential', [System.Management.Automation.PSCredential], $LogDBCredentialAttribCollection)
+        $IntegratedAuthPasswordAttrib = New-Object System.Management.Automation.ParameterAttribute
+        $IntegratedAuthPasswordAttrib.ParameterSetName = 'ApplyConfig'
+        $IntegratedAuthPasswordAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        $IntegratedAuthPasswordAttribCollection.Add($IntegratedAuthPasswordAttrib)
+        $IntegratedAuthPasswordParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IntegratedAuthPassword', [string], $IntegratedAuthPasswordAttribCollection)
 
-                    $UpgradeEnvironmentAttrib = New-Object System.Management.Automation.ParameterAttribute
-                    $UpgradeEnvironmentAttrib.ParameterSetName = 'ApplyConfig'
-                    $UpgradeEnvironmentAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-                    $UpgradeEnvironmentAttribCollection.Add($UpgradeEnvironmentAttrib)
-                    $UpgradeEnvironmentParam = New-Object System.Management.Automation.RuntimeDefinedParameter('UpgradeEnvironment', [switch], $UpgradeEnvironmentAttribCollection)
+        $paramDictionary.Add('ConfigureCacheInvalidationService', $ConfigureCacheInvalidationServiceParam)
+        $paramDictionary.Add('LogDBCredential', $LogDBCredentialParam)
+        $paramDictionary.Add('IntegratedAuthPassword', $IntegratedAuthPasswordParam)
+        $paramDictionary.Add('UpgradeEnvironment', $UpgradeEnvironmentParam)
 
-                    $IntegratedAuthPasswordAttrib = New-Object System.Management.Automation.ParameterAttribute
-                    $IntegratedAuthPasswordAttrib.ParameterSetName = 'ApplyConfig'
-                    $IntegratedAuthPasswordAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-                    $IntegratedAuthPasswordAttribCollection.Add($IntegratedAuthPasswordAttrib)
-                    $IntegratedAuthPasswordParam = New-Object System.Management.Automation.RuntimeDefinedParameter('IntegratedAuthPassword', [string], $IntegratedAuthPasswordAttribCollection)
+        $InstallServiceCenterAttrib = New-Object System.Management.Automation.ParameterAttribute
+        $InstallServiceCenterAttrib.ParameterSetName = 'ApplyConfig'
+        $InstallServiceCenterAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+        $InstallServiceCenterAttribCollection.Add($InstallServiceCenterAttrib)
+        $InstallServiceCenterParam = New-Object System.Management.Automation.RuntimeDefinedParameter('InstallServiceCenter', [switch], $InstallServiceCenterAttribCollection)
 
-                    $paramDictionary.Add('ConfigureCacheInvalidationService', $ConfigureCacheInvalidationServiceParam)
-                    $paramDictionary.Add('LogDBCredential', $LogDBCredentialParam)
-                    $paramDictionary.Add('IntegratedAuthPassword', $IntegratedAuthPasswordParam)
-                    $paramDictionary.Add('UpgradeEnvironment', $UpgradeEnvironmentParam)
-                }
-            }
+        $paramDictionary.Add('InstallServiceCenter', $InstallServiceCenterParam)
 
-            $InstallServiceCenterAttrib = New-Object System.Management.Automation.ParameterAttribute
-            $InstallServiceCenterAttrib.ParameterSetName = 'ApplyConfig'
-            $InstallServiceCenterAttribCollection = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
-            $InstallServiceCenterAttribCollection.Add($InstallServiceCenterAttrib)
-            $InstallServiceCenterParam = New-Object System.Management.Automation.RuntimeDefinedParameter('InstallServiceCenter', [switch], $InstallServiceCenterAttribCollection)
-
-            $paramDictionary.Add('InstallServiceCenter', $InstallServiceCenterParam)
-        }
         return $paramDictionary
     }
 

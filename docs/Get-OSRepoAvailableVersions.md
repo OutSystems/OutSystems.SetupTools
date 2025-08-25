@@ -24,10 +24,10 @@ Usefull for the Install-OSServer and Install-OSServiceStudio cmdLets
 
 ### EXAMPLE 1
 ```
-Get all available versions of the OutSystems 10 platform server
+Get all available versions of the OutSystems 11 platform server
 ```
 
-Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '10'
+Get-OSRepoAvailableVersions -Application 'PlatformServer' -MajorVersion '11'
 
 ### EXAMPLE 2
 ```
@@ -56,7 +56,7 @@ Accept wildcard characters: False
 
 ### -MajorVersion
 Specifies the platform major version
-Accepted values: 10 or 11
+Accepted values: 11
 
 ```yaml
 Type: String

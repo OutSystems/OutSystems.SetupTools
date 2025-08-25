@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param(
     [Parameter(Mandatory = $true)]
-    [ValidateSet('10.0', '11')]
+    [ValidateSet('11')]
     [string]$MajorVersion,
 
     [Parameter()]

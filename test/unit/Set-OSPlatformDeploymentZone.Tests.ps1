@@ -11,7 +11,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         # Global mocks
         Mock IsAdmin { return $true }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
-        Mock GetServerVersion { return '12.0.0.0' }
+        Mock GetServerVersion { return '11.0.0.0' }
         Mock RunConfigTool { return $confToolOutput }
 
         $assNotRunConfTool = @{ 'CommandName' = 'RunConfigTool'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context' }

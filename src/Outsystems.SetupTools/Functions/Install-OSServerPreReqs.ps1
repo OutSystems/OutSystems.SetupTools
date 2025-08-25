@@ -10,7 +10,7 @@ function Install-OSServerPreReqs
 
     .PARAMETER MajorVersion
     Specifies the platform major version.
-    Accepted values: 10 or 11.
+    Accepted values: 11.
 
     .PARAMETER MinorVersion
     Specifies the platform minor version.
@@ -40,10 +40,10 @@ function Install-OSServerPreReqs
     Accepted values: $false and $true. By default this is set to $false.
 
     .EXAMPLE
-    Install-OSServerPreReqs -MajorVersion "10"
+    Install-OSServerPreReqs -MajorVersion "11"
 
     .EXAMPLE
-    Install-OSServerPreReqs -MajorVersion "11" -MinorVersion "12" -PatchVersion "3"
+    Install-OSServerPreReqs -MajorVersion "11" -MinorVersion "23" -PatchVersion "0"
 
     .EXAMPLE
     Install-OSServerPreReqs -MajorVersion "11" -InstallIISMgmtConsole:$false
@@ -57,7 +57,7 @@ function Install-OSServerPreReqs
     [OutputType('Outsystems.SetupTools.InstallResult')]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidatePattern('\d\d+(\.0)?$')]
+        [ValidatePattern('11(\.0)?$')]
         [string]$MajorVersion,
 
         [Parameter()]
@@ -102,6 +102,12 @@ function Install-OSServerPreReqs
 
         #The MajorVersion parameter supports 11.0 or 11. Therefore, we need to remove the '.0' part
         $MajorVersion = $MajorVersion.replace(".0", "")
+
+        if ($MinorVersion -eq "0")
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified. Minimum version will be set to 23."
+            $MinorVersion = "23"
+        }
     }
 
     process
@@ -115,6 +121,16 @@ function Install-OSServerPreReqs
             $installResult.Success = $false
             $installResult.ExitCode = -1
             $installResult.Message = 'The current user is not Administrator or not running this script in an elevated session'
+
+            return $installResult
+        }
+
+        if (-not $(ValidateVersion -Version ([System.Version]"$($MajorVersion).$($MinorVersion).$($PatchVersion).0") -Major "11" -Minor "23" -Build "0"))
+        {
+            WriteNonTerminalError -Message 'Unsupported version'
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Unsupported version'
 
             return $installResult
         }
@@ -133,13 +149,12 @@ function Install-OSServerPreReqs
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Checking pre-requisites for OutSystems major version $MajorVersion"
 
         # MS Buld Tools minimum version is different depending on the Platform Major Version
-        # 10 : 2015 and 2015 Update 3 are allowed but 2017 is not
-        # 11 : All the above three are allowed
+        # 11 : 2015 and 2015 Update 3 are allowed, and 2017
         function ValidateMSBuildTools
         {
             $MSBuildInstallInfo = $(GetMSBuildToolsInstallInfo)
 
-            if (-not $(IsMSBuildToolsVersionValid -MajorVersion $MajorVersion -InstallInfo $MSBuildInstallInfo))
+            if (-not $(IsMSBuildToolsVersionValid -InstallInfo $MSBuildInstallInfo))
             {
                 if ($MSBuildInstallInfo.LatestVersionInstalled)
                 {
@@ -161,126 +176,52 @@ function Install-OSServerPreReqs
             return $false
         }
 
-        switch ($MajorVersion)
-        {
-            '10'
-            {
-                $installBuildTools = ValidateMSBuildTools
-            }
-            default
-            {
-                $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-                if (($fullVersion -lt [version]"11.35.0.0") -or $InstallMSBuildTools)
-                {
-                    $installBuildTools = ValidateMSBuildTools
-                }
-                else
-                {
-                    $installBuildTools = $false
-                }
-            }
-        }
-
         # Version specific pre-reqs checks.
-        switch ($MajorVersion)
+        $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
+        if (($fullVersion -lt [version]"11.35.0.0") -or $InstallMSBuildTools)
         {
-            '10'
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Adding Microsoft Message Queueing feature to the Windows Features list since its required for OutSystems $MajorVersion"
-                $winFeatures += "MSMQ"
+            $installBuildTools = ValidateMSBuildTools
+        }
+        else
+        {
+            $installBuildTools = $false
+        }
+
+        if ($fullVersion -ge [version]"11.27.0.0")
+        {
+            # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
+            # We install .NET 8.0 only
+            $installDotNetHostingBundle6 = $false
+            $installDotNetHostingBundle8 = $true
+            $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
+        }
+        else
+        {
+            # Here means that minor and patch version were specified and we are below version 11.27.0.0
+            $installDotNetHostingBundle6 = $true
+            $installDotNetHostingBundle8 = $false
+            $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['6']['Version']
+        }
+
+        foreach ($version in GetDotNetHostingBundleVersions)
+        {
+            # Check .NET 6.0
+            if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['6']['Version']) {
+                $installDotNetHostingBundle6 = $false
             }
-            default
-            {
-                # Check .NET Core / .NET Windows Server Hosting version
-                $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-                if ($fullVersion -eq [version]"$MajorVersion.0.0.0")
-                {
-                    # Here means that no specific minor and patch version were specified
-                    # So we install all versions
-                    $installDotNetCoreHostingBundle2 = $true
-                    $installDotNetCoreHostingBundle3 = $true
-                    $installDotNetHostingBundle6 = $true
-                    $installDotNetHostingBundle8 = $true
-                }
-                elseif ($fullVersion -ge [version]"11.27.0.0")
-                {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
-                    # We install .NET 8.0 only
-                    $installDotNetCoreHostingBundle2 = $false
-                    $installDotNetCoreHostingBundle3 = $false
-                    $installDotNetHostingBundle6 = $false
-                    $installDotNetHostingBundle8 = $true
-                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['8']['Version']
-                }
-                elseif ($fullVersion -ge [version]"11.17.1.0")
-                {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.17.1.0
-                    # We install .NET 6.0 only
-                    $installDotNetCoreHostingBundle2 = $false
-                    $installDotNetCoreHostingBundle3 = $false
-                    $installDotNetHostingBundle6 = $true
-                    $installDotNetHostingBundle8 = $false
-                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['6']['Version']
-                }
-                elseif ($fullVersion -ge [version]"11.12.2.0")
-                {
-                    # Here means that minor and patch version were specified and we are equal or above version 11.12.2.0
-                    # We install version 3 only
-                    $installDotNetCoreHostingBundle2 = $false
-                    $installDotNetCoreHostingBundle3 = $true
-                    $installDotNetHostingBundle6 = $false
-                    $installDotNetHostingBundle8 = $false
-                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']
-                }
-                else
-                {
-                    # Here means that minor and patch version were specified and we are below version 11.12.2.0
-                    # We install version 2 only
-                    $installDotNetCoreHostingBundle2 = $true
-                    $installDotNetCoreHostingBundle3 = $false
-                    $installDotNetHostingBundle6 = $false
-                    $installDotNetHostingBundle8 = $false
-                    $mostRecentHostingBundleVersion = [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']
-                }
-
-                foreach ($version in GetDotNetCoreHostingBundleVersions)
-                {
-                    # Check .NET Core 2.1
-                    if (([version]$version).Major -eq 2 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['2']['Version']) {
-                        $installDotNetCoreHostingBundle2 = $false
-                    }
-                    # Check .NET Core 3.1
-                    if (([version]$version).Major -eq 3 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['3']['Version']) {
-                        $installDotNetCoreHostingBundle3 = $false
-                    }
-                }
-
-                foreach ($version in GetDotNetHostingBundleVersions)
-                {
-                    # Check .NET 6.0
-                    if (([version]$version).Major -eq 6 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['6']['Version']) {
-                        $installDotNetHostingBundle6 = $false
-                    }
-                    # Check .NET 8.0
-                    if (([version]$version).Major -eq 8 -and ([version]$version) -ge [version]$script:OSDotNetCoreHostingBundleReq['8']['Version']) {
-                        $installDotNetHostingBundle8 = $false
-                    }
-                }
-
-                if ($installDotNetCoreHostingBundle2) {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 2.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                }
-                if ($installDotNetCoreHostingBundle3) {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Core Windows Server Hosting version 3.1 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Core Windows Server Hosting bundle"
-                }
-                if ($installDotNetHostingBundle6) {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 6.0.6 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
-                }
-                if ($installDotNetHostingBundle8) {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 8.0.0 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
-                }
+            # Check .NET 8.0
+            if (([version]$version).Major -eq 8 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['8']['Version']) {
+                $installDotNetHostingBundle8 = $false
             }
         }
+
+        if ($installDotNetHostingBundle6) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 6.0.6 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
+        }
+        if ($installDotNetHostingBundle8) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 8.0.0 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
+        }
+
 
         # Check .NET version
         if ($(GetDotNet4Version) -lt $script:OSDotNetReqForMajor[$MajorVersion]['Value'])
@@ -398,130 +339,13 @@ function Install-OSServerPreReqs
             }
         }
 
-        # Install .NET Core Windows Server Hosting bundle version 2.1
-        if ($installDotNetCoreHostingBundle2)
-        {
-            try
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core 2.1 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '2' -Sources $SourcePath
-            }
-            catch [System.IO.FileNotFoundException]
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Core 2.1 installer not found"
-                WriteNonTerminalError -Message ".NET Core 2.1 installer not found"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = '.NET Core 2.1 installer not found'
-
-                return $installResult
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core 2.1 installation"
-                WriteNonTerminalError -Message "Error downloading or starting the .NET Core 2.1 installation"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error downloading or starting the .NET Core 2.1 installation'
-
-                return $installResult
-            }
-
-            switch ($exitCode)
-            {
-                0
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 2.1 Windows Server Hosting bundle successfully installed."
-                }
-
-                { $_ -in 3010, 3011 }
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 2.1 Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
-                    $installResult.RebootNeeded = $true
-                }
-
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET Core 2.1 Windows Server Hosting bundle. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET Core 2.1 Windows Server Hosting bundle. Exit code: $exitCode"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing .NET Core 2.1 Windows Server Hosting bundle'
-
-                    return $installResult
-                }
-            }
-
-        }
-
-        # Install .NET Core Windows Server Hosting bundle version 3.1
-        if ($installDotNetCoreHostingBundle3)
-        {
-            try
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Core 3.1 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '3' -Sources $SourcePath
-            }
-            catch [System.IO.FileNotFoundException]
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET Core 3.1 installer not found"
-                WriteNonTerminalError -Message ".NET Core 3.1 installer not found"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = '.NET Core 3.1 installer not found'
-
-                return $installResult
-            }
-            catch
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET Core 3.1 installation"
-                WriteNonTerminalError -Message "Error downloading or starting the .NET Core 3.1 installation"
-
-                $installResult.Success = $false
-                $installResult.ExitCode = -1
-                $installResult.Message = 'Error downloading or starting the .NET Core 3.1 installation'
-
-                return $installResult
-            }
-
-            switch ($exitCode)
-            {
-                0
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 3.1 Windows Server Hosting bundle successfully installed."
-                }
-
-                { $_ -in 3010, 3011 }
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET Core 3.1 Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
-                    $installResult.RebootNeeded = $true
-                }
-
-                default
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET Core 3.1 Windows Server Hosting bundle. Exit code: $exitCode"
-                    WriteNonTerminalError -Message "Error installing .NET Core 3.1 Windows Server Hosting bundle. Exit code: $exitCode"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = $exitCode
-                    $installResult.Message = 'Error installing .NET Core 3.1 Windows Server Hosting bundle'
-
-                    return $installResult
-                }
-            }
-        }
-
         # Install .NET Windows Server Hosting bundle version 6
         if ($installDotNetHostingBundle6)
         {
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 6.0 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '6' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
+                $exitCode = InstallDotNetHostingBundle -MajorVersion '6' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
             }
             catch [System.IO.FileNotFoundException]
             {
@@ -579,7 +403,7 @@ function Install-OSServerPreReqs
             try
             {
                 LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 8.0 Windows Server Hosting bundle"
-                $exitCode = InstallDotNetCoreHostingBundle -MajorVersion '8' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
+                $exitCode = InstallDotNetHostingBundle -MajorVersion '8' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
             }
             catch [System.IO.FileNotFoundException]
             {
@@ -818,35 +642,6 @@ function Install-OSServerPreReqs
                 return $installResult
             }
         }
-
-        # Version specific configuration.
-        switch ($MajorVersion)
-        {
-            '10'
-            {
-                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Configure Message Queuing service to to always try to contact a message queue server when running on a server registered in a domain."
-                try
-                {
-                    ConfigureMSMQDomainServer
-                }
-                catch
-                {
-                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error configuring the Message Queuing service"
-                    WriteNonTerminalError -Message "Error configuring the Message Queuing service"
-
-                    $installResult.Success = $false
-                    $installResult.ExitCode = -1
-                    $installResult.Message = 'Error configuring the Message Queuing service'
-
-                    return $installResult
-                }
-            }
-            default
-            {
-                # Nothing to be done here
-            }
-        }
-        #endregion
 
         if ($installResult.RebootNeeded)
         {

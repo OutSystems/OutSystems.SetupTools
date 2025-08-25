@@ -5,12 +5,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
     Describe 'Publish-OSPlatformLifetime Tests' {
 
         # Global mocks
-        Mock GetServerVersion { return '10.0.0.1' }
-        Mock GetLifetimeVersion { return '10.0.0.1' }
+        Mock GetServerVersion { return '11.23.0.1' }
+        Mock GetLifetimeVersion { return '11.23.0.1' }
         Mock GetServerInstallDir { return 'C:\Program Files\OutSystems\Platform Server' }
-        Mock GetSCCompiledVersion { return '10.0.0.1' }
-        Mock GetSysComponentsCompiledVersion { return '10.0.0.1' }
-        Mock GetLifetimeCompiledVersion { return '10.0.0.1' }
+        Mock GetSCCompiledVersion { return '11.23.0.1' }
+        Mock GetSysComponentsCompiledVersion { return '11.23.0.1' }
+        Mock GetLifetimeCompiledVersion { return '11.23.0.1' }
         Mock PublishSolution { return @{ 'Output' = 'All good'; 'ExitCode' = 0} }
         Mock SetLifetimeCompiledVersion {}
 
@@ -38,7 +38,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When service center has a wrong version' {
 
-            Mock GetSCCompiledVersion { return "10.0.0.0" }
+            Mock GetSCCompiledVersion { return "11.23.0.0" }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -54,7 +54,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         }
 
         Context 'When service center installation is not found' {
-            Mock GetLifetimeCompiledVersion { return '10.0.0.0' }
+            Mock GetLifetimeCompiledVersion { return '11.23.0.0' }
             Mock GetSCCompiledVersion { return $null }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
@@ -72,7 +72,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When lifetime and the platform dont have the same version' {
 
-            Mock GetLifetimeCompiledVersion { return '10.0.0.0' }
+            Mock GetLifetimeCompiledVersion { return '11.23.0.0' }
 
             $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -211,6 +211,23 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             $assRunPublishSolution = @{ 'CommandName' = 'PublishSolution'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $SCUser -eq "Whatever" -and $SCPass -eq "admin" } }
 
             It 'Should run the installation with other parameters' { Assert-MockCalled @assRunPublishSolution }
+        }
+
+        Context 'When the lifetime is not supported' {
+
+            Mock GetServerVersion { return '11.10.0.1' }
+            Mock GetLifetimeVersion { return '11.10.0.1' }
+
+            $result = Publish-OSPlatformLifetime -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should not run the installation' { Assert-MockCalled @assNotRunPublishSolution}
+            It 'Should return the right result' {
+                $result.Success | Should Be $false
+                $result.ExitCode | Should Be -1
+                $result.Message | Should Be 'Unsupported version'
+            }
+            It 'Should output an error' { $err[-1] | Should Be 'Unsupported version' }
+            It 'Should not throw' { { Publish-OSPlatformLifetime -ErrorAction SilentlyContinue } | Should Not throw }
         }
     }
 }

@@ -22,16 +22,16 @@ function Install-OSServiceStudio
     If specified, the InstallDir will not be appended with \<InstallerNamePrefix>-<Version>
 
     .EXAMPLE
-    Install-OSServiceStudio -Version "10.0.823.0"
+    Install-OSServiceStudio -Version "11.55.35"
 
     .EXAMPLE
-    Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems
+    Install-OSServiceStudio -Version "11.55.35" -InstallDir D:\Outsystems
 
     .EXAMPLE
-    Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp
+    Install-OSServiceStudio -Version "11.55.35" -InstallDir D:\Outsystems -SourcePath c:\temp
 
     .EXAMPLE
-    Install-OSServiceStudio -Version "10.0.823.0" -InstallDir D:\Outsystems -SourcePath c:\temp -FullPathInstallDir
+    Install-OSServiceStudio -Version "11.55.35" -InstallDir D:\Outsystems -SourcePath c:\temp -FullPathInstallDir
 
     #>
 
@@ -88,7 +88,7 @@ function Install-OSServiceStudio
 
         $osVersion = GetServiceStudioVersion -MajorVersion "$(([System.Version]$Version).Major)"
         $osInstallDir = GetServiceStudioInstallDir -MajorVersion "$(([System.Version]$Version).Major)"
-		
+
         $InstallerNamePrefix = "DevelopmentEnvironment"
         $InstallerFolderPrefix = "Development Environment"
     }
@@ -104,6 +104,16 @@ function Install-OSServiceStudio
             $installResult.Success = $false
             $installResult.ExitCode = -1
             $installResult.Message = 'The current user is not Administrator or not running this script in an elevated session'
+
+            return $installResult
+        }
+
+        if (-not $(ValidateVersion -Version $(([System.Version]$Version)) -Major "11" -Minor "0" -Build "0"))
+        {
+            WriteNonTerminalError -Message 'Unsupported version'
+            $installResult.Success = $false
+            $installResult.ExitCode = -1
+            $installResult.Message = 'Unsupported version'
 
             return $installResult
         }

@@ -19,6 +19,7 @@ function Get-OSIntegrationStudioInfo
     [OutputType('Outsystems.SetupTools.IntegrationStudioInfo')]
     param (
         [Parameter(Mandatory = $true, HelpMessage = "11")]
+        [ValidatePattern('11(\.0)?$')]
         [string]$MajorVersion
     )
 

@@ -52,8 +52,8 @@ Install-OSServerPreReqs -MajorVersion 11
 * Install the platform server and development environment:
 
 ```powershell
-Install-OSServer -Version "11.0.108.0" -InstallDir "D:\OutSystems"
-Install-OSServiceStudio -Version "11.0.108.0" -InstallDir "D:\OutSystems"
+Install-OSServer -Version "11.23.0" -InstallDir "D:\OutSystems"
+Install-OSServiceStudio -Version "11.55.35.64305" -InstallDir "D:\OutSystems"
 ```
 
 * Configure the platform :
