@@ -365,6 +365,7 @@ function Set-OSServerPerformanceTunning2
                     return
                 }
             }
+        }
 
         # Configure HTTP Compression folder (Server Level)
         if ($IISHttpCompressionPath)
