@@ -365,6 +365,19 @@ function Set-OSServerPerformanceTunning2
                     return
                 }
             }
+
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Changing IIS compilation folder to $IISNetCompilationPath"
+            try
+            {
+                SetWebConfigurationProperty -PSPath "MACHINE/WEBROOT" -Filter "system.web/compilation" -Name 'tempDirectory' -Value $IISNetCompilationPath
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error setting the IIS compilation folder"
+                WriteNonTerminalError -Message "Error setting the IIS compilation folder"
+
+                return
+            }
         }
 
         # Configure HTTP Compression folder (Server Level)
