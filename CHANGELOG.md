@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 4.0.2.0
+
+- Skip Service Center validation for first installs.
+- Remove code that modify permissions, this should be something customers handle.
+
 ## 4.0.1.0
 
 - Fix Set-OSServerConfig missing osVersion (#156)
