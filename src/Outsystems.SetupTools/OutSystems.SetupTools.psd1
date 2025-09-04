@@ -104,6 +104,7 @@ FunctionsToExport = @(
     'Set-OSServerPerformanceTunning',
     'Set-OSServerPerformanceTunning2',
     'Set-OSServerSecuritySettings',
+    'Set-OSServerSEOFriendlyURLs',
     'Set-OSServerWindowsFirewall',
     'Start-OSServerServices',
     'Stop-OSServerServices',
