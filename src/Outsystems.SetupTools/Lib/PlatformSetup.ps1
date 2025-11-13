@@ -779,16 +779,16 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process = New-Object System.Diagnostics.Process
         $Process.StartInfo = $ProcessInfo
         $Process.Start() | Out-Null
-        $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle
-        $Output = $Process.StandardOutput.ReadToEnd()
-
+        $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle  
+        
         if ($OnLogEvent)
         {
             do
             {
                 # Keep redirecting output until process exits
-                $OnLogEvent.Invoke($process.StandardOutput.ReadLine());
-
+                $OutputLine = $process.StandardOutput.ReadLine();
+                $Output+="$OutputLine`n";
+                $OnLogEvent.Invoke($OutputLine);
             } until ($process.HasExited)
         }
 
