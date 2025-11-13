@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 4.0.3.0
+
+- Improve how the `ExecuteCommand` function handles redirecting data from the Standard Output stream.
+- Document local testing (with Pester).
+
 ## 4.0.2.0
 
 - Skip Service Center validation for first installs.
