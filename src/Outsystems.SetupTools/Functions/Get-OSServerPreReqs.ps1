@@ -186,18 +186,27 @@ function Get-OSServerPreReqs
 
         # Check .NET Core / .NET Windows Server Hosting version
         $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-        if ($fullVersion -ge [version]"11.27.0.0")
+        if ($fullVersion -ge [version]"11.41.0.0")
+        {
+            $requireDotNetHostingBundle6 = $false
+            $requireDotNetHostingBundle8 = $false
+            $requireDotNetHostingBundle10 = $true
+        }
+
+        elseif ($fullVersion -ge [version]"11.27.0.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
             # We install .NET 8.0 only
             $requireDotNetHostingBundle6 = $false
             $requireDotNetHostingBundle8 = $true
+            $requireDotNetHostingBundle10 = $false
         }
         else
         {
-            # Here means that minor and patch version were specified and we are below version 11.27.0.0
+            # Here means that minor and patch version were not specified or we are below version 11.27.0.0
             $requireDotNetHostingBundle6 = $true
             $requireDotNetHostingBundle8 = $true
+            $requireDotNetHostingBundle10 = $true
         }
 
         if ($fullVersion -lt [version]"11.35.0.0")
@@ -285,6 +294,45 @@ function Get-OSServerPreReqs
                                                             }
         }
 
+        if ($requireDotNetHostingBundle10) {
+            $RequirementStatuses += CreateRequirementStatus -Title ".NET 10.0 Windows Server Hosting" `
+                                                            -ScriptBlock `
+                                                            {
+                                                                $Status = $False
+                                                                foreach ($version in GetDotNetHostingBundleVersions)
+                                                                {
+                                                                    # Check version 10.0
+                                                                    if (([version]$version).Major -eq 10 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['10']['Version']) {
+                                                                        $Status = $True
+                                                                    }
+                                                                }
+                                                                $OKMessages = @("Minimum .NET 10.0.2 Windows Server Hosting found.")
+                                                                $NOKMessages = @("Minimum .NET 10.0.2 Windows Server Hosting not found.")
+                                                                $IISStatus = $True
+
+                                                                if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
+                                                                {
+                                                                    $aspModules = Get-WebGlobalModule | Where-Object { $_.Name -eq "aspnetcoremodulev2" }
+                                                                    if ($Status)
+                                                                    {
+                                                                        # Check if IIS can find ASP.NET modules
+                                                                        if ($aspModules.Count -lt 1)
+                                                                        {
+                                                                            $Status = $False
+                                                                            $IISStatus = $False
+                                                                            $NOKMessages = @("IIS can't find ASP.NET modules")
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            $IISStatus = $True
+                                                                        }
+                                                                    }
+                                                                }
+
+
+                                                                return $(CreateResult -Status $Status -IISStatus $IISStatus -OKMessages $OKMessages -NOKMessages $NOKMessages)
+                                                            }
+        }
 
         $RequirementStatuses += CreateRequirementStatus -Title "Windows Features" `
                                                         -ScriptBlock `
