@@ -186,7 +186,7 @@ function Get-OSServerPreReqs
 
         # Check .NET Core / .NET Windows Server Hosting version
         $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-        if ($fullVersion -ge [version]"11.41.0.0")
+        if ($fullVersion -ge [version]"11.40.2.0")
         {
             $requireDotNetHostingBundle6 = $false
             $requireDotNetHostingBundle8 = $false

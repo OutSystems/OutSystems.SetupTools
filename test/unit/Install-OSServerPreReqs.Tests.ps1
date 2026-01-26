@@ -589,7 +589,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When .NET 10.0 installation fails to start' {
 
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "10" } -MockWith { throw 'Big error' }
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -613,7 +613,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error downloading or starting the .NET 10.0 installation'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error downloading or starting the .NET 10.0 installation' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET 8.0 installation fails to start' {
@@ -679,7 +679,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When .NET 10.0 installer not found' {
 
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "10" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 10.0 installer not found' }
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -703,7 +703,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be '.NET 10.0 installer not found'
             }
             It 'Should output an error' { $err[-1] | Should Be '.NET 10.0 installer not found' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET 8.0 installer not found' {
@@ -768,7 +768,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
         Context 'When .NET 10.0 reports a reboot' {
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "10" } -MockWith { return 3010 }
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallDotNet
@@ -793,7 +793,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Outsystems platform server pre-requisites successfully installed but a reboot is required'
             }
             It 'Should not output an error' { $err.Count | Should Be 0 }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET 8.0 reports a reboot' {
@@ -861,7 +861,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When .NET 10.0 reports an error' {
 
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "10" } -MockWith { return 10 }
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the next actions' {
                 Assert-MockCalled @assRunInstallWindowsFeatures
@@ -885,7 +885,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.Message | Should Be 'Error installing .NET 10.0 Windows Server Hosting bundle'
             }
             It 'Should output an error' { $err[-1] | Should Be 'Error installing .NET 10.0 Windows Server Hosting bundle. Exit code: 10' }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
         Context 'When .NET 8.0 reports an error' {
@@ -1138,9 +1138,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         }
 
         # .Net 10 Hosting Bundle region
-        Context 'When trying to install prerequisites for a OS 11 version in Minor version 41 and Patch version 0 (11.41.0)' {
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 40 and Patch version 2 (11.40.2)' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should not run the BuildTools installation' { Assert-MockCalled @assNotRunInstallBuildTools }
@@ -1160,12 +1160,12 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be 0
                 $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
             }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When trying to install prerequisites for a OS 11 version in Minor version 41 and Patch version 0 (11.41.0) with RemovePreviousHostingBundlePackages flag active' {
+        Context 'When trying to install prerequisites for a OS 11 version in Minor version 40 and Patch version 2 (11.40.2) with RemovePreviousHostingBundlePackages flag active' {
 
-            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -PatchVersion '0' -RemovePreviousHostingBundlePackages $true -ErrorVariable err -ErrorAction SilentlyContinue
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -RemovePreviousHostingBundlePackages $true -ErrorVariable err -ErrorAction SilentlyContinue
 
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should not run the BuildTools installation' { Assert-MockCalled @assNotRunInstallBuildTools }
@@ -1185,7 +1185,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 $result.ExitCode | Should Be 0
                 $result.Message | Should Be 'OutSystems platform server pre-requisites successfully installed'
             }
-            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '41' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
+            It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '40' -PatchVersion '2' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
         # END OF .Net 10 Hosting Bundle region
 
