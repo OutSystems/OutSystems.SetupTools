@@ -135,12 +135,14 @@ function InstallDotNet([string]$Sources, [string]$URL)
         {
             $installer = "$Sources\DotNet.exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
         elseif (Test-Path "$Sources\DotNet.exe.exe")
         {
             $installer = "$Sources\DotNet.exe.exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         else {
             throw [System.IO.FileNotFoundException] "DotNet.exe not found."
@@ -346,12 +348,14 @@ function InstallBuildTools([string]$Sources)
         {
             $installer = "$Sources\BuildTools_Full.exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
         elseif (Test-Path "$Sources\BuildTools_Full.exe.exe")
         {
             $installer = "$Sources\BuildTools_Full.exe.exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         else {
             throw [System.IO.FileNotFoundException] "BuildTools_Full.exe not found."
@@ -380,12 +384,14 @@ function InstallDotNetHostingBundle([string]$MajorVersion, [string]$Sources, [bo
         {
             $installer = "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName'])"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
         elseif (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe")
         {
             $installer = "$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         else {
             throw [System.IO.FileNotFoundException] "$installerName.exe not found."
@@ -419,12 +425,14 @@ function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
         {
             $installer = "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName'])"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
         elseif (Test-Path "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).exe")
         {
             $installer = "$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
+            LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         else {
             throw [System.IO.FileNotFoundException] "$installerName.exe not found."
@@ -779,8 +787,8 @@ Function ExecuteCommand([string]$CommandPath, [string]$WorkingDirectory, [string
         $Process = New-Object System.Diagnostics.Process
         $Process.StartInfo = $ProcessInfo
         $Process.Start() | Out-Null
-        $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle  
-        
+        $Process.PriorityClass = [System.Diagnostics.ProcessPriorityClass]::Idle
+
         if ($OnLogEvent)
         {
             do

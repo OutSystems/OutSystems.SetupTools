@@ -367,3 +367,32 @@ function ValidateMinimumRequiredVersion()
 
     return $true
 }
+
+# Checks if the ZoneId (not AppZoneId) is different than 0 (non local)
+# ZoneId identifies the general security zone (e.g., Internet, Intranet) from which a file was downloaded, determining how strictly Windows treats the file.
+# AppZoneId is a specialized, often temporary, identifier used by applications (like Microsoft SmartScreen) to manage trust exceptions after a user has decided to "Run" a file, often replacing or bypassing the original ZoneId to prevent future security prompts for that specific file
+# It is possible to test this by modifying alternate data stream Set-Content -Path <file> -Stream Zone.Identifier -Value "[ZoneTransfer]`nZoneId=1"
+function CheckIfFileIsBlocked([string]$Path)
+{
+    $fileAlternateDataStream = Get-Content $Path -Stream Zone.Identifier
+    if ($fileAlternateDataStream)
+    {
+        $ZoneId = $fileAlternateDataStream -match "^ZoneId=[0-9]"
+        if ($ZoneId)
+        {
+            $Id = $ZoneId -replace "ZoneId=" , ""
+
+            return $($Id[0] -ne 0)
+        }
+    }
+
+    return $false
+}
+
+function LogIfFileIsBlocked([string]$Function, [string]$Path)
+{
+    if ($(CheckIfFileIsBlocked -Path $Path))
+    {
+        LogMessage -Function $Function -Phase 1 -Stream 1 -Message "$($Path) might be blocked (ZoneId <> 0). Depending on the windows policies of the machine the installation might get stuck."
+    }
+}
