@@ -187,19 +187,30 @@ function Install-OSServerPreReqs
             $installBuildTools = $false
         }
 
-        if ($fullVersion -ge [version]"11.27.0.0")
+        if ($fullVersion -ge [version]"11.40.2.0")
+        {
+            # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
+            # We install .NET 8.0 only
+            $installDotNetHostingBundle6 = $false
+            $installDotNetHostingBundle8 = $false
+            $installDotNetHostingBundle10 = $true
+            $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['10']['Version']
+        }
+        elseif ($fullVersion -ge [version]"11.27.0.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
             # We install .NET 8.0 only
             $installDotNetHostingBundle6 = $false
             $installDotNetHostingBundle8 = $true
+            $installDotNetHostingBundle10 = $false
             $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
         }
         else
         {
-            # Here means that minor and patch version were specified and we are below version 11.27.0.0
+            # Here means that minor and patch version were not specified or we are below version 11.27.0.0
             $installDotNetHostingBundle6 = $true
             $installDotNetHostingBundle8 = $false
+            $installDotNetHostingBundle10 = $false
             $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['6']['Version']
         }
 
@@ -213,6 +224,10 @@ function Install-OSServerPreReqs
             if (([version]$version).Major -eq 8 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['8']['Version']) {
                 $installDotNetHostingBundle8 = $false
             }
+            # Check .NET 10.0
+            if (([version]$version).Major -eq 10 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['10']['Version']) {
+                $installDotNetHostingBundle10 = $false
+            }
         }
 
         if ($installDotNetHostingBundle6) {
@@ -221,7 +236,9 @@ function Install-OSServerPreReqs
         if ($installDotNetHostingBundle8) {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 8.0.0 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
         }
-
+        if ($installDotNetHostingBundle10) {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minimum .NET Windows Server Hosting version 10.0.2 for OutSystems $MajorVersion not found. We will try to download and install the latest .NET Windows Server Hosting bundle"
+        }
 
         # Check .NET version
         if ($(GetDotNet4Version) -lt $script:OSDotNetReqForMajor[$MajorVersion]['Value'])
@@ -455,6 +472,63 @@ function Install-OSServerPreReqs
             }
         }
 
+        # Install .NET Windows Server Hosting bundle version 10
+        if ($installDotNetHostingBundle10)
+        {
+            try
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET 10.0 Windows Server Hosting bundle"
+                $exitCode = InstallDotNetHostingBundle -MajorVersion '10' -Sources $SourcePath -SkipRuntimePackages $SkipRuntimePackages
+            }
+            catch [System.IO.FileNotFoundException]
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message ".NET 10.0 installer not found"
+                WriteNonTerminalError -Message ".NET 10.0 installer not found"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = '.NET 10.0 installer not found'
+
+                return $installResult
+            }
+            catch
+            {
+                LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Exception $_.Exception -Stream 3 -Message "Error downloading or starting the .NET 10.0 installation"
+                WriteNonTerminalError -Message "Error downloading or starting the .NET 10.0 installation"
+
+                $installResult.Success = $false
+                $installResult.ExitCode = -1
+                $installResult.Message = 'Error downloading or starting the .NET 10.0 installation'
+
+                return $installResult
+            }
+
+            switch ($exitCode)
+            {
+                0
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 10.0 Windows Server Hosting bundle successfully installed."
+                }
+
+                { $_ -in 3010, 3011 }
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message ".NET 10.0 Windows Server Hosting bundle successfully installed but a reboot is needed. Exit code: $exitCode"
+                    $installResult.RebootNeeded = $true
+                }
+
+                default
+                {
+                    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Error installing .NET 10.0 Windows Server Hosting bundle. Exit code: $exitCode"
+                    WriteNonTerminalError -Message "Error installing .NET 10.0 Windows Server Hosting bundle. Exit code: $exitCode"
+
+                    $installResult.Success = $false
+                    $installResult.ExitCode = $exitCode
+                    $installResult.Message = 'Error installing .NET 10.0 Windows Server Hosting bundle'
+
+                    return $installResult
+                }
+            }
+        }
 
         if ($mostRecentHostingBundleVersion -and $RemovePreviousHostingBundlePackages)
         {
