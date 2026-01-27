@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 4.1.0.0
+
+- Upgrade the hosting bundle to .NET 10.0
+
 ## 4.0.3.0
 
 - Improve how the `ExecuteCommand` function handles redirecting data from the Standard Output stream.
