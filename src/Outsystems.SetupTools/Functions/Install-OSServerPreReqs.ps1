@@ -107,6 +107,7 @@ function Install-OSServerPreReqs
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified. Minimum version will be set to 23."
             $MinorVersion = "23"
+            $UnspecifiedMinor = $true
         }
     }
 
@@ -187,7 +188,16 @@ function Install-OSServerPreReqs
             $installBuildTools = $false
         }
 
-        if ($fullVersion -ge [version]"11.40.2.0")
+        if ($UnspecifiedMinor)
+        {
+            # Here means that minor and patch version were not specified
+            # We install all version possible
+            $installDotNetHostingBundle6 = $true
+            $installDotNetHostingBundle8 = $true
+            $installDotNetHostingBundle10 = $true
+            # We do not set recent hosting bundle because we don't know the version we are to uninstall the others
+        }
+        elseif ($fullVersion -ge [version]"11.40.2.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
             # We install .NET 8.0 only
@@ -207,7 +217,7 @@ function Install-OSServerPreReqs
         }
         else
         {
-            # Here means that minor and patch version were not specified or we are below version 11.27.0.0
+            # Here means that we are below version 11.27.0.0
             $installDotNetHostingBundle6 = $true
             $installDotNetHostingBundle8 = $false
             $installDotNetHostingBundle10 = $false
