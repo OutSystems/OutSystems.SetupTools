@@ -1216,7 +1216,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         Context 'When trying to install prerequisites for a OS 11 version without passing the optional Minor and Patch Versions and with RemovePreviousHostingBundlePackages flag active.' {
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -RemovePreviousHostingBundlePackages $true -ErrorVariable err -ErrorAction SilentlyContinue
-            # Without being called with a specific version, .Net Core Uninstall tool should not run even if called with the flag to true
+            # Without being called with a specific version, .Net Core Uninstall tool should not run even if called with the flag to true.
             It 'Should run the .NET installation' { Assert-MockCalled @assRunInstallDotNet }
             It 'Should run the BuildTools installation' { Assert-MockCalled @assRunInstallBuildTools }
             It 'Should install the windows features installation' { Assert-MockCalled @assRunInstallWindowsFeatures }
