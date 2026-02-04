@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 4.1.1.0
+
+- Re-add code path to install all known Hosting Bundles, this removed at the start of 4.0.0.0
+
 ## 4.1.0.0
 
 - Upgrade the hosting bundle to .NET 10.0
