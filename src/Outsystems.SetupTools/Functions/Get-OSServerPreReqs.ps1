@@ -189,10 +189,9 @@ function Get-OSServerPreReqs
         if ($fullVersion -ge [version]"11.40.2.0")
         {
             $requireDotNetHostingBundle6 = $false
-            $requireDotNetHostingBundle8 = $false
-            $requireDotNetHostingBundle10 = $true
+            $requireDotNetHostingBundle8 = $true
+            $requireDotNetHostingBundle10 = $false
         }
-
         elseif ($fullVersion -ge [version]"11.27.0.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
@@ -206,7 +205,7 @@ function Get-OSServerPreReqs
             # Here means that minor and patch version were not specified or we are below version 11.27.0.0
             $requireDotNetHostingBundle6 = $true
             $requireDotNetHostingBundle8 = $true
-            $requireDotNetHostingBundle10 = $true
+            $requireDotNetHostingBundle10 = $false
         }
 
         if ($fullVersion -lt [version]"11.35.0.0")

@@ -194,7 +194,7 @@ function Install-OSServerPreReqs
             # We install all version possible
             $installDotNetHostingBundle6 = $true
             $installDotNetHostingBundle8 = $true
-            $installDotNetHostingBundle10 = $true
+            $installDotNetHostingBundle10 = $false
             # We do not set recent hosting bundle because we don't know the version we are to uninstall the others
         }
         elseif ($fullVersion -ge [version]"11.40.2.0")
@@ -202,9 +202,9 @@ function Install-OSServerPreReqs
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
             # We install .NET 8.0 only
             $installDotNetHostingBundle6 = $false
-            $installDotNetHostingBundle8 = $false
-            $installDotNetHostingBundle10 = $true
-            $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['10']['Version']
+            $installDotNetHostingBundle8 = $true
+            $installDotNetHostingBundle10 = $false
+            $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
         }
         elseif ($fullVersion -ge [version]"11.27.0.0")
         {
