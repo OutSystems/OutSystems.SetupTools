@@ -197,6 +197,12 @@ function Install-OSServerPreReqs
             $installDotNetHostingBundle10 = $false
             # We do not set recent hosting bundle because we don't know the version we are to uninstall the others
         }
+        elseif ($fullVersion -ge [version]"11.42.0.0")
+        {
+            $installDotNetHostingBundle6 = $false
+            $installDotNetHostingBundle8 = $true
+            $installDotNetHostingBundle10 = $false
+        }
         elseif ($fullVersion -ge [version]"11.40.2.0")
         {
             # Here means that minor and patch version were specified and we are equal or above version 11.27.0.0
@@ -237,6 +243,10 @@ function Install-OSServerPreReqs
             # Check .NET 10.0
             if (([version]$version).Major -eq 10 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['10']['Version']) {
                 $installDotNetHostingBundle10 = $false
+            }
+            # Check .NET 10.0
+            if (([version]$version).Major -eq 11 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['11']['Version']) {
+                $installDotNetHostingBundle8 = $false # We don't install DotNet 11 yet but we accept it
             }
         }
 
