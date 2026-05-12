@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 4.1.3.0
+
+- Setup Tools now supports detection of .NET 11 Hosting Bundle environments ahead of the .NET 11 release (installation support is not included yet).
+
 ## 4.1.2.0
 
 - Revert upgrade to .Net 10.0
