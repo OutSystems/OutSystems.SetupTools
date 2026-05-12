@@ -391,8 +391,15 @@ function CheckIfFileIsBlocked([string]$Path)
 
 function LogIfFileIsBlocked([string]$Function, [string]$Path)
 {
-    if ($(CheckIfFileIsBlocked -Path $Path))
+    try
     {
+        if ($(CheckIfFileIsBlocked -Path $Path))
+        {
         LogMessage -Function $Function -Phase 1 -Stream 1 -Message "$($Path) might be blocked (ZoneId <> 0). Depending on the windows policies of the machine the installation might get stuck."
+        }
+    }
+    catch
+    {
+        LogMessage -Function $Function -Phase 1 -Stream 2 -Message "Unable to open check if file is blocked $($_.Exception)"
     }
 }
