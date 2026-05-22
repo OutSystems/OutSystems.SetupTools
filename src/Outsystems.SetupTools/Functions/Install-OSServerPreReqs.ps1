@@ -202,6 +202,7 @@ function Install-OSServerPreReqs
             $installDotNetHostingBundle6 = $false
             $installDotNetHostingBundle8 = $true
             $installDotNetHostingBundle10 = $false
+            $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
         }
         elseif ($fullVersion -ge [version]"11.40.2.0")
         {
