@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 4.1.5.0
+
+- Fix missing recent version for versions greater or equal to 11.42.0
+
 ## 4.1.4.0
 
 - Ensure LogIfFileIsBlocked doesn't throw exceptions (fix for issue 174)
