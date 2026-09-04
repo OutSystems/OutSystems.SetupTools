@@ -10,6 +10,7 @@ only_commits:
     - build.settings.ps1
     - ScriptAnalyzerSettings.psd1
 
+
 install:
   - ps: |
       Install-Module Pester -RequiredVersion 4.10.1 -Scope CurrentUser -Force
