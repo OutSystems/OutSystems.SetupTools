@@ -1,3 +1,4 @@
 .trash/
 Release/
 _*.Tests.ps1
+.vscode/

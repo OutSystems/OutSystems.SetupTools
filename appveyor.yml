@@ -4,10 +4,15 @@ only_commits:
   files:
     - 'src/'
     - 'test/'
+    - appveyor.yml
+    - build.ps1
+    - build.psake.ps1
+    - build.settings.ps1
+    - ScriptAnalyzerSettings.psd1
+
 
 install:
   - ps: |
-      Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
       Install-Module Pester -RequiredVersion 4.10.1 -Scope CurrentUser -Force
       Install-Module psake -Scope CurrentUser -Force -RequiredVersion 4.7.4
       Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
