@@ -17,7 +17,6 @@ install:
       Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
       Install-Module platyPS -Scope CurrentUser -Force
 
-
 build_script:
     - ps: |
         $testResultsFile = Join-Path $pwd -ChildPath "$PSScriptRoot/TestResults.xml"
