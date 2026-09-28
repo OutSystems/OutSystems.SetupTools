@@ -105,11 +105,11 @@ Disable-OSServerIPv6 -ErrorAction Stop | Out-Null
 # -- Start a new config
 if ($OSPrivateKey)
 {
-    New-OSServerConfig -DatabaseProvider 'SQL' -PrivateKey $OSPrivateKey -ErrorAction Stop | Out-Null
+    New-OSServerConfig -DatabaseProvider 'SQLServer' -PrivateKey $OSPrivateKey -ErrorAction Stop | Out-Null
 }
 else
 {
-    New-OSServerConfig -DatabaseProvider 'SQL' -ErrorAction Stop | Out-Null
+    New-OSServerConfig -DatabaseProvider 'SQLServer' -ErrorAction Stop | Out-Null
 }
 
 # -- Configure common settings to both versions
