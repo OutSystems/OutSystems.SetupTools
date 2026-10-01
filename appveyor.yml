@@ -9,6 +9,7 @@ only_commits:
     - build.psake.ps1
     - build.settings.ps1
     - ScriptAnalyzerSettings.psd1
+    - commit.dummy
 
 
 install:
