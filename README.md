@@ -59,7 +59,7 @@ Install-OSServiceStudio -Version "11.55.35.64305" -InstallDir "D:\OutSystems"
 * Configure the platform :
 
 ```powershell
-New-OSServerConfig -DatabaseProvider 'SQL'
+New-OSServerConfig -DatabaseProvider 'SQLServer'
 Set-OSServerConfig -SettingSection 'PlatformDatabaseConfiguration' -Setting 'RuntimePassword' -Value 'mypassword'
 Set-OSServerConfig -SettingSection 'SessionDatabaseConfiguration' -Setting 'SessionPassword' -Value 'mypassword'
 ...

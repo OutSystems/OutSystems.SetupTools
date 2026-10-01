@@ -1,4 +1,4 @@
-version: 4.1.5.{build}
+version: 4.1.6.{build}
 
 only_commits:
   files:
@@ -9,14 +9,17 @@ only_commits:
     - build.psake.ps1
     - build.settings.ps1
     - ScriptAnalyzerSettings.psd1
+    - commit.dummy
 
+image:
+    - Visual Studio 2022
 
 install:
-  - ps: |
-      Install-Module Pester -RequiredVersion 4.10.1 -Scope CurrentUser -Force
-      Install-Module psake -Scope CurrentUser -Force -RequiredVersion 4.7.4
-      Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
-      Install-Module platyPS -Scope CurrentUser -Force
+    - ps: |
+        Install-Module Pester -RequiredVersion 4.10.1 -Scope CurrentUser -Force
+        Install-Module psake -Scope CurrentUser -Force -RequiredVersion 4.7.4
+        Install-Module PSScriptAnalyzer -Scope CurrentUser -Force
+        Install-Module platyPS -Scope CurrentUser -Force
 
 build_script:
     - ps: |
