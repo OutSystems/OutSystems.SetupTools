@@ -389,12 +389,12 @@ function InstallDotNetHostingBundle([string]$MajorVersion, [string]$Sources, [bo
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
         elseif (Test-Path "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe")
         {
-            $installer = "$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe"
+            $installer = "$Sources\$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']).exe"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
             LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         else {
-            throw [System.IO.FileNotFoundException] "$installerName.exe not found."
+            throw [System.IO.FileNotFoundException] "$($script:OSDotNetHostingBundleReq[$MajorVersion]['InstallerName']) not found in $Sources."
         }
     }
     else
@@ -428,14 +428,14 @@ function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
             LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         # If Windows is set to hide file extensions from file names, the file could have been stored with double extension by mistake.
-        elseif (Test-Path "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).exe")
+        elseif (Test-Path "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).msi")
         {
-            $installer = "$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).exe"
+            $installer = "$Sources\$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']).msi"
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Using local fallback file: $installer"
             LogIfFileIsBlocked -Function $($MyInvocation.Mycommand) -Path $installer
         }
         else {
-            throw [System.IO.FileNotFoundException] "$installerName.exe not found."
+            throw [System.IO.FileNotFoundException] "$($script:OSDotNetCoreUninstallReq[$MajorVersion]['InstallerName']) not found in $Sources."
         }
     }
     else
@@ -452,16 +452,31 @@ function InstallDotNetCoreUninstallTool([string]$MajorVersion, [string]$Sources)
     return $($result.ExitCode)
 }
 
-function IsDotNetCoreUninstallToolInstalled()
+function IsDotNetCoreUninstallToolInstalled([string]$DisplayVersion)
 {
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of .NET Core Uninstall Tool exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
 
     $rootPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
     $filter = '*Microsoft .NET Core SDK Uninstall Tool (x86)*'
 
-    $item = Get-ChildItem -Path $rootPath -ErrorAction Stop | Get-ItemProperty -Name DisplayName -ErrorAction SilentlyContinue | Where-Object { $_ -like $filter}
-
+    # There can only be one uninstaller in the registry but just in case the query returns an array we return only one
+    $item = Get-ChildItem -Path $rootPath -ErrorAction Stop | Get-ItemProperty -Name DisplayName -ErrorAction SilentlyContinue | Where-Object { $_ -like $filter} | Select-Object -First 1
     if (-not $item)
+    {
+        return $false
+    }
+
+    $itemDisplayVersion = $(Get-ItemProperty $item.PSPath -ErrorAction SilentlyContinue).DisplayVersion
+    $itemVersion = $null
+
+    # If the installed version cannot be determined, assume the tool needs to be installed
+    if (-not [version]::TryParse($itemDisplayVersion, [ref]$itemVersion))
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Could not determine the installed version of the .NET Core Uninstall Tool"
+        return $false
+    }
+
+    if ($itemVersion -lt $DisplayVersion)
     {
         return $false
     }
