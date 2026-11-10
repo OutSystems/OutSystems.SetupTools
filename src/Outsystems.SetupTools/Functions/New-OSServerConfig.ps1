@@ -9,7 +9,7 @@ function New-OSServerConfig
     The cmdlet will not overwrite an existing configuration and/or private key. If you wish to overwrite you need to specify the -Force switch
 
     .PARAMETER DatabaseProvider
-    Configuration will be generated for this database provider. Available database provider are 'SQL' and 'Oracle'
+    Configuration will be generated for this database provider. Available database provider are 'SQLServer' (or 'SQL' for retrocompatibility), 'AzureSQL', 'AzureSQLManagedInstance', 'Oracle' and 'PostgreSQL'
 
     .PARAMETER PrivateKey
     Used to specify the environment private key. If you dont specified this, a random one will be generated
@@ -18,7 +18,7 @@ function New-OSServerConfig
     Allows cmdlet to override an existing configuration
 
     .EXAMPLE
-    New-OSServerConfig -DatabaseProvider 'SQL'
+    New-OSServerConfig -DatabaseProvider 'SQLServer'
 
     .EXAMPLE
     New-OSServerConfig -DatabaseProvider 'Oracle' -PrivateKey '42bGTaGWPkWmbmGLDbkQwA==' -Force
@@ -34,7 +34,7 @@ function New-OSServerConfig
     [CmdletBinding()]
     param(
         [Parameter(Mandatory = $true)]
-        [ValidateSet('SQL', 'Oracle', 'PostgreSQL')]
+        [ValidateSet('SQL', 'SQLServer', 'AzureSQL', 'AzureSQLManagedInstance', 'Oracle', 'PostgreSQL')]
         [string]$DatabaseProvider,
 
         [Parameter(ValueFromPipeline = $true)]
@@ -140,6 +140,18 @@ function New-OSServerConfig
             'SQL'
             {
                 $templateFile = "$osInstallDir\docs\SqlServer_template.hsconf"
+            }
+            'SQLServer'
+            {
+                $templateFile = "$osInstallDir\docs\SqlServer_template.hsconf"
+            }
+            'AzureSQL'
+            {
+                $templateFile = "$osInstallDir\docs\AzureSql_template.hsconf"
+            }
+            'AzureSQLManagedInstance'
+            {
+                $templateFile = "$osInstallDir\docs\AzureSqlManagedInstance_template.hsconf"
             }
             'Oracle'
             {

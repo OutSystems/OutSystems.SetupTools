@@ -26,7 +26,7 @@ If you wish to overwrite you need to specify the -Force switch
 
 ### EXAMPLE 1
 ```
-New-OSServerConfig -DatabaseProvider 'SQL'
+New-OSServerConfig -DatabaseProvider 'SQLServer'
 ```
 
 ### EXAMPLE 2
@@ -43,7 +43,7 @@ New-OSPlatformPrivateKey | New-OSServerConfig -DatabaseProvider 'Oracle' -Force
 
 ### -DatabaseProvider
 Configuration will be generated for this database provider.
-Available database provider are 'SQL' and 'Oracle'
+Available database provider are 'SQLServer' (or 'SQL' for retrocompatibility), 'AzureSQL', 'AzureSQLManagedInstance', 'Oracle' and 'PostgreSQL'
 
 ```yaml
 Type: String

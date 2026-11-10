@@ -1,5 +1,9 @@
 # OutSystems.SetupTools Release History
 
+## 4.1.6.0
+
+- Added new DatabaseProviders for New-OSServerConfig.
+
 ## 4.1.5.0
 
 - Fix missing recent version for versions greater or equal to 11.42.0
