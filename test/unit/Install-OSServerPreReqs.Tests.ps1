@@ -675,7 +675,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
-        Context 'When .NET 10.0 installer not found' {
+        Context 'When .NET 11.0 installer not found' {
 
             Mock -CommandName InstallDotNetHostingBundle -ParameterFilter { $MajorVersion -eq "11" } -MockWith { throw [System.IO.FileNotFoundException] '.NET 11.0 installer not found' }
             $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '46' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue
