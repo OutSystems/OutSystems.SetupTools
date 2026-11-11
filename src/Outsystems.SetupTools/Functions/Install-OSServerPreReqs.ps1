@@ -594,21 +594,21 @@ function Install-OSServerPreReqs
             $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous ASP.NET Core Runtime packages"
-            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--aspnet-runtime' -Version $mostRecentHostingBundleVersion
+            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--aspnet-runtime' -RecentVersion $mostRecentHostingBundleVersion
             if (-not $isUninstalled)
             {
                 return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous ASP.NET Core Runtime packages'
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous .NET Core Runtime packages"
-            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--runtime' -Version $mostRecentHostingBundleVersion
+            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--runtime' -RecentVersion $mostRecentHostingBundleVersion
             if (-not $isUninstalled)
             {
                 return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous .NET Core Runtime packages'
             }
 
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Uninstalling previous .NET Hosting Bundle packages"
-            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--hosting-bundle' -Version $mostRecentHostingBundleVersion
+            $isUninstalled = UninstallPreviousDotNetCorePackages -Package '--hosting-bundle' -RecentVersion $mostRecentHostingBundleVersion
             if (-not $isUninstalled)
             {
                 return LogErrorMessage -InstallResult $installResult -Message 'Error uninstalling previous .NET Hosting Bundle packages'
