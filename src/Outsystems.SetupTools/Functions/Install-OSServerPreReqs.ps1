@@ -203,6 +203,8 @@ function Install-OSServerPreReqs
             $installDotNetHostingBundle8 = $true
             $installDotNetHostingBundle10 = $false
             $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
+            $dotNetCoreUninstallToolVersion = $script:OSDotNetHostingBundleReq['8']['UninstallerVersion']
+            $dotNetCoreUninstallToolDisplayVersion = $script:OSDotNetCoreUninstallReq[$dotNetCoreUninstallToolVersion]['DisplayVersion']
         }
         elseif ($fullVersion -ge [version]"11.40.2.0")
         {
@@ -212,6 +214,8 @@ function Install-OSServerPreReqs
             $installDotNetHostingBundle8 = $true
             $installDotNetHostingBundle10 = $false
             $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
+            $dotNetCoreUninstallToolVersion = $script:OSDotNetHostingBundleReq['8']['UninstallerVersion']
+            $dotNetCoreUninstallToolDisplayVersion = $script:OSDotNetCoreUninstallReq[$dotNetCoreUninstallToolVersion]['DisplayVersion']
         }
         elseif ($fullVersion -ge [version]"11.27.0.0")
         {
@@ -221,6 +225,8 @@ function Install-OSServerPreReqs
             $installDotNetHostingBundle8 = $true
             $installDotNetHostingBundle10 = $false
             $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['8']['Version']
+            $dotNetCoreUninstallToolVersion = $script:OSDotNetHostingBundleReq['8']['UninstallerVersion']
+            $dotNetCoreUninstallToolDisplayVersion = $script:OSDotNetCoreUninstallReq[$dotNetCoreUninstallToolVersion]['DisplayVersion']
         }
         else
         {
@@ -229,6 +235,8 @@ function Install-OSServerPreReqs
             $installDotNetHostingBundle8 = $false
             $installDotNetHostingBundle10 = $false
             $mostRecentHostingBundleVersion = [version]$script:OSDotNetHostingBundleReq['6']['Version']
+            $dotNetCoreUninstallToolVersion = $script:OSDotNetHostingBundleReq['6']['UninstallerVersion']
+            $dotNetCoreUninstallToolDisplayVersion = $script:OSDotNetCoreUninstallReq[$dotNetCoreUninstallToolVersion]['DisplayVersion']
         }
 
         foreach ($version in GetDotNetHostingBundleVersions)
@@ -553,13 +561,13 @@ function Install-OSServerPreReqs
 
         if ($mostRecentHostingBundleVersion -and $RemovePreviousHostingBundlePackages)
         {
-            $isInstalled = IsDotNetCoreUninstallToolInstalled
+            $isInstalled = IsDotNetCoreUninstallToolInstalled -DisplayVersion $dotNetCoreUninstallToolDisplayVersion
             if (-not $isInstalled)
             {
                 try
                 {
                     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Installing .NET Uninstall Tool"
-                    $exitCode = InstallDotNetCoreUninstallTool -MajorVersion '1.5' -Sources $SourcePath
+                    $exitCode = InstallDotNetCoreUninstallTool -MajorVersion $dotNetCoreUninstallToolVersion -Sources $SourcePath
                 }
                 catch [System.IO.FileNotFoundException]
                 {
