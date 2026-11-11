@@ -1,6 +1,6 @@
 # OutSystems.SetupTools Release History
 
-## 4.2.0.0
+## 5.0.0.0
 
 - Added support for .NET 11.0
 - Fixed an issue where versions between 11.23 to 11.26 would require the .NET 8.0 or .NET 11.0 hosting bundle
