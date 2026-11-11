@@ -36,6 +36,10 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $assNotRunInstallDotNetHostingBundle  = @{ 'CommandName' = 'InstallDotNetHostingBundle'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq "6" }}
         $assRunInstallDotNetCoreUninstallTool = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunInstallDotNetCoreUninstallTool = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
+        $assRunInstallDotNetCoreUninstallToolVersion17 = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq '1.7' } }
+        $assRunIsDotNetCoreUninstallToolInstalledDisplayVersion = @{ 'CommandName' = 'IsDotNetCoreUninstallToolInstalled'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $DisplayVersion -eq '4.112.868' } }
+        $assRunUninstallPreviousPackagesRecentVersion8 = @{ 'CommandName' = 'UninstallPreviousDotNetCorePackages'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $RecentVersion -eq '8.0.0' } }
+        $assRunUninstallPreviousPackagesRecentVersion11 = @{ 'CommandName' = 'UninstallPreviousDotNetCorePackages'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $RecentVersion -eq '11.0.0' } }
         $assRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
@@ -1122,6 +1126,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET 11.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle11 }
             It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
+            It 'Should install the .NET Core Uninstall Tool version 1.7' { Assert-MockCalled @assRunInstallDotNetCoreUninstallToolVersion17 }
+            It 'Should check the .NET Core Uninstall Tool display version 4.112.868' { Assert-MockCalled @assRunIsDotNetCoreUninstallToolInstalledDisplayVersion }
+            It 'Should uninstall previous .NET Core packages keeping version 8.0.0' { Assert-MockCalled @assRunUninstallPreviousPackagesRecentVersion8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should disable the FIPS' { Assert-MockCalled @assRunDisableFIPS }
@@ -1226,6 +1233,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle8 }
             It 'Should not run the .NET 11.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle11 }
             It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
+            It 'Should install the .NET Core Uninstall Tool version 1.7' { Assert-MockCalled @assRunInstallDotNetCoreUninstallToolVersion17 }
+            It 'Should check the .NET Core Uninstall Tool display version 4.112.868' { Assert-MockCalled @assRunIsDotNetCoreUninstallToolInstalledDisplayVersion }
+            It 'Should uninstall previous .NET Core packages keeping version 8.0.0' { Assert-MockCalled @assRunUninstallPreviousPackagesRecentVersion8 }
             It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
             It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
             It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
@@ -1306,6 +1316,9 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
                 It 'Should run the .NET 11.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle11 }
                 It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
+                It 'Should install the .NET Core Uninstall Tool version 1.7' { Assert-MockCalled @assRunInstallDotNetCoreUninstallToolVersion17 }
+                It 'Should check the .NET Core Uninstall Tool display version 4.112.868' { Assert-MockCalled @assRunIsDotNetCoreUninstallToolInstalledDisplayVersion }
+                It 'Should uninstall previous .NET Core packages keeping version 11.0.0' { Assert-MockCalled @assRunUninstallPreviousPackagesRecentVersion11 }
                 It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
                 It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
                 It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }
