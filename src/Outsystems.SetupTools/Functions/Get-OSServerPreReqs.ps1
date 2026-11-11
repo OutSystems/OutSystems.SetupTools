@@ -186,17 +186,24 @@ function Get-OSServerPreReqs
 
         # Check .NET Core / .NET Windows Server Hosting version
         $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-        if ($fullVersion -ge [version]"11.42.0.0")
+        if ($fullVersion -ge [version]"11.46.0.0")
+        {
+            $requireDotNetHostingBundle6 = $false
+            $requireDotNetHostingBundle8 = $false
+            $requireDotNetHostingBundle8Or11 = $false
+            $requireDotNetHostingBundle11 = $true
+        }
+        elseif ($fullVersion -ge [version]"11.42.0.0")
         {
             $requireDotNetHostingBundle6 = $false
             $requireDotNetHostingBundle8Or11 = $true
-            $requireDotNetHostingBundle10 = $false
+            $requireDotNetHostingBundle11 = $false
         }
         elseif ($fullVersion -ge [version]"11.40.2.0")
         {
             $requireDotNetHostingBundle6 = $false
             $requireDotNetHostingBundle8 = $true
-            $requireDotNetHostingBundle10 = $false
+            $requireDotNetHostingBundle11 = $false
         }
         elseif ($fullVersion -ge [version]"11.27.0.0")
         {
@@ -204,14 +211,14 @@ function Get-OSServerPreReqs
             # We install .NET 8.0 only
             $requireDotNetHostingBundle6 = $false
             $requireDotNetHostingBundle8 = $true
-            $requireDotNetHostingBundle10 = $false
+            $requireDotNetHostingBundle11 = $false
         }
         else
         {
             # Here means that minor and patch version were not specified or we are below version 11.27.0.0
             $requireDotNetHostingBundle6 = $true
             $requireDotNetHostingBundle8 = $true
-            $requireDotNetHostingBundle10 = $false
+            $requireDotNetHostingBundle11 = $true
         }
 
         if ($fullVersion -lt [version]"11.35.0.0")
@@ -344,20 +351,20 @@ function Get-OSServerPreReqs
                                                             }
         }
 
-        if ($requireDotNetHostingBundle10) {
-            $RequirementStatuses += CreateRequirementStatus -Title ".NET 10.0 Windows Server Hosting" `
+        if ($requireDotNetHostingBundle11) {
+            $RequirementStatuses += CreateRequirementStatus -Title ".NET 11.0 Windows Server Hosting" `
                                                             -ScriptBlock `
                                                             {
                                                                 $Status = $False
                                                                 foreach ($version in GetDotNetHostingBundleVersions)
                                                                 {
-                                                                    # Check version 10.0
-                                                                    if (([version]$version).Major -eq 10 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['10']['Version']) {
+                                                                    # Check version 11.0
+                                                                    if (([version]$version).Major -eq 11 -and ([version]$version) -ge [version]$script:OSDotNetHostingBundleReq['11']['Version']) {
                                                                         $Status = $True
                                                                     }
                                                                 }
-                                                                $OKMessages = @("Minimum .NET 10.0.2 Windows Server Hosting found.")
-                                                                $NOKMessages = @("Minimum .NET 10.0.2 Windows Server Hosting not found.")
+                                                                $OKMessages = @("Minimum .NET 11.0.0 Windows Server Hosting found.")
+                                                                $NOKMessages = @("Minimum .NET 11.0.0 Windows Server Hosting not found.")
                                                                 $IISStatus = $True
 
                                                                 if (Get-Command Get-WebGlobalModule -errorAction SilentlyContinue)
