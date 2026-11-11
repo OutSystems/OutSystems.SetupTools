@@ -139,6 +139,7 @@ function Get-OSServerPreReqs
         {
             LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "Minor version was not specified. Minimum version will be set to 23."
             $MinorVersion = "23"
+            $UnspecifiedMinor = $true
         }
     }
 
@@ -186,7 +187,15 @@ function Get-OSServerPreReqs
 
         # Check .NET Core / .NET Windows Server Hosting version
         $fullVersion = [version]"$MajorVersion.$MinorVersion.$PatchVersion.0"
-        if ($fullVersion -ge [version]"11.46.0.0")
+        if ($UnspecifiedMinor)
+        {
+            # Here means that minor and patch version were not specified
+            # We require all version possible
+            $requireDotNetHostingBundle6 = $true
+            $requireDotNetHostingBundle8 = $true
+            $requireDotNetHostingBundle11 = $true
+        }
+        elseif ($fullVersion -ge [version]"11.46.0.0")
         {
             $requireDotNetHostingBundle6 = $false
             $requireDotNetHostingBundle8 = $false
@@ -215,10 +224,11 @@ function Get-OSServerPreReqs
         }
         else
         {
-            # Here means that minor and patch version were not specified or we are below version 11.27.0.0
+            # Here means that minor and patch version were specified and we are below version 11.27.0.0
+            # .NET 8 and 11 are not required here: the Install side only installs .NET 6 for this range
             $requireDotNetHostingBundle6 = $true
-            $requireDotNetHostingBundle8 = $true
-            $requireDotNetHostingBundle11 = $true
+            $requireDotNetHostingBundle8 = $false
+            $requireDotNetHostingBundle11 = $false
         }
 
         if ($fullVersion -lt [version]"11.35.0.0")
