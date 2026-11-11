@@ -208,7 +208,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallWindowsFeatures
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -242,7 +242,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
             It 'Should return the right result' {
                 $result.Success | Should Be $false
@@ -272,7 +272,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
             It 'Should return the right result' {
                 $result.Success | Should Be $false
@@ -302,7 +302,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should NOT run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -333,7 +333,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
             It 'Should return the right result' {
                 $result.Success | Should Be $false
@@ -386,7 +386,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -416,7 +416,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -450,7 +450,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should NOT run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -477,7 +477,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -507,7 +507,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallBuildTools
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -541,7 +541,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should NOT run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -569,7 +569,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunInstallBuildTools
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -629,7 +629,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -659,7 +659,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -719,7 +719,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -749,7 +749,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -813,7 +813,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -844,7 +844,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -901,7 +901,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -931,7 +931,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunInstallDotNet
                 Assert-MockCalled @assNotRunInstallDotNetHostingBundle8
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
                 Assert-MockCalled @assNotRunConfigureServiceWMI
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
@@ -966,7 +966,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 Assert-MockCalled @assNotRunConfigureServiceWindowsSearch
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -997,7 +997,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunDisableFIPS
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -1028,7 +1028,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             It 'Should NOT run the next actions' {
                 Assert-MockCalled @assNotRunConfigureWindowsEventLog
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
@@ -1060,7 +1060,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             }
 
             It 'Should NOT run the next actions' {
-                Assert-MockCalled @assNotRunInstallDotNetHostingBundle10
+                Assert-MockCalled @assNotRunInstallDotNetHostingBundle11
             }
 
             It 'Should return the right result' {
