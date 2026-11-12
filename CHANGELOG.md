@@ -1,5 +1,13 @@
 # OutSystems.SetupTools Release History
 
+## 5.0.0.0
+
+- Added support for .NET 11.0
+- Fixed an issue where versions between 11.23 to 11.26 would require the .NET 8.0 or .NET 11.0 hosting bundle
+- Fix -RemovePreviousHostingBundlePackages not passing the version to keep to the uninstall step, which could remove the wrong hosting bundle packages.
+- Changed .Net uninstaller tool name from DotNetCore_Uninstall_15.msi to DotNetCore_Uninstall.msi
+- Updated .Net uninstaller tool version for more recent versions of .Net installations
+
 ## 4.1.6.0
 
 - Added new DatabaseProviders for New-OSServerConfig.
