@@ -1,5 +1,12 @@
 # OutSystems.SetupTools Release History
 
+## 5.0.1.0
+
+- Fixed -RemovePreviousHostingBundlePackages removing hosting bundle patches newer than the required version (e.g. 8.0.2 when 8.0.0 is required).
+- -RemovePreviousHostingBundlePackages no longer removes .NET Core 2.x, 3.x and .NET 5 packages, since uninstalling them can break ASP.NET Core applications in IIS (https://github.com/dotnet/aspnetcore/issues/65508). It only removes packages from .NET 6 up to the required major, keeps the newest patch of each version, and skips previews.
+- -RemovePreviousHostingBundlePackages does not remove .NET 11.0 and later packages, which the .NET Uninstall Tool cannot uninstall.
+- The .NET 11.0 hosting bundle requirement is now 11.0.0.26529, so a release candidate is replaced by the 11.0.0 release.
+
 ## 5.0.0.0
 
 - Added support for .NET 11.0
