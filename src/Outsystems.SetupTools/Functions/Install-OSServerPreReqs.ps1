@@ -29,6 +29,9 @@ function Install-OSServerPreReqs
 
     .PARAMETER RemovePreviousHostingBundlePackages
     Specifies whether the installer should remove previous installations of the Hosting Bundle.
+    Only packages from .NET 6 up to the required major are removed, when they are below the required version or with a higher patch.
+    Older packages (.NET Core 2.x and 3.x, .NET 5), newer majors and .NET 11 and above (the .NET Uninstall Tool cannot remove them) are kept.
+    Reason: https://github.com/dotnet/aspnetcore/issues/65508
     Accepted values: $false and $true. By default this is set to $false.
 
     .PARAMETER SkipRuntimePackages

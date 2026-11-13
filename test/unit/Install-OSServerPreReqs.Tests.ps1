@@ -39,7 +39,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
         $assRunInstallDotNetCoreUninstallToolVersion17 = @{ 'CommandName' = 'InstallDotNetCoreUninstallTool'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $MajorVersion -eq '1.7' } }
         $assRunIsDotNetCoreUninstallToolInstalledDisplayVersion = @{ 'CommandName' = 'IsDotNetCoreUninstallToolInstalled'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $DisplayVersion -eq '4.112.868' } }
         $assRunUninstallPreviousPackagesRecentVersion8 = @{ 'CommandName' = 'UninstallPreviousDotNetCorePackages'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $RecentVersion -eq '8.0.0' } }
-        $assRunUninstallPreviousPackagesRecentVersion11 = @{ 'CommandName' = 'UninstallPreviousDotNetCorePackages'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $RecentVersion -eq '11.0.0' } }
+        $assRunUninstallPreviousPackagesRecentVersion11 = @{ 'CommandName' = 'UninstallPreviousDotNetCorePackages'; 'Times' = 3; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { $RecentVersion -eq '11.0.0.26529' } }
         $assRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
         $assNotRunConfigureServiceWMI = @{ 'CommandName' = 'ConfigureServiceWMI'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'}
         $assRunConfigureServiceWindowsSearch = @{ 'CommandName' = 'ConfigureServiceWindowsSearch'; 'Times' = 1; 'Exactly' = $true; 'Scope' = 'Context'}
@@ -125,7 +125,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
 
             Mock GetMSBuildToolsInstallInfo { return @{ 'HasMSBuild2015' = $True; 'HasMSBuild2017' = $False; 'LatestVersionInstalled' = 'MS Build Tools 2015'; 'RebootNeeded' = $False } }
             Mock GetDotNet4Version { return 461808 }
-            Mock GetDotNetHostingBundleVersions { return @('6.0.6', '8.0.0', '11.0.0') }
+            Mock GetDotNetHostingBundleVersions { return @('6.0.6', '8.0.0', '11.0.0.26529') }
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -1131,11 +1131,28 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             It 'Should not throw' { { Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '27' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue } | Should Not throw }
         }
 
+        Context 'When installing OS 11.46 with a .NET 11 release candidate installed' {
+
+            # Builds below 11.0.0.26529 are release candidates, so the 11.0.0 release has to be installed
+            Mock GetDotNet4Version { return 461808 }
+            Mock GetDotNetHostingBundleVersions { return '11.0.0.25529' }
+
+            $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '46' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue
+
+            It 'Should run the .NET 11.0 Hosting Bundle installation' { Assert-MockCalled @assRunInstallDotNetHostingBundle11 }
+            It 'Should not run the .NET 8.0 Hosting Bundle installation' { Assert-MockCalled @assNotRunInstallDotNetHostingBundle8 }
+            It 'Should return the right result' {
+                $result.Success | Should Be $true
+                $result.ExitCode | Should Be 0
+            }
+            It 'Should not output an error' { $err.Count | Should Be 0 }
+        }
+
         # .Net Hosting Bundle region
         Context 'When trying to install prerequisites for a OS 11 version in Minor version 42 and Patch version 0 (11.42.0) with .Net 11 Hosting Bundle installed' {
 
             Mock GetDotNet4Version { return 461808 }
-            Mock GetDotNetHostingBundleVersions { return '11.0.0' }
+            Mock GetDotNetHostingBundleVersions { return '11.0.0.26529' }
 
             $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '42' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -1243,7 +1260,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
             Context 'When trying to install prerequisites for a OS 11 version in Minor version 46 and Patch version 0 (11.46.0) with .Net 11 Hosting Bundle installed' {
 
                 Mock GetDotNet4Version { return 461808 }
-                Mock GetDotNetHostingBundleVersions { return '11.0.0' }
+                Mock GetDotNetHostingBundleVersions { return '11.0.0.26529' }
 
                 $result = Install-OSServerPreReqs -MajorVersion '11' -MinorVersion '46' -PatchVersion '0' -ErrorVariable err -ErrorAction SilentlyContinue
 
@@ -1306,7 +1323,7 @@ InModuleScope -ModuleName OutSystems.SetupTools {
                 It 'Should run the .NET Core Uninstall Tool installation' { Assert-MockCalled @assRunInstallDotNetCoreUninstallTool }
                 It 'Should install the .NET Core Uninstall Tool version 1.7' { Assert-MockCalled @assRunInstallDotNetCoreUninstallToolVersion17 }
                 It 'Should check the .NET Core Uninstall Tool display version 4.112.868' { Assert-MockCalled @assRunIsDotNetCoreUninstallToolInstalledDisplayVersion }
-                It 'Should uninstall previous .NET Core packages keeping version 11.0.0' { Assert-MockCalled @assRunUninstallPreviousPackagesRecentVersion11 }
+                It 'Should uninstall previous .NET Core packages keeping version 11.0.0.26529' { Assert-MockCalled @assRunUninstallPreviousPackagesRecentVersion11 }
                 It 'Should configure the WMI service' { Assert-MockCalled @assRunConfigureServiceWMI }
                 It 'Should configure the Windows search service' { Assert-MockCalled @assRunConfigureServiceWindowsSearch }
                 It 'Should not disable the FIPS' { Assert-MockCalled @assNotRunDisableFIPS }

@@ -114,7 +114,7 @@ $OSDotNetHostingBundleReq = @{
         UninstallerVersion = '1.7'
     }
     '11' = @{
-        Version = '11.0.0'
+        Version = '11.0.0.26529'
         ToInstallDownloadURL = 'https://builds.dotnet.microsoft.com/dotnet/aspnetcore/Runtime/11.0.0/dotnet-hosting-11.0.0-win.exe'
         InstallerName = 'DotNet_WindowsHosting_11.exe'
         UninstallerVersion = '1.7'

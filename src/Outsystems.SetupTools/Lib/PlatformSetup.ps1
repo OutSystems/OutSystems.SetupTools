@@ -484,38 +484,129 @@ function IsDotNetCoreUninstallToolInstalled([string]$DisplayVersion)
     return $true
 }
 
-function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVersion)
+function GetInstalledDotNetCorePackageVersions([string]$Package)
 {
-    Write-Output "y" | dotnet-core-uninstall remove --all-but $RecentVersion $Package | Out-Null
-
-    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of previous .NET Core versions exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
-
     $rootPath = 'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall'
-    $filter = ''
+    $filters = @()
 
     switch ($Package) {
         '--runtime'
         {
-            $filter = '*Microsoft .NET*Runtime*'
+            $filters = @('*Microsoft .NET*Runtime*')
         }
         '--aspnet-runtime'
         {
-            $filter = '*Microsoft ASP.NET*Shared Framework*'
+            $filters = @('*Microsoft ASP.NET*Shared Framework*')
         }
         '--hosting-bundle'
         {
-            $filter = '*Microsoft*Hosting Bundle*'
+            # A hosting bundle registers two kinds of entries, e.g.
+            #   'Microsoft .NET Core 2.1.12 - Windows Server Hosting', 'Microsoft .NET 8.0.0 - Windows Server Hosting'
+            #   'Microsoft ASP.NET Core 8.0.0 Hosting Bundle Options' (only from .NET 6 onwards)
+            $filters = @('*Microsoft*Hosting Bundle*', '*Microsoft .NET*Windows Server Hosting*')
         }
     }
 
-    $item = Get-ChildItem -Path $rootPath -ErrorAction Stop | Get-ItemProperty -Name DisplayName -ErrorAction SilentlyContinue | Where-Object { $_ -like $filter -and $_ -notlike "*$RecentVersion*"}
-
-    if (-not $item)
+    $versions = @()
+    $entries = Get-ChildItem -Path $rootPath -ErrorAction Stop | Get-ItemProperty -Name DisplayName -ErrorAction SilentlyContinue
+    foreach ($entry in $entries)
     {
+        $displayName = $entry.DisplayName
+        if (@($filters | Where-Object { $displayName -like $_ }).Count -eq 0)
+        {
+            continue
+        }
+
+        # Previews are skipped: the .NET Uninstall Tool lists them under their preview version (e.g. 10.0.0-preview.7), so removing them by
+        # their release version (10.0.0) would not find them and the check after the uninstall would fail the installation.
+        # Release candidates are kept, since the tool lists them under their release version (e.g. 'RC 3 Build rc.3.26522.148' as 11.0.0).
+        if ($displayName -match 'preview|alpha')
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "'$displayName' is a preview. Ignoring it."
+            continue
+        }
+
+        $installedVersion = $null
+        if (($displayName -match '(\d+\.\d+\.\d+)') -and [version]::TryParse($Matches[1], [ref]$installedVersion))
+        {
+            $versions += $installedVersion
+        }
+        else
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Could not determine the version of '$displayName'. Ignoring it."
+        }
+    }
+
+    return @($versions | Sort-Object -Unique)
+}
+
+function GetDotNetCorePackageVersionsToRemove([version[]]$InstalledVersions, [string]$RecentVersion)
+{
+    # Only packages from .NET 6 up to the required major are removed. Anything older (.NET Core 2.x and 3.x, .NET 5) is left installed on purpose:
+    # uninstalling those bundles removes the aspNetCore section declaration from IIS applicationHost.config while a newer bundle
+    # stays installed, which breaks every ASP.NET Core application with HTTP 500.19 (https://github.com/dotnet/aspnetcore/issues/65508).
+    # Newer majors than the required one are kept as well.
+    # We do not use the tool's --all-below, --all-but or --all-lower-patches options because none of them can be limited to these majors.
+    $lowestMajorToRemove = 6
+
+    # The .NET Uninstall Tool 1.7 refuses to remove these versions ("Cannot uninstall version 11.0.0 and above"). Selecting them would make
+    # the check after the uninstall find them still installed and fail the installation, so they are kept. Raise it when a newer tool supports them.
+    $firstVersionNotRemovableByTool = [version]'11.0.0'
+
+    # Compare on major.minor.patch only, since the minimum version can carry a revision (e.g. 11.0.0.26529) that the package names do not have
+    $recent = [version]$RecentVersion
+    $minimumVersion = New-Object -TypeName System.Version -ArgumentList $recent.Major, $recent.Minor, ([Math]::Max($recent.Build, 0))
+
+    # The required major is in the range, so its older patches are removed too (e.g. 8.0.0 when 8.0.2 is installed)
+    $versionsToRemove = @()
+    $candidates = @($InstalledVersions | Where-Object { $_ -and ($_.Major -ge $lowestMajorToRemove) -and ($_.Major -le $minimumVersion.Major) -and ($_ -lt $firstVersionNotRemovableByTool) })
+    foreach ($version in $candidates)
+    {
+        # Below the minimum version (e.g. 6.0.6 or 8.0.0 when the minimum is 11.0.0)
+        $isBelowMinimum = $version -lt $minimumVersion
+
+        # If a higher patch of the same major.minor (e.g. 8.0.0 when 8.0.2 is installed) is installed, the highest patch is kept
+        $hasHigherPatch = @($candidates | Where-Object { ($_.Major -eq $version.Major) -and ($_.Minor -eq $version.Minor) -and ($_.Build -gt $version.Build) }).Count -gt 0
+
+        if ($isBelowMinimum -or $hasHigherPatch)
+        {
+            $versionsToRemove += $version
+        }
+    }
+
+    return $versionsToRemove
+}
+
+function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVersion)
+{
+    $installedVersions = @(GetInstalledDotNetCorePackageVersions -Package $Package)
+    $versionsToRemove = @(GetDotNetCorePackageVersionsToRemove -InstalledVersions $installedVersions -RecentVersion $RecentVersion)
+
+    if ($versionsToRemove.Count -eq 0)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "No previous $Package packages to remove"
         return $true
     }
 
-    return $false
+    foreach ($version in $versionsToRemove)
+    {
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Removing $Package $version"
+        Write-Output "y" | dotnet-core-uninstall remove "$version" $Package | Out-Null
+    }
+
+    LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of the removed versions still exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
+
+    $installedVersions = @(GetInstalledDotNetCorePackageVersions -Package $Package)
+    $leftovers = @($versionsToRemove | Where-Object { $installedVersions -contains $_ })
+
+    if ($leftovers.Count -gt 0)
+    {
+        # Logged as a warning so it always reaches the log file: the tool output is discarded and the caller only logs a generic error
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 1 -Message "Could not remove $Package $($leftovers -join ', ')"
+        return $false
+    }
+
+    return $true
 }
 
 function LogErrorMessage([pscustomobject]$InstallResult, [string]$Message)
