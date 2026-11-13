@@ -517,6 +517,15 @@ function GetInstalledDotNetCorePackageVersions([string]$Package)
             continue
         }
 
+        # Previews are skipped: the .NET Uninstall Tool lists them under their preview version (e.g. 10.0.0-preview.7), so removing them by
+        # their release version (10.0.0) would not find them and the check after the uninstall would fail the installation.
+        # Release candidates are kept, since the tool lists them under their release version (e.g. 'RC 3 Build rc.3.26522.148' as 11.0.0).
+        if ($displayName -match 'preview|alpha')
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "'$displayName' is a preview. Ignoring it."
+            continue
+        }
+
         $installedVersion = $null
         if (($displayName -match '(\d+\.\d+\.\d+)') -and [version]::TryParse($Matches[1], [ref]$installedVersion))
         {
@@ -592,7 +601,8 @@ function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVe
 
     if ($leftovers.Count -gt 0)
     {
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Could not remove $Package $($leftovers -join ', ')"
+        # Logged as a warning so it always reaches the log file: the tool output is discarded and the caller only logs a generic error
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 1 -Message "Could not remove $Package $($leftovers -join ', ')"
         return $false
     }
 
