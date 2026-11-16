@@ -16,6 +16,27 @@ function global:dotnet-core-uninstall
 try
 {
     InModuleScope -ModuleName OutSystems.SetupTools {
+        Describe 'IsRemovableByDotNetCoreUninstallTool Tests' {
+
+            Context 'When the tool lists the version' {
+
+                Mock dotnet-core-uninstall { $global:LASTEXITCODE = 0 }
+
+                $result = IsRemovableByDotNetCoreUninstallTool -Version '8.0.20' -Package '--runtime'
+
+                It 'Should only run a dry run' { Assert-MockCalled -CommandName dotnet-core-uninstall -Times 1 -Exactly -Scope Context -ParameterFilter { ($Arguments -join ' ') -eq 'dry-run 8.0.20 --runtime' } }
+                It 'Should return true' { $result | Should Be $true }
+            }
+
+            Context 'When the tool does not list the version' {
+
+                # 'The specified version is not found: "10.0.15".' and exit code 1
+                Mock dotnet-core-uninstall { $global:LASTEXITCODE = 1 }
+
+                It 'Should return false' { IsRemovableByDotNetCoreUninstallTool -Version '10.0.15' -Package '--runtime' | Should Be $false }
+            }
+        }
+
         Describe 'UninstallPreviousDotNetCorePackages Tests' {
 
             Mock LogMessage {}
@@ -24,6 +45,7 @@ try
             # The registry entries the function reads. The tool mock removes the entries of the version it is asked to remove,
             # so the check after the uninstall sees the same state a real machine would.
             Mock Get-ItemProperty { return $script:registryEntries }
+            Mock IsRemovableByDotNetCoreUninstallTool { return $true }
             Mock dotnet-core-uninstall {
                 $removedVersion = $Arguments[1]
                 $script:registryEntries = @($script:registryEntries | Where-Object { $_.DisplayName -notmatch "(^|[^\d.])$([regex]::Escape($removedVersion))([^\d.]|$)" })
@@ -45,6 +67,37 @@ try
             }
 
             $assNotRunBulkOptions = @{ 'CommandName' = 'dotnet-core-uninstall'; 'Times' = 0; 'Exactly' = $true; 'Scope' = 'Context'; 'ParameterFilter' = { ($Arguments -contains '--all-below') -or ($Arguments -contains '--all-but') -or ($Arguments -contains '--all-lower-patches') -or ($Arguments -contains '--all-but-latest') } }
+
+            Context 'When a runtime was installed by a hosting bundle' {
+
+                # The machine where 'remove 10.0.15 --runtime' answered 'The specified version is not found' and stopped the installation
+                Mock IsRemovableByDotNetCoreUninstallTool { return $false } -ParameterFilter { $Version -eq '10.0.15' }
+
+                SetRegistryEntries @(
+                    'Microsoft .NET Runtime - 8.0.20 (x64)',
+                    'Microsoft .NET Runtime - 10.0.15 (x64)',
+                    'Microsoft .NET Runtime - 10.0.15 (x86)',
+                    'Microsoft .NET Runtime - 11.0.0 (x86)'
+                )
+
+                $result = UninstallPreviousDotNetCorePackages -Package '--runtime' -RecentVersion '11.0.0.26529'
+
+                It 'Should remove the runtime the tool lists' { AssertRemoved 'remove 8.0.20 --runtime' }
+                It 'Should not try to remove the runtime the tool does not list' { AssertNotRemoved '10.0.15' }
+                It 'Should report success' { $result | Should Be $true }
+            }
+
+            Context 'When the tool cannot remove any of the selected versions' {
+
+                Mock IsRemovableByDotNetCoreUninstallTool { return $false }
+
+                SetRegistryEntries @('Microsoft .NET Runtime - 10.0.15 (x64)')
+
+                $result = UninstallPreviousDotNetCorePackages -Package '--runtime' -RecentVersion '11.0.0.26529'
+
+                It 'Should not run the tool' { Assert-MockCalled -CommandName dotnet-core-uninstall -Times 0 -Exactly -Scope Context }
+                It 'Should report success' { $result | Should Be $true }
+            }
 
             Context 'When hosting bundles older than .NET 6 are installed next to .NET 6 and the minimum version' {
 
@@ -188,7 +241,7 @@ try
                 $result = UninstallPreviousDotNetCorePackages -Package '--hosting-bundle' -RecentVersion '8.0.0'
 
                 It 'Should try to remove it' { AssertRemoved 'remove 6.0.6 --hosting-bundle' }
-                It 'Should log the version left as a warning' { Assert-MockCalled -CommandName LogMessage -Times 1 -Exactly -Scope Context -ParameterFilter { ($Stream -eq 1) -and ($Message -eq 'Could not remove --hosting-bundle 6.0.6') } }
+                It 'Should log the version left as an error' { Assert-MockCalled -CommandName LogMessage -Times 1 -Exactly -Scope Context -ParameterFilter { ($Stream -eq 3) -and ($Message -eq 'Could not remove --hosting-bundle 6.0.6') } }
                 It 'Should report failure' { $result | Should Be $false }
             }
 

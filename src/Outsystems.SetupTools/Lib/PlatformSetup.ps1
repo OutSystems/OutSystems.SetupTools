@@ -577,6 +577,14 @@ function GetDotNetCorePackageVersionsToRemove([version[]]$InstalledVersions, [st
     return $versionsToRemove
 }
 
+function IsRemovableByDotNetCoreUninstallTool([string]$Version, [string]$Package)
+{
+    # dry-run removes nothing and exits with 1 when the tool does not list the version (e.g. 'The specified version is not found')
+    dotnet-core-uninstall dry-run $Version $Package | Out-Null
+
+    return ($LASTEXITCODE -eq 0)
+}
+
 function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVersion)
 {
     $installedVersions = @(GetInstalledDotNetCorePackageVersions -Package $Package)
@@ -588,21 +596,36 @@ function UninstallPreviousDotNetCorePackages([string]$Package, [string]$RecentVe
         return $true
     }
 
+    $removedVersions = @()
     foreach ($version in $versionsToRemove)
     {
+        # The registry lists packages the tool cannot remove on their own, e.g. the runtimes installed by a hosting bundle
+        # ('Microsoft .NET Runtime - 10.0.15' from the 10.0.15 bundle). Those are removed with the hosting bundle instead.
+        if (-not $(IsRemovableByDotNetCoreUninstallTool -Version "$version" -Package $Package))
+        {
+            LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 0 -Message "The .NET Uninstall Tool cannot remove $Package $version on its own. Skipping it."
+            continue
+        }
+
         LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Removing $Package $version"
         Write-Output "y" | dotnet-core-uninstall remove "$version" $Package | Out-Null
+        $removedVersions += $version
+    }
+
+    if ($removedVersions.Count -eq 0)
+    {
+        return $true
     }
 
     LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 2 -Message "Checking if registry key of the removed versions still exists in HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall"
 
     $installedVersions = @(GetInstalledDotNetCorePackageVersions -Package $Package)
-    $leftovers = @($versionsToRemove | Where-Object { $installedVersions -contains $_ })
+    $leftovers = @($removedVersions | Where-Object { $installedVersions -contains $_ })
 
     if ($leftovers.Count -gt 0)
     {
-        # Logged as a warning so it always reaches the log file: the tool output is discarded and the caller only logs a generic error
-        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 1 -Message "Could not remove $Package $($leftovers -join ', ')"
+        # Logged as an error so it always reaches the log file: the tool output is discarded and the caller only logs a generic error
+        LogMessage -Function $($MyInvocation.Mycommand) -Phase 1 -Stream 3 -Message "Could not remove $Package $($leftovers -join ', ')"
         return $false
     }
 
