@@ -1,5 +1,10 @@
 # OutSystems.SetupTools Release History
 
+## 5.0.2.0
+
+- Fixed -RemovePreviousHostingBundlePackages failing with "Error uninstalling previous .NET Core Runtime packages" when a runtime was installed by a hosting bundle (e.g. the .NET 10.0 runtime of the 10.0 hosting bundle). Versions the .NET Uninstall Tool cannot remove on their own are now skipped, and are removed with their hosting bundle.
+- The versions that could not be removed are now logged as an error.
+
 ## 5.0.1.0
 
 - Fixed -RemovePreviousHostingBundlePackages removing hosting bundle patches newer than the required version (e.g. 8.0.2 when 8.0.0 is required).
